@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c46bslpmokm55"]
 
-[ext_resource type="Script" path="res://editor/script_parser/script_parser.gd" id="1_7t8hl"]
-[ext_resource type="Script" path="res://editor/script_parser/script_text_editor.gd" id="1_samjk"]
+[ext_resource type="Script" uid="uid://dedn21ytyvfpb" path="res://editor/script_parser/script_parser.gd" id="1_7t8hl"]
+[ext_resource type="Script" uid="uid://2dirlx2pde8f" path="res://editor/script_parser/script_text_editor.gd" id="1_samjk"]
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_rsrqa"]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ju3qxlac7uq1"]
 
-[ext_resource type="Script" path="res://mods/example_mod/editor/example_editor_tab.gd" id="1_6y15c"]
+[ext_resource type="Script" uid="uid://ba43gx3k2nrsp" path="res://mods/example_mod/editor/example_editor_tab.gd" id="1_6y15c"]
 
 [node name="Example" type="MarginContainer"]
 anchors_preset = 15

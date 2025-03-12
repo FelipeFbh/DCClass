@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://boddxdrkli1e5"]
 
-[ext_resource type="Script" path="res://editor/entities/entities_editor.gd" id="1_u6ssc"]
-[ext_resource type="Script" path="res://utils/custom_control/switcher_container.gd" id="2_aoubr"]
+[ext_resource type="Script" uid="uid://b3xgjwhvqlesw" path="res://editor/entities/entities_editor.gd" id="1_u6ssc"]
+[ext_resource type="Script" uid="uid://c1hnbqqx02c2h" path="res://utils/custom_control/switcher_container.gd" id="2_aoubr"]
 [ext_resource type="PackedScene" uid="uid://c0vjf6c6pu6r6" path="res://editor/entities/entity_wrapper_editor_window.tscn" id="3_c7g16"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8jg8c"]

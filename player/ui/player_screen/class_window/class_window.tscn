@@ -1,10 +1,10 @@
 [gd_scene load_steps=14 format=3 uid="uid://cdf57hapkw603"]
 
 [ext_resource type="PackedScene" uid="uid://cl6gcu3ckai1r" path="res://player/ui/player_screen/class_window/player_screen_indicator.tscn" id="1_61jat"]
-[ext_resource type="Script" path="res://player/ui/player_screen/class_window/class_window.gd" id="1_s0jgr"]
+[ext_resource type="Script" uid="uid://di7mut8xy5ykx" path="res://player/ui/player_screen/class_window/class_window.gd" id="1_s0jgr"]
 [ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="2_caqkq"]
-[ext_resource type="Script" path="res://player/ui/player_screen/class_window/player_slider.gd" id="4_733sw"]
-[ext_resource type="Script" path="res://utils/stopwatch.gd" id="4_ufhj5"]
+[ext_resource type="Script" uid="uid://oktielarubfh" path="res://player/ui/player_screen/class_window/player_slider.gd" id="4_733sw"]
+[ext_resource type="Script" uid="uid://c0p4qqfnhxfcy" path="res://utils/stopwatch.gd" id="4_ufhj5"]
 
 [sub_resource type="GDScript" id="GDScript_b0r1l"]
 resource_name = "camera_control"

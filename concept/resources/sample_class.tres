@@ -1,19 +1,23 @@
-[gd_resource type="Resource" script_class="ClassIndex" load_steps=25 format=3 uid="uid://cvcb4bqok6n0y"]
+[gd_resource type="Resource" script_class="ClassIndex" load_steps=29 format=3 uid="uid://cvcb4bqok6n0y"]
 
 [ext_resource type="Resource" uid="uid://cew6pjlmafut0" path="res://concept/resources/sample_class_metadata.tres" id="1_aspss"]
-[ext_resource type="Script" path="res://core/resources/class/class_index.gd" id="1_k7mu1"]
-[ext_resource type="Script" path="res://core/resources/class/class_organization/class_section.gd" id="3_ydfld"]
-[ext_resource type="Script" path="res://core/resources/class/class_organization/class_parallel_group.gd" id="5_csasb"]
-[ext_resource type="Script" path="res://core/resources/class/class_organization/class_slide.gd" id="6_4qxia"]
-[ext_resource type="Script" path="res://core/resources/class/entities/entity_wrapper/entity_wrapper.gd" id="15_nq5mc"]
-[ext_resource type="Script" path="res://core/resources/class/entities/entity_wrapper/size_entity_property.gd" id="16_3tn48"]
-[ext_resource type="Script" path="res://core/resources/class/entities/entity_wrapper/position_entity_property.gd" id="17_iduu7"]
-[ext_resource type="Script" path="res://core/resources/class/class_organization/class_chain_group.gd" id="19_o65ol"]
+[ext_resource type="Script" uid="uid://clrgmxx18gvdb" path="res://core/resources/class/script_entries/script_entry.gd" id="1_h3rdj"]
+[ext_resource type="Script" uid="uid://djhsfdx6pc366" path="res://core/resources/class/class_index.gd" id="1_k7mu1"]
+[ext_resource type="Script" uid="uid://b82ncy6voqs37" path="res://core/resources/class/entities/entity.gd" id="2_kjhf7"]
+[ext_resource type="Script" uid="uid://bsqi4kbbnlvsh" path="res://core/resources/class/class_organization/class_section.gd" id="3_ydfld"]
+[ext_resource type="Script" uid="uid://djb47yqhumyx2" path="res://core/resources/class/class_organization/class_parallel_group.gd" id="5_csasb"]
+[ext_resource type="Script" uid="uid://7c61ox81sh1j" path="res://core/resources/class/class_organization/class_slide.gd" id="6_4qxia"]
+[ext_resource type="Script" uid="uid://dprh4gr882j7k" path="res://core/resources/class/class_organization/class_group.gd" id="8_vwtsj"]
+[ext_resource type="Script" uid="uid://dyng6otmmxqbv" path="res://core/resources/class/entities/entity_wrapper/entity_property.gd" id="9_7pcnb"]
+[ext_resource type="Script" uid="uid://bt8n1edkc13f0" path="res://core/resources/class/entities/entity_wrapper/entity_wrapper.gd" id="15_nq5mc"]
+[ext_resource type="Script" uid="uid://ct0q6veq04lgn" path="res://core/resources/class/entities/entity_wrapper/size_entity_property.gd" id="16_3tn48"]
+[ext_resource type="Script" uid="uid://bdcflo8lwbvvq" path="res://core/resources/class/entities/entity_wrapper/position_entity_property.gd" id="17_iduu7"]
+[ext_resource type="Script" uid="uid://dklm0qkiayoay" path="res://core/resources/class/class_organization/class_chain_group.gd" id="19_o65ol"]
 
 [sub_resource type="Resource" id="Resource_x2lig"]
 script = ExtResource("15_nq5mc")
 entity_id = 0
-entity_properties = Array[Resource("res://core/resources/class/entities/entity_wrapper/entity_property.gd")]([])
+entity_properties = Array[ExtResource("9_7pcnb")]([])
 
 [sub_resource type="Resource" id="Resource_msjrh"]
 script = ExtResource("16_3tn48")
@@ -22,12 +26,12 @@ size = Vector2(600, 400)
 [sub_resource type="Resource" id="Resource_2eowf"]
 script = ExtResource("15_nq5mc")
 entity_id = 1
-entity_properties = Array[Resource("res://core/resources/class/entities/entity_wrapper/entity_property.gd")]([SubResource("Resource_msjrh")])
+entity_properties = Array[ExtResource("9_7pcnb")]([SubResource("Resource_msjrh")])
 
 [sub_resource type="Resource" id="Resource_b6xcl"]
 script = ExtResource("5_csasb")
 entities = Array[ExtResource("15_nq5mc")]([SubResource("Resource_x2lig"), SubResource("Resource_2eowf")])
-groups = Array[Resource("res://core/resources/class/class_organization/class_group.gd")]([])
+groups = Array[ExtResource("8_vwtsj")]([])
 
 [sub_resource type="Resource" id="Resource_g70k2"]
 script = ExtResource("17_iduu7")
@@ -36,7 +40,7 @@ position = Vector2(300, 100)
 [sub_resource type="Resource" id="Resource_3seju"]
 script = ExtResource("15_nq5mc")
 entity_id = 2
-entity_properties = Array[Resource("res://core/resources/class/entities/entity_wrapper/entity_property.gd")]([SubResource("Resource_g70k2")])
+entity_properties = Array[ExtResource("9_7pcnb")]([SubResource("Resource_g70k2")])
 
 [sub_resource type="Resource" id="Resource_sod5n"]
 script = ExtResource("17_iduu7")
@@ -45,7 +49,7 @@ position = Vector2(600, 0)
 [sub_resource type="Resource" id="Resource_ro5k7"]
 script = ExtResource("15_nq5mc")
 entity_id = 5
-entity_properties = Array[Resource("res://core/resources/class/entities/entity_wrapper/entity_property.gd")]([SubResource("Resource_sod5n")])
+entity_properties = Array[ExtResource("9_7pcnb")]([SubResource("Resource_sod5n")])
 
 [sub_resource type="Resource" id="Resource_rwj31"]
 script = ExtResource("16_3tn48")
@@ -58,17 +62,17 @@ position = Vector2(600, 100)
 [sub_resource type="Resource" id="Resource_v4tlt"]
 script = ExtResource("15_nq5mc")
 entity_id = 6
-entity_properties = Array[Resource("res://core/resources/class/entities/entity_wrapper/entity_property.gd")]([SubResource("Resource_rwj31"), SubResource("Resource_psat2")])
+entity_properties = Array[ExtResource("9_7pcnb")]([SubResource("Resource_rwj31"), SubResource("Resource_psat2")])
 
 [sub_resource type="Resource" id="Resource_1syln"]
 script = ExtResource("5_csasb")
 entities = Array[ExtResource("15_nq5mc")]([SubResource("Resource_x2lig"), SubResource("Resource_3seju"), SubResource("Resource_ro5k7"), SubResource("Resource_v4tlt")])
-groups = Array[Resource("res://core/resources/class/class_organization/class_group.gd")]([])
+groups = Array[ExtResource("8_vwtsj")]([])
 
 [sub_resource type="Resource" id="Resource_e0ine"]
 script = ExtResource("19_o65ol")
 entities = Array[ExtResource("15_nq5mc")]([])
-groups = Array[Resource("res://core/resources/class/class_organization/class_group.gd")]([SubResource("Resource_b6xcl"), SubResource("Resource_1syln")])
+groups = Array[ExtResource("8_vwtsj")]([SubResource("Resource_b6xcl"), SubResource("Resource_1syln")])
 
 [sub_resource type="Resource" id="Resource_4ahko"]
 script = ExtResource("6_4qxia")
@@ -83,6 +87,6 @@ slides = Array[ExtResource("6_4qxia")]([SubResource("Resource_4ahko")])
 [resource]
 script = ExtResource("1_k7mu1")
 metadata = ExtResource("1_aspss")
-entities = Array[Resource("res://core/resources/class/entities/entity.gd")]([])
+entities = Array[ExtResource("2_kjhf7")]([])
 sections = Array[ExtResource("3_ydfld")]([SubResource("Resource_t18gp")])
-class_script = Array[Resource("res://core/resources/class/script_entries/script_entry.gd")]([])
+class_script = Array[ExtResource("1_h3rdj")]([])

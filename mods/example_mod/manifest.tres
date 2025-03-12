@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ModProperties" load_steps=4 format=3 uid="uid://b1ea0yj41wn1c"]
 
 [ext_resource type="PackedScene" uid="uid://ju3qxlac7uq1" path="res://mods/example_mod/editor/example_editor_tab.tscn" id="1_58ssu"]
-[ext_resource type="Script" path="res://core/mods/module_properties.gd" id="1_h63rg"]
+[ext_resource type="Script" uid="uid://biicb6gjum7j2" path="res://core/mods/module_properties.gd" id="1_h63rg"]
 [ext_resource type="PackedScene" uid="uid://baa40m8qjckc6" path="res://mods/example_mod/player/example_player_tab.tscn" id="2_x0atc"]
 
 [resource]

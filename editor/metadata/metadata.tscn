@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://t2glt66qlxoo"]
 
-[ext_resource type="Script" path="res://editor/metadata/metadata_editor.gd" id="1_yhila"]
+[ext_resource type="Script" uid="uid://beso0dvnbg47y" path="res://editor/metadata/metadata_editor.gd" id="1_yhila"]
 
 [node name="Metadata" type="MarginContainer"]
 anchors_preset = 15

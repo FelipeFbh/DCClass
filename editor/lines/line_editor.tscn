@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://6cm0u5eqk1pl"]
 
-[ext_resource type="Script" path="res://editor/lines/line_editor.gd" id="1_8cpwo"]
+[ext_resource type="Script" uid="uid://ccq1ceo66xtt0" path="res://editor/lines/line_editor.gd" id="1_8cpwo"]
 [ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="2_pcot2"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1xim8"]

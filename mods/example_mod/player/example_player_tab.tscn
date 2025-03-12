@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://baa40m8qjckc6"]
 
-[ext_resource type="Script" path="res://mods/example_mod/player/example_player_tab.gd" id="1_e3eom"]
+[ext_resource type="Script" uid="uid://cdqfhbnhs5s0l" path="res://mods/example_mod/player/example_player_tab.gd" id="1_e3eom"]
 [ext_resource type="Texture2D" uid="uid://c7u1gnaa17l4" path="res://mods/example_mod/assets/progress.png" id="2_64n7m"]
 [ext_resource type="Texture2D" uid="uid://bomt51h0ewmw4" path="res://mods/example_mod/assets/under.png" id="3_scrfx"]
 
