@@ -1,0 +1,270 @@
+[gd_scene load_steps=14 format=3 uid="uid://c340c4al7fg2r"]
+
+[ext_resource type="Script" uid="uid://cgsis7ghldo0n" path="res://editor/2whiteboard/player_screen/class_window/class_window.gd" id="1_q48er"]
+[ext_resource type="Script" uid="uid://cnp5mp84uvknc" path="res://editor/2whiteboard/player_screen/class_window/whiteboard.gd" id="2_ebiip"]
+[ext_resource type="PackedScene" uid="uid://bfxw21a4i2jsp" path="res://editor/2whiteboard/player_screen/class_window/player_screen_indicator.tscn" id="2_q48er"]
+[ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="3_jqomu"]
+[ext_resource type="Script" uid="uid://bd8fko1aorchr" path="res://editor/2whiteboard/player_screen/class_window/player_slider.gd" id="5_ebiip"]
+[ext_resource type="Script" uid="uid://bpju5lto4io2m" path="res://utils/stopwatcheditor.gd" id="5_q48er"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ai0gx"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(300, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s1sm7"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(350, 400, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(50, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mw2kf"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(200, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ar7p2"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(200, 350, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o2vqn"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(200, 450, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8b6xy"]
+atlas = ExtResource("3_jqomu")
+region = Rect2(350, 450, 50, 50)
+
+[node name="ClassWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_q48er")
+
+[node name="LeftSplit" type="HSplitContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+split_offset = 200
+
+[node name="LeftPanel" type="PanelContainer" parent="LeftSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RightSplit" type="HSplitContainer" parent="LeftSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BottomSplit" type="VSplitContainer" parent="LeftSplit/RightSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+dragger_visibility = 1
+
+[node name="Whiteboard" type="Control" parent="LeftSplit/RightSplit/BottomSplit"]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_ebiip")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/SubViewportContainer"]
+unique_name_in_owner = true
+disable_3d = true
+handle_input_locally = false
+size = Vector2i(868, 604)
+render_target_update_mode = 4
+
+[node name="PlayerScreenIndicator" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard" instance=ExtResource("2_q48er")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="FullscreenButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"FullscreenIconButton"
+toggle_mode = true
+icon = SubResource("AtlasTexture_ai0gx")
+flat = true
+
+[node name="RecenterCameraButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"FullscreenIconButton"
+icon = SubResource("AtlasTexture_s1sm7")
+flat = true
+
+[node name="BottomPanel" type="PanelContainer" parent="LeftSplit/RightSplit/BottomSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControlRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="CameraZoom" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ZoomButton" type="TextureButton" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/CameraZoom"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_uioh1")
+
+[node name="ZoomSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/CameraZoom"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 3.0
+step = 0.1
+value = 1.0
+
+[node name="Spacer" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StopButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Stop"
+
+[node name="Spacer3" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PlaybackControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+alignment = 1
+
+[node name="PreviousButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PlayerIconButton"
+icon = SubResource("AtlasTexture_mw2kf")
+
+[node name="PlayPauseButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PlayerIconButton"
+icon = SubResource("AtlasTexture_ar7p2")
+
+[node name="NextButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PlayerIconButton"
+icon = SubResource("AtlasTexture_o2vqn")
+
+[node name="Spacer2" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpeedControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+
+[node name="SpeedButton" type="TextureButton" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/SpeedControls"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_8b6xy")
+
+[node name="SpeedSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/SpeedControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 3.0
+step = 0.1
+value = 1.0
+
+[node name="TimeRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="CurrentTimeLabel" type="Label" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:00"
+
+[node name="TimeSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+step = 0.25
+scrollable = false
+script = ExtResource("5_ebiip")
+
+[node name="TotalTimeLabel" type="Label" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:00"
+
+[node name="RightPanel" type="PanelContainer" parent="LeftSplit/RightSplit"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="ModTabContainer" type="TabContainer" parent="LeftSplit/RightSplit/RightPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+current_tab = 0
+
+[node name="ModTabManager" type="MarginContainer" parent="LeftSplit/RightSplit/RightPanel/ModTabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Stopwatch" type="Node" parent="."]
+unique_name_in_owner = true
+process_mode = 1
+script = ExtResource("5_q48er")

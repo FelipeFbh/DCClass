@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://wb0c848uqu1l"]
 
-[ext_resource type="Script" uid="uid://dcbclt4y8k7md" path="res://player/ui/player_screen/main/main.gd" id="1_71exo"]
+[ext_resource type="Script" uid="uid://byg1rnjuh57gg" path="res://player/ui/player_screen/main/main.gd" id="1_71exo"]
 [ext_resource type="PackedScene" uid="uid://cdf57hapkw603" path="res://player/ui/player_screen/class_window/class_window.tscn" id="2_w24an"]
-[ext_resource type="Script" uid="uid://b0fu3m8kn6mkk" path="res://player/ui/player_screen/main/parse_and_play.gd" id="3_qjepy"]
+[ext_resource type="Script" uid="uid://bh42qgh3g33xn" path="res://player/ui/player_screen/main/parse_and_play.gd" id="3_qjepy"]
 [ext_resource type="PackedScene" uid="uid://k6e56lrpnnla" path="res://player/ui/player_screen/background/background.tscn" id="4_22y3d"]
-[ext_resource type="Script" uid="uid://cecs0rd1cl37n" path="res://player/ui/player_screen/camera/class_camera.gd" id="5_hoqiu"]
+[ext_resource type="Script" uid="uid://b28n7xtqnfxt5" path="res://player/ui/player_screen/camera/class_camera.gd" id="5_hoqiu"]
 
 [node name="UI" type="CanvasLayer"]
 script = ExtResource("1_71exo")

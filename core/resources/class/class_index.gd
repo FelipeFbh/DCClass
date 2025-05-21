@@ -15,8 +15,7 @@ extends Resource
 # 6. export variables: define all export variables in groups here
 @export var metadata: ClassMetadata
 @export var entities: Array[Entity] = []
-@export var sections: Array[ClassSection] = []
-@export var class_script: Array[ScriptEntry] = []
+@export var tree_structure: ClassNode
 # 7. public variables: define all public variables here
 
 # 8. private variables: define all private variables here, use _ as preffix
@@ -34,8 +33,7 @@ func serialize() -> Dictionary:
 	var data = {
 		"metadata": metadata.serialize(),
 		"entities": entities.map(func(e): return e.serialize()),
-		"sections": sections.map(func(e): return e.serialize()),
-		"script": class_script.map(func(e): return e.serialize()),
+		"tree_structure": tree_structure.serialize(),
 	}
 	return data
 
@@ -44,10 +42,7 @@ static func deserialize(data: Dictionary) -> ClassIndex:
 	instance.metadata = ClassMetadata.deserialize(data["metadata"])
 	for entity in data["entities"]:
 		instance.entities.append(Entity.deserialize(entity))
-	for section in data["sections"]:
-		instance.sections.append(ClassSection.deserialize(section))
-	for _script in data["script"]:
-		instance.class_script.append(ScriptEntry.deserialize(_script))
+	instance.tree_structure = ClassNode.deserialize(data["tree_structure"])
 	return instance
 
 # 13. private methods: define all private methods here, use _ as preffix

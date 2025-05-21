@@ -4,8 +4,6 @@ extends Node2D
 ## A widget is a visual element that can be played and reset.
 ## This class defines the main API for a widget.
 
-signal animation_finished
-
 ## The ZIP file containing the widget assets.
 ## Use [method ZIPReader.file_exists] to check if a file exists in the ZIP file.
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
@@ -25,7 +23,7 @@ func init(_properties: Dictionary) -> void:
 
 ## Called when it's time to play the widget.
 ## The animation should be played for the given [param duration].
-func play(_duration: float) -> void:
+func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	pass
 
 ## Called when the player seeked to a point before the widget was played.
@@ -47,6 +45,3 @@ func set_speed_scale(_speed: float) -> void:
 ## Reset the speed scale of the widget to 1.0.
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
-
-func _emit_animation_finished() -> void:
-	animation_finished.emit()

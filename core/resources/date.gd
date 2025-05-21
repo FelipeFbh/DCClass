@@ -55,4 +55,3 @@ func _reverse_date_format(input:String) -> String:
 	return "{0}-{1}-{2}".format(element_array)
 
 # 14. subclasses: define all subclasses here
-

@@ -14,6 +14,8 @@ extends Entity
 
 # 6. export variables: define all export variables in groups here
 @export var points: PackedVector2Array
+var delays: Array
+
 # TODO: add property variables
 # 7. public variables: define all public variables here
 
@@ -38,6 +40,7 @@ func serialize() -> Dictionary:
 	return {
 		"entity_type": get_class_name(),
 		"points": points_array.map(func(v): return {"x": v.x, "y": v.y}),
+		"delays": delays
 	}
 
 func load_data(data: Dictionary) -> void:
@@ -45,6 +48,8 @@ func load_data(data: Dictionary) -> void:
 	for point in data["points"]:
 		points_array.append(Vector2(point["x"], point["y"]))
 	points = PackedVector2Array(points_array)
+
+	delays = data["delays"]
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here

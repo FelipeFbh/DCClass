@@ -14,16 +14,42 @@ func init(properties: Dictionary) -> void:
 		position = properties["position"]
 	line.hide()
 
-func play(duration: float) -> void:
+func serialize() -> Dictionary:
+	return entity.serialize()
+
+func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	line.show()
 	if tween:
 		tween.kill()
-	if !is_zero_approx(duration):
-		tween = create_tween()
-		tween.tween_method(_add_points, 0, len(entity.points) - 1, duration)
-		tween.tween_callback(_emit_animation_finished)
-	else:
-		_emit_animation_finished()
+
+	var pts = entity.points
+	var delays = entity.delays
+	
+	var count = pts.size()
+	if count == 0:
+		return
+	#var needed := count - 1
+	#if delays.size() < needed:
+	#	for i in range(delays.size(), needed):
+	#		delays.append((_duration_leaf / _total_real_time) * _duration / needed)
+
+	tween = create_tween()
+	tween.set_speed_scale(1/(_duration / _total_real_time))
+	tween.pause()
+	
+	for i in range(count):
+		tween.tween_callback(Callable(self, "_add_points").bind(i))
+		if i < delays.size():
+			tween.tween_interval(delays[i])
+
+	#var now = Time.get_ticks_msec() / 1000.0
+	tween.play()
+
+	await tween.finished
+	#var finish = Time.get_ticks_msec() / 1000.0
+	#print("LineWidget: Play time: ", finish - now, " seconds")
+	
+
 
 func reset():
 	if tween:
@@ -41,3 +67,13 @@ func _add_points(i: int) -> void:
 	if not line.points.is_empty() and line.points[-1] == entity.points[i]:
 		return # to avoid duplicate points
 	line.add_point(entity.points[i])
+
+
+## Returns the duration of the line in seconds.
+func compute_duration() -> float:
+	var duration: float = 0.0
+	var delays = entity.delays
+	if delays.size() > 0:
+		for i in range(delays.size()):
+			duration += delays[i]
+	return duration

@@ -70,7 +70,7 @@ func _instantiate() -> bool:
 		root.add_child(node)
 	return true
 
-func _instantiate_section(section: ClassSection) -> Node2D:
+func _instantiate_section(section: ClassNode) -> Node2D:
 	var node: Node2D = Node2D.new()
 	var section_tree_item := section_manager.register_section(section.name)
 	var slide_x_position := 0.0
@@ -86,7 +86,7 @@ func _instantiate_section(section: ClassSection) -> Node2D:
 	section_tree_item.set_metadata(0, node.get_child(0))
 	return node
 
-func _instantiate_slide(slide: ClassSlide) -> SlideNode:
+func _instantiate_slide(slide: ClassNode) -> SlideNode:
 	var node: SlideNode = SlideNode.new()
 	node.name = slide.name
 	var group: GroupController = GroupController.instantiate(slide.content_root, entities)

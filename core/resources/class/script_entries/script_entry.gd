@@ -32,22 +32,22 @@ extends Resource
 
 # 12. public methods: define all public methods here
 func get_class_name() -> String:
-    return "ScriptEntry"
+	return "ScriptEntry"
 
 func serialize() -> Dictionary:
-    return {
-        "entry_type": get_class_name(),
-        "content": content,
-    }
+	return {
+		"entry_type": get_class_name(),
+		"content": content,
+	}
 
 static func deserialize(data: Dictionary) -> ScriptEntry:
-    var instance: ScriptEntry = CustomClassDB.instantiate(data["entry_type"])
-    instance.content = data["content"]
-    instance.load_data(data)
-    return instance
+	var instance: ScriptEntry = CustomClassDB.instantiate(data["entry_type"])
+	instance.content = data["content"]
+	instance.load_data(data)
+	return instance
 
 func load_data(_data: Dictionary) -> void:
-    pass
+	pass
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here

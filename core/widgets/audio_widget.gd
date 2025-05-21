@@ -15,15 +15,18 @@ func init(_properties: Dictionary) -> void:
 	audio.bus = &"AudioWidget"
 	audio.stream = packet_sequence
 
-func play(_duration: float) -> void:
+func serialize() -> Dictionary:
+	return entity.serialize()
+
+func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	audio.play()
-	if audio.finished.is_connected(_emit_animation_finished):
-		return
-	audio.finished.connect(_emit_animation_finished, CONNECT_ONE_SHOT)
+
+
+
+func is_audio() -> bool:
+	return true
 
 func reset():
-	if audio.finished.is_connected(_emit_animation_finished):
-		audio.finished.disconnect(_emit_animation_finished)
 	audio.stop()
 
 func skip_to_end():

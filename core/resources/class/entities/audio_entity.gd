@@ -27,19 +27,19 @@ extends Entity
 
 # 12. public methods: define all public methods here
 func get_class_name() -> String:
-    return "AudioEntity"
+	return "AudioEntity"
 
 func get_editor_name() -> String:
-    return "Audio: " + audio_path
+	return "Audio: " + audio_path
 
 func serialize() -> Dictionary:
-    return {
-        "entity_type": get_class_name(),
-        "audio_path": audio_path
-    }
+	return {
+		"entity_type": get_class_name(),
+		"audio_path": audio_path
+	}
 
 func load_data(data: Dictionary) -> void:
-    audio_path = data["audio_path"]
+	audio_path = data["audio_path"]
 
 # 13. private methods: define all private methods here, use _ as preffix
 
