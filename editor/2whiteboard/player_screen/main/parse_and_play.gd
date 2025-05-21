@@ -16,6 +16,8 @@ var zip_file: ZIPReader
 
 var entry_point : NodeController
 
+var tree_manager: TreeManagerEditor
+
 
 func _enter_tree():
 	WHITEBOARD_SIZE = _load_whiteboard_size()
@@ -68,6 +70,8 @@ func _instantiate() -> bool:
 	var node: Node2D = Node2D.new()
 	node.add_child(entry_point)
 	root.add_child(node)
+	tree_manager = TreeManagerEditor.new()
+	tree_manager.build(root_tree_structure, entities)
 	return true
 
 

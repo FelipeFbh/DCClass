@@ -66,7 +66,7 @@ func _populate_slide_content(parent_item: TreeItem, slide: ClassNode) -> void:
 func _add_groups(parent_item: TreeItem, groups: Array[ClassGroup]) -> void:
 	for group in groups:
 		var group_item = parent_item.create_child()
-		group_item.set_text(0, group.get_editor_name())
+		#group_item.set_text(0, group.get_editor_name())
 		group_item.set_metadata(0, group)
 		_add_groups(group_item, group.groups)
 		_add_entities(group_item, group.entities)

@@ -3,35 +3,13 @@ extends Control
 
 var find_group_by_timestamp: Callable
 
-#region Section Tree
-@onready var section_tree_parent: Control = %LeftPanel
-# justo encima de set_section_tree()
-var section_tree: Tree            # ← NUEVO
-	
-func set_section_tree(tree: Tree) -> void:
-	section_tree = tree           # ← guarda la referencia
-	section_tree_parent.add_child(tree)
-	tree.item_activated.connect(_on_tree_section_clicked.bind(tree))
+#region Index Tree
+@onready var index_tree_parent: Control = %LeftPanel
+
+func set_index_tree(tree: Tree) -> void:
+	index_tree_parent.add_child(tree)
 	%LeftSplit.split_offset = tree.size.x + 10
-	tree.scroll_horizontal_enabled = true
-
-func _on_tree_section_clicked(tree: Tree) -> void:
-	var selected: TreeItem = tree.get_selected()
-	if !is_instance_valid(selected):
-		return
-	_play_section(selected)
-
-func _play_section(selected: TreeItem) -> void:
-	var slide: SlideNode = selected.get_metadata(0)
-	if !is_instance_valid(slide):
-		return
-	var current_slide: SlideNode = (get_tree().get_first_node_in_group("current_slide") as SlideNode)
-	var current_slide_index: int = 0
-	if is_instance_valid(current_slide):
-		# current_slide.stop()
-		current_slide_index = current_slide.absolute_slide_id
-	get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFERRED, "slide_nodes", "on_seek", current_slide_index, slide.absolute_slide_id)
-	slide.call_deferred(&"play")
+	tree.scroll_horizontal_enabled = true	
 #endregion
 
 #region Whiteboard
@@ -124,13 +102,13 @@ func _play_next_section() -> void:
 	var next_section: TreeItem = _get_next_section()
 	if !is_instance_valid(next_section):
 		return
-	_play_section(next_section)
+	#_play_section(next_section)
 
 func _play_prev_section() -> void:
 	var prev_section: TreeItem = _get_prev_section()
 	if !is_instance_valid(prev_section):
 		return
-	_play_section(prev_section)
+	#_play_section(prev_section)
 
 func _slider_value_selected(seconds: float) -> void:
 	print("Seeking to " + str(seconds))
@@ -140,18 +118,18 @@ func _slider_value_selected(seconds: float) -> void:
 		stopwatch.resume()
 		return
 	var slide: SlideNode = group.get_parent() as SlideNode
-	_play_section(slide.tree_item)
+	#_play_section(slide.tree_item)
 
 
 
 
 
 @onready var stop_icon          : Texture = get_theme_icon("stop", "Button")
-@onready var continue_icon      : Texture = get_theme_icon("reload", "Button")  # usa el icono que prefieras
+@onready var continue_icon      : Texture = get_theme_icon("reload", "Button")  
 
-var is_stopped        : bool = false        # ¿estamos en modo STOP?
-var stopped_slide_idx : int  = -1           # índice del slide donde nos quedamos
-var stopped_section : TreeItem      # ← guardaremos el TreeItem
+var is_stopped        : bool = false
+var stopped_slide_idx : int  = -1
+var stopped_section : TreeItem    
 
 
 
@@ -179,11 +157,11 @@ func _stop_playback() -> void:
 
 func _resume_playback() -> void:
 	if !is_instance_valid(stopped_section):
-		return                       # por si algo salió mal
+		return
 
 	is_stopped = false
 
-	_play_section(stopped_section)   # ← TreeItem válido
+	#_play_section(stopped_section)
 	stopwatch.start()
 	play_button.icon = pause_icon
 

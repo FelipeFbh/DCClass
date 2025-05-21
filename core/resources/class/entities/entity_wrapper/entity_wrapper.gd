@@ -8,6 +8,9 @@ extends Resource
 
 var entity: Entity = null
 
+func get_editor_name(entities: Array[Entity]) -> String:
+	return "EW > " + entities[entity_id].get_editor_name()
+
 ## Return a dictionary with all the properties of the entity.
 ## Keys with the same name will be overwritten.
 func get_properties() -> Dictionary:

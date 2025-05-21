@@ -36,8 +36,8 @@ extends ClassNode
 func get_class_name():
 	return "ClassLeaf"
 
-func get_editor_name():
-	pass
+func get_editor_name(entities: Array[Entity]):
+	return "Leaf > " + _value.get_editor_name(entities)
 
 func serialize():
 	pass

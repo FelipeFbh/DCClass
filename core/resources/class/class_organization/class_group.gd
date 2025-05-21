@@ -16,11 +16,11 @@ extends ClassNode
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
+@export var _name: String = "Group"
 @export var _childrens: Array[ClassNode] = []
 
 
 # 7. public variables: define all public variables here
-
 
 # 8. private variables: define all private variables here, use _ as preffix
 
@@ -39,14 +39,16 @@ func add_child(child):
 func get_class_name():
 	return "ClassGroup"
 
-func get_editor_name():
-	pass
+func get_editor_name(entities: Array[Entity]):
+	return _name
 
 func serialize():
 	pass
 
 static func deserialize(data: Dictionary):
 	var instance: ClassGroup = ClassGroup.new()
+	if data.has("name"):
+		instance._name = data["name"]
 	for child_data in data["childrens"]:
 		var child = ClassNode.deserialize(child_data)
 		instance.add_child(child)

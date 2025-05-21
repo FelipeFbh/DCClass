@@ -30,7 +30,7 @@ extends Resource
 func get_class_name():
 	return "ClassNode"
 
-func get_editor_name():
+func get_editor_name(entities: Array[Entity]):
 	pass
 
 func serialize():

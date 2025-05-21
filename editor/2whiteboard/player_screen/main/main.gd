@@ -15,7 +15,7 @@ func _ready():
 
 func _setup_scene():
 	window.set_class_node(class_scene)
-	#window.set_section_tree(class_scene.section_manager.tree)
+	window.set_index_tree(class_scene.tree_manager.tree)
 	#class_scene.compute_duration()
 	#window.set_total_time(ceili(class_scene.total_duration))
 	#window.setup_mods()
