@@ -6,7 +6,7 @@
 > **Contribuidores:** Felipe Olivares, Luis Mateu B. y Puntito(_Christopher Marín_)
 
 ## Introducción
-El objetivo de este proyecto es crear un reproductor y editor de clases envasadas con el objetivo de simular la clase lo más cercano a una experiencia en viva real, además de aportarle más interactividad a esta.
+El objetivo de este proyecto es crear un reproductor y editor de clases envasadas con la finalidad de simular la clase lo más cercano a una experiencia en vivo, además de aportarle más interactividad a esta.
 
 ## Objetivo
 Diseñar e implementar un editor de clases para el prototipo de la aplicación [POODLE](./README_POODLE.md). Además, de continuar con su desarrollo.

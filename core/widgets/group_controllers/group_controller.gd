@@ -127,6 +127,7 @@ static func instantiate(group: ClassNode, entities: Array[Entity]) -> NodeContro
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: GroupController = CustomClassDB.instantiate(_class)
 	controller.load_data(group, entities)
+	controller._class_node = group
 	return controller
 
 func load_data(group: ClassGroup, entities: Array[Entity]) -> void:

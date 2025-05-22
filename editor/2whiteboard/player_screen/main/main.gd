@@ -3,7 +3,7 @@ extends Node
 
 static var context: ClassContextEditor
 
-@onready var class_scene: ConceptClassSceneEditor = $ParseAndPlay
+@onready var class_scene: ClassSceneEditor = $ParseAndPlay
 @onready var window: ConceptClassWindowEditor = $ClassWindow
 
 func _enter_tree():
@@ -15,7 +15,7 @@ func _ready():
 
 func _setup_scene():
 	window.set_class_node(class_scene)
-	window.set_index_tree(class_scene.tree_manager.tree)
+	window.set_index_tree(class_scene.tree_manager.tree_manager_index)
 	#class_scene.compute_duration()
 	#window.set_total_time(ceili(class_scene.total_duration))
 	#window.setup_mods()

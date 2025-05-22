@@ -17,6 +17,8 @@ func _compute_duration() -> float:
 
 
 func play(__duration: float = _duration, __total_real_time: float = _total_real_time) -> void:
+	var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+	_bus.current_node_leaf_changed.emit(_class_node)
 	await leaf_value.play(__duration, __total_real_time, _duration_leaf)
 
 func is_audio() -> bool:
@@ -36,6 +38,7 @@ static func instantiate(leaf: ClassNode, entities: Array[Entity]) -> LeafControl
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: LeafController = CustomClassDB.instantiate(_class)
 	controller.load_data(leaf, entities)
+	controller._class_node = leaf
 	return controller
 
 func load_data(leaf: ClassLeaf, entities: Array[Entity]) -> void:

@@ -49,3 +49,6 @@ signal pen_toggled(active: bool)
 signal request_detach()
 
 #endregion
+
+## Emitted when the current node in the index tree changes and the new node is passed as an argument.
+signal current_node_leaf_changed(node: ClassNode)

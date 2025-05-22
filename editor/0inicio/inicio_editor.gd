@@ -39,9 +39,8 @@ func _on_file_selected(path: String) -> void:
 	if not path.ends_with(".poodle") and not path.ends_with(".zip"):
 		printerr("Invalid file type: ", path)
 		return
-	PersistenceEditor.clase_path = path
-	Persistence.class_path = path
-	print("Selected file: ", PersistenceEditor.clase_path)
+	PersistenceEditor.class_path = path
+	print("Selected file: ", PersistenceEditor.class_path)
 	
 	get_tree().change_scene_to_packed(editor_screen)
 #endregion

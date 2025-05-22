@@ -32,7 +32,6 @@ extends ClassNode
 
 # 12. public methods: define all public methods here
 
-
 func get_class_name():
 	return "ClassLeaf"
 

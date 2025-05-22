@@ -1,28 +1,32 @@
-class_name ConceptClassSceneEditor
+class_name ClassSceneEditor
 extends Node2D
 
 var WHITEBOARD_SIZE: Vector2i
+var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+
 
 var file: String
 @export var class_index: ClassIndex
 var entities: Array
 var root_tree_structure: ClassNode
-var root_tree_structure_controller: GroupController
 
+
+
+var root_tree_structure_controller: GroupController
+var tree_manager: TreeManagerEditor
+var entry_point : NodeController
+var _current_node_leaf: ClassNode
 
 @onready var root: Node2D = $Class
 
 var zip_file: ZIPReader
-
-var entry_point : NodeController
-
-var tree_manager: TreeManagerEditor
 
 
 func _enter_tree():
 	WHITEBOARD_SIZE = _load_whiteboard_size()
 
 func _ready():
+	_bus.current_node_leaf_changed.connect(_current_node_leaf_changed)
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
@@ -40,7 +44,7 @@ func _load_whiteboard_size() -> Vector2i:
 func _parse() -> bool:
 	zip_file = ZIPReader.new()
 	if file == null or file.is_empty():
-		file = Persistence.class_path
+		file = PersistenceEditor.class_path
 	print("File: " + file)
 	if file == null or file.is_empty():
 		push_error("Error: file not set")
@@ -84,3 +88,19 @@ func play():
 		push_error("Error playing content: entry_point is not valid")
 		return
 	entry_point.play()
+
+var current_item_tree
+func _current_node_leaf_changed(current_node_leaf):
+	var color_boolean = false
+	if _current_node_leaf == null:
+		color_boolean = true
+		current_item_tree = tree_manager.find_item_by_node(current_node_leaf)
+		current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
+	else:
+		current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
+		current_item_tree = tree_manager.get_next_leaf_item(_current_node_leaf)
+		if current_item_tree != null:
+			color_boolean = true
+			current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
+	
+	_current_node_leaf = current_node_leaf
