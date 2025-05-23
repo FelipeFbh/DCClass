@@ -9,7 +9,7 @@ var find_group_by_timestamp: Callable
 func set_index_tree(tree: Tree) -> void:
 	index_tree_parent.add_child(tree)
 	%LeftSplit.split_offset = tree.size.x + 10
-	tree.scroll_horizontal_enabled = true	
+	tree.scroll_horizontal_enabled = true
 #endregion
 
 #region Whiteboard
@@ -137,6 +137,9 @@ func _toggle_playback_stop() -> void:
 	_stop_playback()
 
 func _stop_playback() -> void:
+	var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+	_bus.stop_editor.emit()
+	return
 	#is_stopped = true
 	stop_button.icon = continue_icon
 	stopped_section = _get_current_section()   # ← TreeItem, no entero
@@ -241,7 +244,7 @@ func _ready():
 	fullscreen_button.toggled.connect(_toggle_fullscreen)
 	center_camera_button.pressed.connect(func (): ClassUIEditor.context.camera.user_controlled = false)
 	play_button.pressed.connect(_toggle_playback)
-	stop_button.pressed.connect(_toggle_playback_stop)
+	stop_button.pressed.connect(_stop_playback)
 	prev_button.pressed.connect(_play_prev_section)
 	next_button.pressed.connect(_play_next_section)
 	time_slider.value_selected.connect(_slider_value_selected)

@@ -68,11 +68,10 @@ func _parse() -> bool:
 func _instantiate() -> bool:
 	entities = class_index.entities
 	root_tree_structure = class_index.tree_structure
-	var root_group: GroupController = GroupController.instantiate(root_tree_structure, entities)
-	root_tree_structure_controller = root_group
+	root_tree_structure_controller = GroupController.instantiate(root_tree_structure, entities)
 	entry_point = root_tree_structure_controller
 	var node: Node2D = Node2D.new()
-	node.add_child(entry_point)
+	node.add_child(root_tree_structure_controller)
 	root.add_child(node)
 	tree_manager = TreeManagerEditor.new()
 	tree_manager.build(root_tree_structure, entities)
@@ -87,7 +86,9 @@ func play():
 	if !is_instance_valid(entry_point):
 		push_error("Error playing content: entry_point is not valid")
 		return
-	entry_point.play()
+	entry_point = entry_point.get_first_leaf()
+	#entry_point = entry_point.get_first_leaf().get_next_audio_after()
+	entry_point.play_preorden()
 
 var current_item_tree
 func _current_node_leaf_changed(current_node_leaf):

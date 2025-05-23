@@ -3,9 +3,8 @@ extends NodeController
 
 
 var _childrens: Array[NodeController] = []
-var _duration: float = 0
-var _total_real_time: float = 0
-
+var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+signal termino
 
 
 # Return the first LeafController in this group
@@ -41,7 +40,7 @@ func previous(current_node: NodeController) -> NodeController:
 	if index > 0:
 		return _childrens[index - 1]
 	var parent = get_parent()
-	if parent != null:
+	if parent != null and parent is NodeController:
 		return parent.previous(self)
 	return null
 
@@ -81,6 +80,13 @@ func get_next_audio_after(current_node: NodeController) -> LeafController:
 		leaf = get_next_leaf_node(leaf)
 	return leaf
 
+# Return the previous LeafController that is an audio
+func get_previous_audio_before(current_node: NodeController) -> LeafController:
+	var leaf = get_previous_leaf_node(current_node)
+	while leaf != null and not leaf.is_audio():
+		leaf = get_previous_leaf_node(leaf)
+	return leaf
+
 # Return the total duration between start_leaf and end_leaf
 func compute_total_duration_between(start_leaf: LeafController, end_leaf: LeafController) -> float:
 	var total: float = 0.0
@@ -92,25 +98,56 @@ func compute_total_duration_between(start_leaf: LeafController, end_leaf: LeafCo
 		current = get_next_leaf_node(current)
 	return total
 
+
+func _compute_duration_play(current_node: NodeController, _duration: float = 0.0, _total_real_time: float = 0.0) -> Array[float]:
+	var _previous_audio
+	if current_node.has_method("is_audio") and current_node.is_audio():
+		_previous_audio = current_node
+		_duration = current_node.compute_duration()
+	else:
+		_previous_audio = get_previous_audio_before(current_node)
+		_duration = _previous_audio.compute_duration()
+	
+	var _next_leaf_paudio = _previous_audio.get_next_leaf_node()
+	var _next_audio = get_next_audio_after(current_node)
+	if _next_audio == null:
+		_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
+	else:
+		var _prev_leaf_naudio = _next_audio.get_previous_leaf_node()
+		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)
+	
+	return [_duration, _total_real_time]
 	
 
+# Play the group in pre-order
+func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
+	
 
-func play(__duration: float = _duration, __total_real_time: float = _total_real_time) -> void:
-	for child in _childrens:
-		if child.has_method("play"):
-			if child.has_method("is_audio") and child.is_audio():
-				_duration = child.compute_duration()
-				var next_leaf = get_next_leaf_node(child)
-				var next_audio = get_next_audio_after(child)
-				if next_audio == null:
-					_total_real_time = next_leaf.compute_total_duration_between(null)
-				else:
-					var prev_leaf = next_audio.get_previous_leaf_node()
-					_total_real_time = next_leaf.compute_total_duration_between(prev_leaf)
-			await child.play(_duration, _total_real_time)
-		else:
-			push_error("Child " + child.get_class_name() + " does not have a play method.")
-	#hide()
+	var index = _childrens.find(last_child)
+	if _childrens.size() == 0:
+		return
+		
+	if index+1 == _childrens.size():
+		
+		var parent = get_parent()
+		if parent != null and parent.has_method("play_preorden"):
+			parent.play_preorden(__duration, __total_real_time, self)
+		return
+	
+	var next_child_to_play = _childrens[index + 1]
+	if next_child_to_play.has_method("play"):
+		
+		next_child_to_play.play_preorden(__duration, __total_real_time)
+
+
+
+func play(__duration: float = 0.0, __total_real_time: float = 0.0) -> void:
+	if _childrens.size() == 0:
+		return
+	
+	if _childrens[0].has_method("play_preorden"):
+		_childrens[0].play_preorden(__duration, __total_real_time)
+	
 
 ## Called when the player seeked to a point before this group was played.
 ## The widgets should be reset to its initial state.

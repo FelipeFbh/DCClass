@@ -52,3 +52,5 @@ signal request_detach()
 
 ## Emitted when the current node in the index tree changes and the new node is passed as an argument.
 signal current_node_leaf_changed(node: ClassNode)
+
+signal stop_editor()

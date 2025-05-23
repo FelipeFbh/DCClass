@@ -25,7 +25,6 @@ func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Array[Enti
 			_populate_node(item, child, entities)
 
 
-# ————————————— Utility: buscar TreeItem por ClassNode —————————————
 
 func find_item_by_node(target: ClassNode) -> TreeItem:
 	var root = tree_manager_index.get_root()
@@ -45,7 +44,6 @@ func _find_item_recursive(item: TreeItem, target: ClassNode) -> TreeItem:
 	return null
 
 
-# ————————————— Buscar siguiente hoja —————————————
 
 func get_next_leaf_item(current_node: ClassNode) -> TreeItem:
 	var current_item = find_item_by_node(current_node)
@@ -60,7 +58,6 @@ func get_next_leaf_item(current_node: ClassNode) -> TreeItem:
 	return null
 
 
-# ————————————— Buscar hoja anterior —————————————
 
 func get_previous_leaf_item(current_node: ClassNode) -> TreeItem:
 	var current_item = find_item_by_node(current_node)

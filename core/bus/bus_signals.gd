@@ -1,0 +1,71 @@
+@tool
+class_name SignalsCore
+
+
+static func await_any(signals: Array[Signal]) -> Variant:
+	var watcher := AnySignalCore.new()
+	for sig in signals:
+		watcher.add_signal(sig)
+	return watcher
+
+
+static func await_any_once(signals: Array[Signal]) -> Variant:
+	var watcher := AnySignalCore.new()
+	for sig in signals:
+		watcher.add_signal_once(sig)
+	return watcher
+
+
+
+class AnySignalCore:
+	signal completed(value)
+
+	var _done     := false
+	var _entries  := []
+	var _signal_source
+	var _signal_value
+
+	func add_signal(sig: Signal) -> void:
+		var fun_connected = func(value = null) -> void:
+			_on_signal(sig, value)
+		sig.connect(fun_connected)
+		_entries.append([sig, fun_connected])
+
+	func _on_signal(sig: Signal, value = null) -> void:
+		if _done:
+			return
+		_done = true
+		
+		_signal_source = sig
+		_signal_value  = value
+		emit_signal("completed", value)
+
+	func add_signal_once(sig: Signal) -> void:
+		var fun_connected = func(value = null) -> void:
+			_on_signal_once(sig, value)
+		sig.connect(fun_connected)
+		_entries.append([sig, fun_connected])
+
+	func _on_signal_once(sig: Signal, value = null) -> void:
+		if _done:
+			return
+		_done = true
+		
+		_signal_source = sig
+		_signal_value  = value
+		emit_signal("completed", value)
+
+		_disconnect_all()
+
+	func _disconnect_all():
+		for entry in _entries:
+			var signal_entry : Signal = entry[0]
+			var fun_connected = entry[1]
+			if signal_entry.is_connected(fun_connected):
+				signal_entry.disconnect(fun_connected)
+		_entries.clear()
+
+	func restart():
+		_done = false
+		_signal_source = null
+		_signal_value  = null

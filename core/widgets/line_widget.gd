@@ -17,6 +17,7 @@ func init(properties: Dictionary) -> void:
 func serialize() -> Dictionary:
 	return entity.serialize()
 
+signal termino
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	line.show()
 	if tween:
@@ -44,8 +45,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 
 	#var now = Time.get_ticks_msec() / 1000.0
 	tween.play()
-
+	
 	await tween.finished
+	emit_signal("termino")
 	#var finish = Time.get_ticks_msec() / 1000.0
 	#print("LineWidget: Play time: ", finish - now, " seconds")
 	

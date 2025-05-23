@@ -17,9 +17,12 @@ func init(_properties: Dictionary) -> void:
 
 func serialize() -> Dictionary:
 	return entity.serialize()
+	
 
+signal termino
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	audio.play()
+	emit_signal("termino")
 
 
 
