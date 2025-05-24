@@ -2,14 +2,13 @@ class_name ClassSceneEditor
 extends Node2D
 
 var WHITEBOARD_SIZE: Vector2i
-var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
-
+@onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+var parse_class: ParseClassEditor
 
 var file: String
 @export var class_index: ClassIndex
 var entities: Array
 var root_tree_structure: ClassNode
-
 
 
 var root_tree_structure_controller: GroupController
@@ -34,7 +33,7 @@ func _ready():
 		push_error("Error instantiating class: " + class_index.name)
 		return
 	zip_file.close()
-	print("parse_and_play._ready")
+	print("play._ready")
 
 
 func _load_whiteboard_size() -> Vector2i:
@@ -53,15 +52,8 @@ func _parse() -> bool:
 	if err != OK:
 		push_error("Error %d opening file: " % err)
 		return false
-	if !zip_file.file_exists("index.json"):
-		push_error("Error: index.json not found in zip file")
-		return false
-	var index_string := zip_file.read_file("index.json").get_string_from_utf8()
-	var index = JSON.parse_string(index_string)
-	if index == null or typeof(index) != TYPE_DICTIONARY:
-		return false
 	Widget.zip_file = zip_file
-	class_index = ClassIndex.deserialize(index)
+	class_index = parse_class.class_index
 	return class_index != null
 
 
@@ -73,8 +65,8 @@ func _instantiate() -> bool:
 	var node: Node2D = Node2D.new()
 	node.add_child(root_tree_structure_controller)
 	root.add_child(node)
-	tree_manager = TreeManagerEditor.new()
-	tree_manager.build(root_tree_structure, entities)
+	#tree_manager = TreeManagerEditor.new()
+	#tree_manager.build(root_tree_structure, entities)
 	return true
 
 
@@ -86,12 +78,15 @@ func play():
 	if !is_instance_valid(entry_point):
 		push_error("Error playing content: entry_point is not valid")
 		return
-	entry_point = entry_point.get_first_leaf()
-	#entry_point = entry_point.get_first_leaf().get_next_audio_after()
+	#entry_point = entry_point.get_first_leaf()
+	#entry_point = entry_point.get_next_audio_after()
 	entry_point.play_preorden()
 
-var current_item_tree
 func _current_node_leaf_changed(current_node_leaf):
+	_current_node_leaf = current_node_leaf
+
+var current_item_tree
+func _current_node_leaf_changed_deprecated(current_node_leaf):
 	var color_boolean = false
 	if _current_node_leaf == null:
 		color_boolean = true

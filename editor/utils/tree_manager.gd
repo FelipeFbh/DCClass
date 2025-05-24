@@ -7,8 +7,8 @@ func _init():
 	tree_manager_index = Tree.new()
 	tree_manager_index.name = "IndexTree"
 	tree_manager_index.hide_root = true
-	tree_manager_index.columns = 1
-	tree_manager_index.scroll_horizontal_enabled = true
+	#tree_manager_index.columns = 1
+	#tree_manager_index.scroll_horizontal_enabled = true
 
 func build(root_group: ClassGroup, entities: Array[Entity]) -> Tree:
 	tree_manager_index.clear()
@@ -24,7 +24,14 @@ func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Array[Enti
 		for child in node._childrens:
 			_populate_node(item, child, entities)
 
-
+func reset_colors():
+	var root = tree_manager_index.get_root()
+	if root == null:
+		return
+	var item = root
+	while item:
+		item.set_custom_color(0, Color.GRAY)
+		item = item.get_next_visible()
 
 func find_item_by_node(target: ClassNode) -> TreeItem:
 	var root = tree_manager_index.get_root()

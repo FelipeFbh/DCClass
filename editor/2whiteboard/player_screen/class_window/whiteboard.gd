@@ -3,19 +3,19 @@ extends Control
 const WARP_OFFSET        := -10
 const SQUARED_THRESHOLD  := 25.0
 
-@onready var _bus               : EditorEventBus        = Engine.get_singleton("EditorSignals")
+@onready var _bus: EditorEventBus = Engine.get_singleton("EditorSignals")
 @onready var _viewport_container: SubViewportContainer  = %SubViewportContainer
-@onready var _viewport          : SubViewport          = %SubViewport
+@onready var _viewport : SubViewport = %SubViewport
 
 var camera : ClassCameraEditor
 
 var _dragging : bool = false
-var _warped   : bool = false
+var _warped : bool = false
 
-var _pen_enabled : bool   = false
-var _pressed      : bool   = false
-var _line         : Line2D
-var _last_point   : Vector2 = Vector2.INF
+var _pen_enabled : bool = false
+var _pressed : bool = false
+var _line : Line2D
+var _last_point : Vector2 = Vector2.INF
 
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
@@ -103,9 +103,11 @@ func _handle_drawing(event: InputEvent) -> void:
 
 			var entity := LineEntity.new()
 			entity.points = _line.points
-			entity.delays = _delays.duplicate() 
-			_bus.class_entities_add_requested.emit([entity])
-
+			entity.delays = _delays.duplicate()
+			# Eliminamos ahora la linea
+			var parent := _line.get_parent()
+			parent.remove_child(_line)
+			_line.queue_free()
 			_line = null
 			print("soy la linea :9")
 			print(entity.serialize())

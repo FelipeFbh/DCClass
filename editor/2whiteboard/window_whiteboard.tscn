@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctbhart5orqu0"]
+
+[ext_resource type="Script" uid="uid://bywnyt5nf0siw" path="res://editor/2whiteboard/window_whiteboard.gd" id="1_cjejt"]
+[ext_resource type="PackedScene" uid="uid://bwf4trwm5o7s0" path="res://editor/2whiteboard/main_menu/main.tscn" id="2_f02me"]
+
+[node name="WindowWhiteboard" type="Window"]
+initial_position = 1
+size = Vector2i(1080, 720)
+script = ExtResource("1_cjejt")
+
+[node name="UI" parent="." instance=ExtResource("2_f02me")]
+unique_name_in_owner = true

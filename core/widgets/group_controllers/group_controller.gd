@@ -122,7 +122,6 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 # Play the group in pre-order
 func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
 	
-
 	var index = _childrens.find(last_child)
 	if _childrens.size() == 0:
 		return
@@ -135,8 +134,7 @@ func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, las
 		return
 	
 	var next_child_to_play = _childrens[index + 1]
-	if next_child_to_play.has_method("play"):
-		
+	if next_child_to_play.has_method("play_preorden"):
 		next_child_to_play.play_preorden(__duration, __total_real_time)
 
 

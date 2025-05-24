@@ -111,6 +111,7 @@ func _play_prev_section() -> void:
 	#_play_section(prev_section)
 
 func _slider_value_selected(seconds: float) -> void:
+	return
 	print("Seeking to " + str(seconds))
 	stopwatch.stop()
 	var group: GroupController = find_group_by_timestamp.call(seconds)

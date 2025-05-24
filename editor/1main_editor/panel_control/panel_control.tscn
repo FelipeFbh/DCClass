@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bkt85dfs5q52u"]
 
 [ext_resource type="Script" uid="uid://c63f4j1umyt6q" path="res://editor/1main_editor/panel_control/panel_control.gd" id="1_1n5vg"]
-[ext_resource type="PackedScene" uid="uid://ctbhart5orqu0" path="res://editor/2whiteboard/ventana_whiteboard.tscn" id="2_l7ki5"]
+[ext_resource type="PackedScene" uid="uid://ctbhart5orqu0" path="res://editor/2whiteboard/window_whiteboard.tscn" id="2_l7ki5"]
 
 [node name="PanelControl" type="MarginContainer"]
 anchors_preset = 15
@@ -24,15 +24,20 @@ size_flags_vertical = 4
 [node name="HBoxContainerAdd" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="AddSection" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
+[node name="AddGroupButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "AddSection"
+text = "Add Group"
 
-[node name="AddSlide" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
+[node name="RemoveButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "AddSlide"
+text = "Remove"
+
+[node name="ClearButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Clear"
 
 [node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
@@ -42,17 +47,27 @@ size_flags_horizontal = 6
 [node name="HBoxContainerControl" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="ButtonPen" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+[node name="AudioButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Audio"
+
+[node name="PenButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Pen"
 
-[node name="ButtonDetach" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+[node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Detach Ventana"
+text = "Color Selected"
 
-[node name="EstructuraClase" type="PanelContainer" parent="VBoxContainer"]
+[node name="DetachButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Detach Window"
+
+[node name="IndexClass" type="PanelContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -62,5 +77,6 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="TextEdit" type="TextEdit" parent="VBoxContainer/PanelContainer2"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Hola Profesor Luis Mateu!"
