@@ -4,17 +4,18 @@ extends Node2D
 @onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 var file: String
-var entities: Array
+var entities: Dictionary
 @export var class_index: ClassIndex
 
 
 var root_tree_structure: ClassNode
-var tree_manager: TreeManagerEditor
-var _current_node_leaf: ClassNode
+var _current_node: ClassNode
 
 var zip_file: ZIPReader
 
 func _ready():
+	_bus.current_node_changed.connect(_current_node_changed)
+	_bus.add_class_leaf.connect(_add_class_leaf)
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
@@ -53,4 +54,43 @@ func _parse() -> bool:
 func _instantiate() -> bool:
 	entities = class_index.entities
 	root_tree_structure = class_index.tree_structure
+	_current_node = root_tree_structure
 	return true
+
+func _current_node_changed(current_node):
+	_current_node = current_node
+
+func _add_class_leaf( entity : Entity ) -> void:
+	if entity == null:
+		return
+
+	var entity_id : int = entities.size()
+	entity.entity_id = entity_id
+	entities[entity_id] = entity
+
+	var data_new = {
+		"entity_id": entity_id,
+		"entity_properties": [],
+	}
+	var entity_wrapper_new : EntityWrapper = EntityWrapper.deserialize(data_new)
+	var class_node = ClassLeaf.new()
+	class_node._value = entity_wrapper_new
+	
+
+	if _current_node is ClassGroup:
+		class_node.set_parent(_current_node)
+		var _current_class_group_childrens = _current_node._childrens
+		var index_current = _current_class_group_childrens.find(_current_node)
+		_current_class_group_childrens.insert(index_current + 1, class_node)
+		
+
+	if _current_node is ClassLeaf:
+		var parent_node = _current_node._parent
+		if parent_node is ClassGroup:
+			class_node.set_parent(parent_node)
+			var _current_class_group_childrens = parent_node._childrens
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+	
+	_bus.update_treeindex.emit()
+	_bus.current_node_changed.emit(class_node)

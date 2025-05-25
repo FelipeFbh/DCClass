@@ -4,8 +4,6 @@ extends NodeController
 
 var _childrens: Array[NodeController] = []
 var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
-signal termino
-
 
 # Return the first LeafController in this group
 func get_first_leaf() -> LeafController:
@@ -121,13 +119,12 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 
 # Play the group in pre-order
 func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
-	
+	_bus.current_node_changed.emit(_class_node)
 	var index = _childrens.find(last_child)
 	if _childrens.size() == 0:
 		return
 		
 	if index+1 == _childrens.size():
-		
 		var parent = get_parent()
 		if parent != null and parent.has_method("play_preorden"):
 			parent.play_preorden(__duration, __total_real_time, self)
@@ -157,7 +154,7 @@ func reset() -> void:
 func skip_to_end() -> void:
 	pass
 
-static func instantiate(group: ClassNode, entities: Array[Entity]) -> NodeController:
+static func instantiate(group: ClassNode, entities: Dictionary) -> NodeController:
 	var _class: String = group.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: GroupController = CustomClassDB.instantiate(_class)
@@ -165,7 +162,7 @@ static func instantiate(group: ClassNode, entities: Array[Entity]) -> NodeContro
 	controller._class_node = group
 	return controller
 
-func load_data(group: ClassGroup, entities: Array[Entity]) -> void:
+func load_data(group: ClassGroup, entities: Dictionary) -> void:
 	for children in group._childrens:
 		var child_node: NodeController = NodeController.instantiate(children, entities)
 		_childrens.append(child_node)

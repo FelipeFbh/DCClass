@@ -17,14 +17,14 @@ func _compute_duration() -> float:
 	return 0.0
 
 func play(__duration: float = _duration, __total_real_time: float = _total_real_time):
-	_bus.current_node_leaf_changed.emit(_class_node)
-	var sigs : Array[Signal] = [leaf_value.termino, _bus.stop_editor]
+	_bus.current_node_changed.emit(_class_node)
+	var sigs : Array[Signal] = [leaf_value.termino, _bus.stop_play]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.play(__duration, __total_real_time, _duration_leaf)
 	#leaf_value.play(1, 1, 1)
 	if !state._done:
 		await state.completed
-		if state._signal_source == _bus.stop_editor:
+		if state._signal_source == _bus.stop_play:
 			return 1
 
 func play_preorden(__duration: float = _duration, __total_real_time: float = _total_real_time, last_child: NodeController = null) -> void:
@@ -53,7 +53,7 @@ func reset() -> void:
 func skip_to_end() -> void:
 	pass
 
-static func instantiate(leaf: ClassNode, entities: Array[Entity]) -> LeafController:
+static func instantiate(leaf: ClassNode, entities: Dictionary) -> LeafController:
 	var _class: String = leaf.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: LeafController = CustomClassDB.instantiate(_class)
@@ -61,14 +61,14 @@ static func instantiate(leaf: ClassNode, entities: Array[Entity]) -> LeafControl
 	controller._class_node = leaf
 	return controller
 
-func load_data(leaf: ClassLeaf, entities: Array[Entity]) -> void:
+func load_data(leaf: ClassLeaf, entities: Dictionary) -> void:
 	var entity_node: Widget = _instantiate_entity(leaf._value, entities)
 	if is_instance_valid(entity_node):
 		leaf_value = entity_node
 		_duration_leaf = leaf_value.compute_duration()
 		add_child(leaf_value)
 
-func _instantiate_entity(wrapper: EntityWrapper, entities: Array[Entity]) -> Widget:
+func _instantiate_entity(wrapper: EntityWrapper, entities: Dictionary) -> Widget:
 	var entity: Entity = entities[wrapper.entity_id]
 	if !_has_widget(entity):
 		push_error("Error instantiating entity: " + entity.get_class_name() + ", widget not found")

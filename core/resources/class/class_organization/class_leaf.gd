@@ -16,6 +16,7 @@ extends ClassNode
 
 # 6. export variables: define all export variables in groups here
 @export var _value : EntityWrapper
+@export var _parent: ClassNode
 
 
 # 7. public variables: define all public variables here
@@ -31,11 +32,13 @@ extends ClassNode
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
+func set_parent(parent):
+	_parent = parent
 
 func get_class_name():
 	return "ClassLeaf"
 
-func get_editor_name(entities: Array[Entity]):
+func get_editor_name(entities: Dictionary):
 	return "Leaf > " + _value.get_editor_name(entities)
 
 func serialize():

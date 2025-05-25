@@ -68,13 +68,10 @@ func _zoom_reset() -> void:
 #region Playback Controls
 
 @onready var play_button: Button = %PlayPauseButton
-@onready var prev_button: Button = %PreviousButton
-@onready var next_button: Button = %NextButton
 @onready var stop_button: Button = %StopButton
 @onready var play_icon: Texture2D = get_theme_icon("play", play_button.theme_type_variation)
 @onready var pause_icon: Texture2D = get_theme_icon("pause", play_button.theme_type_variation)
-@onready var prev_icon: Texture2D = get_theme_icon("prev", prev_button.theme_type_variation)
-@onready var next_icon: Texture2D = get_theme_icon("next", next_button.theme_type_variation)
+
 
 func _toggle_playback() -> void:
 	get_tree().paused = !get_tree().paused
@@ -139,15 +136,9 @@ func _toggle_playback_stop() -> void:
 
 func _stop_playback() -> void:
 	var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
-	_bus.stop_editor.emit()
-	return
+	_bus.stop_play.emit()
 	#is_stopped = true
-	stop_button.icon = continue_icon
-	stopped_section = _get_current_section()   # ← TreeItem, no entero
-	
-	
-	print(SlideNode.get_current_section_name())  # → "Introducción"
-	print(SlideNode.get_current_slide_name())    # → "Introducción a POODLE"
+	#stop_button.icon = continue_icon
 	return
 	
 	stopwatch.stop()
@@ -246,8 +237,6 @@ func _ready():
 	center_camera_button.pressed.connect(func (): ClassUIEditor.context.camera.user_controlled = false)
 	play_button.pressed.connect(_toggle_playback)
 	stop_button.pressed.connect(_stop_playback)
-	prev_button.pressed.connect(_play_prev_section)
-	next_button.pressed.connect(_play_next_section)
 	time_slider.value_selected.connect(_slider_value_selected)
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)

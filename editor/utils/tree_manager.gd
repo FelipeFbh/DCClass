@@ -7,16 +7,15 @@ func _init():
 	tree_manager_index = Tree.new()
 	tree_manager_index.name = "IndexTree"
 	tree_manager_index.hide_root = true
-	#tree_manager_index.columns = 1
-	#tree_manager_index.scroll_horizontal_enabled = true
+	
 
-func build(root_group: ClassGroup, entities: Array[Entity]) -> Tree:
+func build(root_group: ClassGroup, entities: Dictionary) -> Tree:
 	tree_manager_index.clear()
 	var root_item = tree_manager_index.create_item()
 	_populate_node(root_item, root_group, entities)
 	return tree_manager_index
 
-func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Array[Entity]) -> void:
+func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary) -> void:
 	var item = tree_manager_index.create_item(parent_item)
 	item.set_text(0, node.get_editor_name(entities))
 	item.set_metadata(0, node)
@@ -77,10 +76,3 @@ func get_previous_leaf_item(current_node: ClassNode) -> TreeItem:
 			return prev_item
 		prev_item = prev_item.get_prev_visible()
 	return null
-
-
-func _on_item_selected():
-	var selected = tree_manager_index.get_selected()
-	if selected:
-		var node = selected.get_metadata(0)
-		emit_signal("node_selected", node)

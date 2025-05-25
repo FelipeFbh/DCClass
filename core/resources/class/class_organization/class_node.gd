@@ -19,7 +19,6 @@ extends Resource
 
 # 8. private variables: define all private variables here, use _ as preffix
 
-
 # 9. onready variables: define all onready variables here
 
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
@@ -30,7 +29,7 @@ extends Resource
 func get_class_name():
 	return "ClassNode"
 
-func get_editor_name(entities: Array[Entity]):
+func get_editor_name(entities: Dictionary):
 	pass
 
 func serialize():

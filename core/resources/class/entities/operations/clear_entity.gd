@@ -1,12 +1,10 @@
 @tool
-# 1. class name: uncomment and fill the class name
-class_name CodeTextEntity
-extends TextEntity
+# 1. class name: fill the class name
+class_name ClearEntity
+extends Entity
 
 # 2. docs: use docstring (##) to generate docs for this file
-## A TextEntity that holds code
-##
-## This class is used to hold code in a TextEntity that can be used to generate a code block
+## An [Entity] that holds the reference to an audio file
 
 # 3. signals: define signals here
 
@@ -22,13 +20,25 @@ extends TextEntity
 
 # 9. onready variables: define all onready variables here
 
+
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
 
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
 func get_class_name() -> String:
-	return "CodeTextEntity"
+	return "ClearEntity"
+
+func get_editor_name() -> String:
+	return "Clear"
+
+func serialize() -> Dictionary:
+	return {
+		"entity_type": get_class_name()
+	}
+
+func load_data(data: Dictionary) -> void:
+	pass
 
 # 13. private methods: define all private methods here, use _ as preffix
 

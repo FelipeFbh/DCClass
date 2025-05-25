@@ -2,13 +2,13 @@
 class_name EntityWrapper
 extends Resource
 
-@export var entity_id: int = 0
+var entity_id
 
 @export var entity_properties: Array[EntityProperty] = []
 
 var entity: Entity = null
 
-func get_editor_name(entities: Array[Entity]) -> String:
+func get_editor_name(entities: Dictionary) -> String:
 	return "EW > " + entities[entity_id].get_editor_name()
 
 ## Return a dictionary with all the properties of the entity.

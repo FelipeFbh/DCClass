@@ -36,7 +36,11 @@ func skip_to_end():
 	reset()
 
 func _ready():
+	_bus_core.clear_widget.connect(_clear)
 	add_to_group(&"speed_scale_handler")
+
+func _clear():
+	pass
 
 func set_speed_scale(_speed: float) -> void:
 	audio.pitch_scale = _speed

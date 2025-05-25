@@ -109,8 +109,11 @@ func _handle_drawing(event: InputEvent) -> void:
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null
-			print("soy la linea :9")
-			print(entity.serialize())
+
+			_bus.emit_signal("add_class_leaf", entity)
+
+			#print(entity.serialize())
+
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()

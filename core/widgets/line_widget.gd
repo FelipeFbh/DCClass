@@ -50,8 +50,6 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	emit_signal("termino")
 	#var finish = Time.get_ticks_msec() / 1000.0
 	#print("LineWidget: Play time: ", finish - now, " seconds")
-	
-
 
 func reset():
 	if tween:

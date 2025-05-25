@@ -1,4 +1,3 @@
-#metadata.gd
 class_name MetadataEditor
 extends Control
 
@@ -6,21 +5,15 @@ extends Control
 var editor_signals: EditorEventBus
 
 
-func _ready():
-	editor_signals = Engine.get_singleton(&"EditorSignals") as EditorEventBus
-	if is_instance_valid(metadata):
-		_update()
-	%SaveButton.pressed.connect(save)
-	editor_signals.class_index_changed.connect(_on_class_index_changed)
-	editor_signals.class_metadata_changed.connect(_update_metadata)
+#func _ready():
+	#editor_signals = Engine.get_singleton(&"EditorSignals") as EditorEventBus
+	#if is_instance_valid(metadata):
+	#	_update()
+	#%SaveButton.pressed.connect(save)
 
-func _on_class_index_changed(index: ClassIndex):
-	_update_metadata(index.metadata)
 
-func _update_metadata(new_metadata: ClassMetadata):
-	if new_metadata == metadata:
-		return
-	metadata = new_metadata
+func _setup_metadata_class(index: ClassIndex):
+	metadata = index.metadata
 	_update()
 
 ## Update the editor to reflect the current metadata.

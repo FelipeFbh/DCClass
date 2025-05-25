@@ -1,6 +1,7 @@
 class_name Widget
 extends Node2D
 
+
 ## A widget is a visual element that can be played and reset.
 ## This class defines the main API for a widget.
 
@@ -8,6 +9,9 @@ extends Node2D
 ## Use [method ZIPReader.file_exists] to check if a file exists in the ZIP file.
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
+
+@onready var _bus_core: CoreEventBus = Engine.get_singleton("CoreEvent")
+
 
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:
@@ -20,6 +24,9 @@ func compute_duration() -> float:
 ## Custom [param properties] are passed as a dictionary.
 func init(_properties: Dictionary) -> void:
 	pass
+
+func _ready() -> void:
+	_bus_core.clear_widget.connect(_clear)
 
 ## Called when it's time to play the widget.
 ## The animation should be played for the given [param duration].
@@ -45,3 +52,6 @@ func set_speed_scale(_speed: float) -> void:
 ## Reset the speed scale of the widget to 1.0.
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
+
+func _clear():
+	reset()

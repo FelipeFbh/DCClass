@@ -14,8 +14,9 @@ extends Resource
 
 # 6. export variables: define all export variables in groups here
 @export var metadata: ClassMetadata
-@export var entities: Array[Entity] = []
+@export var entities: Dictionary = {}
 @export var tree_structure: ClassNode
+
 # 7. public variables: define all public variables here
 
 # 8. private variables: define all private variables here, use _ as preffix
@@ -25,14 +26,16 @@ extends Resource
 
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
 
+
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
 
+
 func serialize() -> Dictionary:
 	var data = {
 		"metadata": metadata.serialize(),
-		"entities": entities.map(func(e): return e.serialize()),
+		"entities": entities.values().map(func(e): return e.serialize()),
 		"tree_structure": tree_structure.serialize(),
 	}
 	return data
@@ -40,8 +43,11 @@ func serialize() -> Dictionary:
 static func deserialize(data: Dictionary) -> ClassIndex:
 	var instance = ClassIndex.new()
 	instance.metadata = ClassMetadata.deserialize(data["metadata"])
-	for entity in data["entities"]:
-		instance.entities.append(Entity.deserialize(entity))
+
+	for entity_data in data["entities"]:
+		var entity = Entity.deserialize(entity_data)
+		instance.entities[entity.get_entity_id()] = entity
+
 	instance.tree_structure = ClassNode.deserialize(data["tree_structure"])
 	return instance
 

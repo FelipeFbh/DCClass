@@ -5,7 +5,7 @@ var WHITEBOARD_SIZE: Vector2i
 
 var file: String
 @export var class_index: ClassIndex
-var entities: Array
+var entities: Dictionary
 
 @onready var root: Node2D = $Class
 

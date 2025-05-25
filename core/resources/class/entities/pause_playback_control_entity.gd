@@ -25,10 +25,10 @@ extends PlaybackControlEntity
 
 # 11. virtual methods: define other virtual methos here
 func get_class_name() -> String:
-    return "PausePlaybackControlEntity"
+	return "PausePlaybackControlEntity"
 
 func get_editor_name() -> String:
-    return "Pause"
+	return "Pause"
 
 # 12. public methods: define all public methods here
 

@@ -4,7 +4,7 @@ extends Node2D
 var _class_node: ClassNode
 
 
-static func instantiate(node: ClassNode, entities: Array[Entity]) -> NodeController:
+static func instantiate(node: ClassNode, entities: Dictionary) -> NodeController:
 	var _class: String = node.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	

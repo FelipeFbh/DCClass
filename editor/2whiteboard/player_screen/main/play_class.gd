@@ -7,14 +7,14 @@ var parse_class: ParseClassEditor
 
 var file: String
 @export var class_index: ClassIndex
-var entities: Array
+var entities: Dictionary
 var root_tree_structure: ClassNode
 
 
 var root_tree_structure_controller: GroupController
 var tree_manager: TreeManagerEditor
 var entry_point : NodeController
-var _current_node_leaf: ClassNode
+var _current_node: ClassNode
 
 @onready var root: Node2D = $Class
 
@@ -25,7 +25,7 @@ func _enter_tree():
 	WHITEBOARD_SIZE = _load_whiteboard_size()
 
 func _ready():
-	_bus.current_node_leaf_changed.connect(_current_node_leaf_changed)
+	_bus.current_node_changed.connect(_current_node_changed)
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
@@ -82,21 +82,21 @@ func play():
 	#entry_point = entry_point.get_next_audio_after()
 	entry_point.play_preorden()
 
-func _current_node_leaf_changed(current_node_leaf):
-	_current_node_leaf = current_node_leaf
+func _current_node_changed(current_node):
+	_current_node = current_node
 
 var current_item_tree
-func _current_node_leaf_changed_deprecated(current_node_leaf):
+func _current_node_changed_deprecated(current_node):
 	var color_boolean = false
-	if _current_node_leaf == null:
+	if _current_node == null:
 		color_boolean = true
-		current_item_tree = tree_manager.find_item_by_node(current_node_leaf)
+		current_item_tree = tree_manager.find_item_by_node(current_node)
 		current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
 	else:
 		current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
-		current_item_tree = tree_manager.get_next_leaf_item(_current_node_leaf)
+		current_item_tree = tree_manager.get_next_item(_current_node)
 		if current_item_tree != null:
 			color_boolean = true
 			current_item_tree.set_custom_color(0, Color.LIME_GREEN if color_boolean else Color.WHITE)
 	
-	_current_node_leaf = current_node_leaf
+	_current_node = current_node
