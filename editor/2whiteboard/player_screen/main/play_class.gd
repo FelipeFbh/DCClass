@@ -2,8 +2,7 @@ class_name ClassSceneEditor
 extends Node2D
 
 var WHITEBOARD_SIZE: Vector2i
-@onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
-var parse_class: ParseClassEditor
+@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
 var file: String
 @export var class_index: ClassIndex
@@ -25,7 +24,9 @@ func _enter_tree():
 	WHITEBOARD_SIZE = _load_whiteboard_size()
 
 func _ready():
-	_bus.current_node_changed.connect(_current_node_changed)
+	_bus_core.current_node_changed.connect(_current_node_changed)
+
+func _setup_play():
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
@@ -53,7 +54,8 @@ func _parse() -> bool:
 		push_error("Error %d opening file: " % err)
 		return false
 	Widget.zip_file = zip_file
-	class_index = parse_class.class_index
+	# aqui se cae, ya que, dice que parse_class es null
+	class_index = ClassUIEditor.context.parse_class.class_index
 	return class_index != null
 
 

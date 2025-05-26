@@ -23,6 +23,9 @@ extends Entity
 
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
 
+func _init() -> void:
+	entity_id = "Clear"
+
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here

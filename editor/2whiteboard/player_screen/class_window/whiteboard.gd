@@ -3,7 +3,7 @@ extends Control
 const WARP_OFFSET        := -10
 const SQUARED_THRESHOLD  := 25.0
 
-@onready var _bus: EditorEventBus = Engine.get_singleton("EditorSignals")
+@onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 @onready var _viewport_container: SubViewportContainer  = %SubViewportContainer
 @onready var _viewport : SubViewport = %SubViewport
 
@@ -110,7 +110,7 @@ func _handle_drawing(event: InputEvent) -> void:
 			_line.queue_free()
 			_line = null
 
-			_bus.emit_signal("add_class_leaf", entity)
+			_bus.emit_signal("add_class_leaf_entity", entity)
 
 			#print(entity.serialize())
 

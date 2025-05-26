@@ -6,11 +6,11 @@ extends Control
 @onready var panel_control: PanelControl = %PanelControl
 var current_window: WindowWhiteboard
 
-@onready var editor_signals: EditorEventBus = Engine.get_singleton("EditorSignals")
+@onready var editor_signals: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 func _enter_tree() -> void:
-	Engine.register_singleton("EditorSignals", EditorEventBus.new())
-	Engine.register_singleton("CoreEvent", CoreEventBus.new())
+	Engine.register_singleton(&"EditorSignals", EditorEventBus.new())
+	Engine.register_singleton(&"CoreSignals", CoreEventBus.new())
 
 func _ready() -> void:
 	editor_signals.request_detach.connect(_on_request_detach)
@@ -26,8 +26,11 @@ func _on_request_detach() -> void:
 		return
 
 	var detach_scene: PackedScene = panel_control.detach_window
+	
 	current_window = detach_scene.instantiate() as WindowWhiteboard
-	current_window.get_node("UI").get_node("PlayClass").parse_class = parse_class
+	#current_window.get_node("UI").get_node("PlayClass").parse_class = parse_class
+	current_window.get_node("UI").context.parse_class = parse_class
+
 	get_tree().root.add_child(current_window)
 	current_window.close_requested.connect(_on_window_close_requested)
 	current_window.popup_centered()

@@ -1,6 +1,7 @@
 class_name ParseClassEditor
 extends Node2D
 
+@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 var file: String
@@ -14,8 +15,12 @@ var _current_node: ClassNode
 var zip_file: ZIPReader
 
 func _ready():
-	_bus.current_node_changed.connect(_current_node_changed)
+	_bus_core.current_node_changed.connect(_current_node_changed)
+	_bus.add_class_leaf_entity.connect(_add_class_leaf_entity)
 	_bus.add_class_leaf.connect(_add_class_leaf)
+	_bus.add_class_group.connect(_add_class_group)
+
+
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
@@ -60,7 +65,7 @@ func _instantiate() -> bool:
 func _current_node_changed(current_node):
 	_current_node = current_node
 
-func _add_class_leaf( entity : Entity ) -> void:
+func _add_class_leaf_entity( entity : Entity ) -> void:
 	if entity == null:
 		return
 
@@ -93,4 +98,45 @@ func _add_class_leaf( entity : Entity ) -> void:
 			_current_class_group_childrens.insert(index_current + 1, class_node)
 	
 	_bus.update_treeindex.emit()
-	_bus.current_node_changed.emit(class_node)
+	_bus_core.current_node_changed.emit(class_node)
+
+
+func _add_class_leaf(class_node : ClassNode) -> void:
+	if class_node == null:
+		return
+
+	if _current_node is ClassGroup:
+		class_node.set_parent(_current_node)
+		var _current_class_group_childrens = _current_node._childrens
+		var index_current = _current_class_group_childrens.find(_current_node)
+		_current_class_group_childrens.insert(index_current + 1, class_node)
+		
+
+	if _current_node is ClassLeaf:
+		var parent_node = _current_node._parent
+		if parent_node is ClassGroup:
+			class_node.set_parent(parent_node)
+			var _current_class_group_childrens = parent_node._childrens
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+	
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(class_node)
+
+
+func _add_class_group(class_node : ClassNode, order : bool) -> void:
+	if class_node == null:
+		return
+	
+	if _current_node is ClassLeaf or order:
+		_add_class_leaf(class_node)
+		return
+	
+	class_node.set_parent(_current_node)
+	var _current_class_group_childrens = _current_node._childrens
+	var index_current = _current_class_group_childrens.size()
+	
+	_current_class_group_childrens.insert(index_current, class_node)
+	
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(class_node)

@@ -3,7 +3,6 @@ extends NodeController
 
 
 var _childrens: Array[NodeController] = []
-var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 # Return the first LeafController in this group
 func get_first_leaf() -> LeafController:
@@ -45,11 +44,14 @@ func previous(current_node: NodeController) -> NodeController:
 # Return the next LeafController after current_node
 func get_next_leaf_node(current_node: NodeController) -> LeafController:
 	var next = next(current_node)
-	if next == null:
-		return null
-	if next is LeafController:
-		return next
-	return next.get_first_leaf()
+	while next != null:
+		if next is LeafController:
+			return next
+		var first_leaf_inside = next.get_first_leaf()
+		if first_leaf_inside != null:
+			return first_leaf_inside
+		next = next(next)
+	return null
 
 # Return the last LeafController in this group
 func get_last_leaf() -> LeafController:
@@ -65,11 +67,14 @@ func get_last_leaf() -> LeafController:
 # Return the previous LeafController before current_node
 func get_previous_leaf_node(current_node: NodeController) -> LeafController:
 	var prev = previous(current_node)
-	if prev == null:
-		return null
-	if prev is LeafController:
-		return prev
-	return (prev as GroupController).get_last_leaf()
+	while prev != null:
+		if prev is LeafController:
+			return prev
+		var last_leaf_inside = prev.get_last_leaf()
+		if last_leaf_inside != null:
+			return last_leaf_inside
+		prev = previous(prev)
+	return null
 
 # Return the next LeafController that is an audio
 func get_next_audio_after(current_node: NodeController) -> LeafController:
@@ -119,12 +124,10 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 
 # Play the group in pre-order
 func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
-	_bus.current_node_changed.emit(_class_node)
+	_bus_core.current_node_changed.emit(_class_node)
 	var index = _childrens.find(last_child)
-	if _childrens.size() == 0:
-		return
 		
-	if index+1 == _childrens.size():
+	if _childrens.size() == 0 or index+1 == _childrens.size():
 		var parent = get_parent()
 		if parent != null and parent.has_method("play_preorden"):
 			parent.play_preorden(__duration, __total_real_time, self)

@@ -4,7 +4,6 @@ extends NodeController
 var _duration: float = 0.0
 var _total_real_time: float = 0.0
 var _duration_leaf: float = 0.0
-var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
 var leaf_value: Widget
 signal termino
 
@@ -17,22 +16,25 @@ func _compute_duration() -> float:
 	return 0.0
 
 func play(__duration: float = _duration, __total_real_time: float = _total_real_time):
-	_bus.current_node_changed.emit(_class_node)
-	var sigs : Array[Signal] = [leaf_value.termino, _bus.stop_play]
+	_bus_core.current_node_changed.emit(_class_node)
+	var sigs : Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.play(__duration, __total_real_time, _duration_leaf)
-	#leaf_value.play(1, 1, 1)
 	if !state._done:
 		await state.completed
-		if state._signal_source == _bus.stop_play:
+		if state._signal_source == _bus_core.stop_widget:
+			leaf_value.stop()
 			return 1
 
 func play_preorden(__duration: float = _duration, __total_real_time: float = _total_real_time, last_child: NodeController = null) -> void:
-	if _duration == 0.0:
+	
+	
+	if __duration == 0.0:
 		var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
 		__duration = _duration_calculated[0]
 		__total_real_time = _duration_calculated[1]
 
+	
 	var state = await play(__duration, __total_real_time)
 	if state == 1:
 		return

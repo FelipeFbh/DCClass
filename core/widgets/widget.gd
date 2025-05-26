@@ -10,7 +10,7 @@ extends Node2D
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
 
-@onready var _bus_core: CoreEventBus = Engine.get_singleton("CoreEvent")
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
 
 ## Compute the duration of the widget animation.
@@ -36,6 +36,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 ## Called when the player seeked to a point before the widget was played.
 ## The widget should be reset to its initial state.
 func reset() -> void:
+	pass
+
+func stop() -> void:
 	pass
 
 ## Called when the player seeked to a point after the widget was played.

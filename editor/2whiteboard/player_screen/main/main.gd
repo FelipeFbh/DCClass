@@ -1,15 +1,15 @@
 class_name ClassUIEditor
 extends Node
 
-static var context: ClassContextEditor
+static var context: ClassContextEditor = ClassContextEditor.new()
 
 @onready var class_scene: ClassSceneEditor = $PlayClass
 @onready var window: ConceptClassWindowEditor = $ClassWindow
 
-func _enter_tree():
-	context = ClassContextEditor.new()
+
 
 func _ready():
+	class_scene._setup_play()
 	print("ClassScene._ready")
 	_setup_scene()
 
@@ -23,5 +23,6 @@ func _setup_scene():
 	class_scene.play()
 
 class ClassContextEditor:
+	var parse_class: ParseClassEditor
 	var camera: ClassCameraEditor
 	var stopwatch: StopwatchEditor

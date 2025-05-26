@@ -4,6 +4,9 @@ extends Widget
 @export var entity: AudioEntity
 var audio: AudioStreamPlayer
 
+signal termino
+
+
 func init(_properties: Dictionary) -> void:
 	if !zip_file.file_exists(entity.audio_path):
 		push_error("Audio file not found: " + entity.audio_path)
@@ -17,17 +20,22 @@ func init(_properties: Dictionary) -> void:
 
 func serialize() -> Dictionary:
 	return entity.serialize()
-	
 
-signal termino
+func _ready():
+	_bus_core.clear_widget.connect(_clear)
+	_bus_core.stop_widget.connect(stop)
+	add_to_group(&"speed_scale_handler")
+
+
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	audio.play()
 	emit_signal("termino")
 
-
-
 func is_audio() -> bool:
 	return true
+
+func stop():
+	audio.stop()
 
 func reset():
 	audio.stop()
@@ -35,9 +43,6 @@ func reset():
 func skip_to_end():
 	reset()
 
-func _ready():
-	_bus_core.clear_widget.connect(_clear)
-	add_to_group(&"speed_scale_handler")
 
 func _clear():
 	pass

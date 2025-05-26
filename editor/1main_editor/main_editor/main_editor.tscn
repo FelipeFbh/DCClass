@@ -28,12 +28,14 @@ current_tab = 0
 
 [node name="Metadata" parent="PanelContainer/TabContainer" instance=ExtResource("3_0im0g")]
 unique_name_in_owner = true
+clip_contents = true
 layout_mode = 2
 metadata/_tab_index = 0
 
 [node name="PanelControl" parent="PanelContainer/TabContainer" instance=ExtResource("4_4yc00")]
 unique_name_in_owner = true
 visible = false
+clip_contents = true
 layout_mode = 2
 
 [node name="ParseClass" type="Node2D" parent="."]

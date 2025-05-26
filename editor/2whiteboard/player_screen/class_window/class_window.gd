@@ -2,6 +2,8 @@ class_name ConceptClassWindowEditor
 extends Control
 
 var find_group_by_timestamp: Callable
+var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
+
 
 #region Index Tree
 @onready var index_tree_parent: Control = %LeftPanel
@@ -135,8 +137,7 @@ func _toggle_playback_stop() -> void:
 	_stop_playback()
 
 func _stop_playback() -> void:
-	var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
-	_bus.stop_play.emit()
+	_bus_core.stop_widget.emit()
 	#is_stopped = true
 	#stop_button.icon = continue_icon
 	return

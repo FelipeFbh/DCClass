@@ -57,6 +57,11 @@ func reset():
 	line.hide()
 	line.clear_points()
 
+
+func stop() -> void:
+	skip_to_end()
+	
+
 func skip_to_end() -> void:
 	if tween:
 		tween.kill()

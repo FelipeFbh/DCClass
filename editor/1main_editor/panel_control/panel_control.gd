@@ -3,14 +3,21 @@ extends MarginContainer
 
 @export var detach_window: PackedScene
 
-@onready var _bus : EditorEventBus = Engine.get_singleton("EditorSignals")
+@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
+@onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 signal pen_toggled(active: bool)
 signal request_detach
 
-@onready var btn_pen     : Button  = %PenButton
-@onready var btn_detach  : Button  = %DetachButton
+@onready var btn_pen : Button = %PenButton
+@onready var btn_detach : Button  = %DetachButton
+@onready var btn_add_group : Button = %AddGroupButton
+@onready var btn_add_clear : Button = %ClearButton
+@onready var btn_remove : Button = %RemoveButton
+@onready var btn_push_group : Button = %PushGroupButton
+
 @onready var index_tree_parent : Control = %IndexClass
+
 
 var _parse_class: ParseClassEditor
 var tree_manager: TreeManagerEditor
@@ -19,11 +26,15 @@ var _class_index : ClassIndex
 
 
 func _ready() -> void:
-	_bus.current_node_changed.connect(_current_node_changed)
+	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.update_treeindex.connect(_setup_index_class)
+	
 	btn_pen.toggle_mode = true
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	btn_detach.pressed.connect(_on_button_detach_pressed)
+	btn_add_clear.pressed.connect(_on_button_add_clear_pressed)
+	btn_add_group.pressed.connect(_on_button_add_group_pressed)
+	btn_push_group.pressed.connect(_on_button_push_group_pressed)
 
 
 
@@ -65,4 +76,21 @@ func _current_node_changed(current_node):
 func _on_item_activated() -> void:
 	var item = tree_manager.tree_manager_index.get_selected()
 	var node = item.get_metadata(0)
-	_bus.current_node_changed.emit(node)
+	_bus_core.current_node_changed.emit(node)
+
+func _on_button_add_clear_pressed() -> void:
+	var entity_clear = ClearEntity.new()
+	var class_node = ClassLeaf.new()
+	var entity_wrapper_new = EntityWrapper.new()
+	entity_wrapper_new.entity_id = entity_clear.entity_id
+
+	class_node._value = entity_wrapper_new
+	_bus.add_class_leaf.emit(class_node)
+
+func _on_button_add_group_pressed() -> void:
+	var class_node = ClassGroup.new()
+	_bus.add_class_group.emit(class_node, true)
+
+func _on_button_push_group_pressed() -> void:
+	var class_node = ClassGroup.new()
+	_bus.add_class_group.emit(class_node, false)
