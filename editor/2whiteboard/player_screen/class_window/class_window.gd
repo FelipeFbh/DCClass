@@ -2,7 +2,7 @@ class_name ConceptClassWindowEditor
 extends Control
 
 var find_group_by_timestamp: Callable
-var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
+var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
 
 #region Index Tree
@@ -121,16 +121,12 @@ func _slider_value_selected(seconds: float) -> void:
 	#_play_section(slide.tree_item)
 
 
+@onready var stop_icon: Texture = get_theme_icon("stop", "Button")
+@onready var continue_icon: Texture = get_theme_icon("reload", "Button")
 
-
-
-@onready var stop_icon          : Texture = get_theme_icon("stop", "Button")
-@onready var continue_icon      : Texture = get_theme_icon("reload", "Button")  
-
-var is_stopped        : bool = false
-var stopped_slide_idx : int  = -1
-var stopped_section : TreeItem    
-
+var is_stopped: bool = false
+var stopped_slide_idx: int = -1
+var stopped_section: TreeItem
 
 
 func _toggle_playback_stop() -> void:
@@ -138,6 +134,7 @@ func _toggle_playback_stop() -> void:
 
 func _stop_playback() -> void:
 	_bus_core.stop_widget.emit()
+	get_tree().call_group(&"widget_playing", "stop")
 	#is_stopped = true
 	#stop_button.icon = continue_icon
 	return
@@ -235,13 +232,13 @@ func _ready():
 		ClassUIEditor.context.camera.user_controlled_changed.connect(_toggle_camera_button)
 		get_tree().process_frame.connect(_zoom_reset, CONNECT_ONE_SHOT)
 	fullscreen_button.toggled.connect(_toggle_fullscreen)
-	center_camera_button.pressed.connect(func (): ClassUIEditor.context.camera.user_controlled = false)
+	center_camera_button.pressed.connect(func(): ClassUIEditor.context.camera.user_controlled = false)
 	play_button.pressed.connect(_toggle_playback)
 	stop_button.pressed.connect(_stop_playback)
 	time_slider.value_selected.connect(_slider_value_selected)
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
-	speed_button.pressed.connect(func (): speed_slider.value = 1.0)
+	speed_button.pressed.connect(func(): speed_slider.value = 1.0)
 	speed_slider.value_changed.connect(_speed_slider_value_selected)
 
 func _process(_delta: float):

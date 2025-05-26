@@ -2,6 +2,7 @@ class_name LineWidget
 extends Widget
 
 const scene = preload("res://core/widgets/line_widget.tscn")
+signal termino
 
 @export var entity: LineEntity
 var line: Line2D
@@ -17,7 +18,6 @@ func init(properties: Dictionary) -> void:
 func serialize() -> Dictionary:
 	return entity.serialize()
 
-signal termino
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	line.show()
 	if tween:
@@ -35,8 +35,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	#		delays.append((_duration_leaf / _total_real_time) * _duration / needed)
 
 	tween = create_tween()
-	tween.set_speed_scale(1/(_duration / _total_real_time))
+	tween.set_speed_scale(1 / (_duration / _total_real_time))
 	tween.pause()
+	
 	
 	for i in range(count):
 		tween.tween_callback(Callable(self, "_add_points").bind(i))
@@ -44,9 +45,13 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 			tween.tween_interval(delays[i])
 
 	#var now = Time.get_ticks_msec() / 1000.0
+	add_to_group(&"playing_widget")
 	tween.play()
 	
 	await tween.finished
+	
+	remove_from_group(&"widget_playing")
+	add_to_group(&"widget_finished")
 	emit_signal("termino")
 	#var finish = Time.get_ticks_msec() / 1000.0
 	#print("LineWidget: Play time: ", finish - now, " seconds")

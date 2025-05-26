@@ -13,6 +13,7 @@ func serialize() -> Dictionary:
 
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	_bus_core.emit_signal("clear_widget")
+	get_tree().call_group(&"widget_finished", "clear")
 	emit_signal("termino")
 
 func reset():

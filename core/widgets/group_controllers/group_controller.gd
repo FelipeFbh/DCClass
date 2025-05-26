@@ -27,7 +27,7 @@ func next(current_node: NodeController) -> NodeController:
 		return _childrens[index + 1]
 	var parent = get_parent()
 	if parent != null and parent is GroupController:
-		return parent.next(self)
+		return parent.next(current_node)
 	return null
 
 # Return the previous controller in the group
@@ -38,19 +38,19 @@ func previous(current_node: NodeController) -> NodeController:
 		return _childrens[index - 1]
 	var parent = get_parent()
 	if parent != null and parent is NodeController:
-		return parent.previous(self)
+		return parent.previous(current_node)
 	return null
 
 # Return the next LeafController after current_node
 func get_next_leaf_node(current_node: NodeController) -> LeafController:
-	var next = next(current_node)
+	var next = self.next(current_node)
 	while next != null:
 		if next is LeafController:
 			return next
 		var first_leaf_inside = next.get_first_leaf()
 		if first_leaf_inside != null:
 			return first_leaf_inside
-		next = next(next)
+		next = self.next(next)
 	return null
 
 # Return the last LeafController in this group
@@ -66,14 +66,14 @@ func get_last_leaf() -> LeafController:
 
 # Return the previous LeafController before current_node
 func get_previous_leaf_node(current_node: NodeController) -> LeafController:
-	var prev = previous(current_node)
+	var prev = self.previous(current_node)
 	while prev != null:
 		if prev is LeafController:
 			return prev
 		var last_leaf_inside = prev.get_last_leaf()
 		if last_leaf_inside != null:
 			return last_leaf_inside
-		prev = previous(prev)
+		prev = self.previous(prev)
 	return null
 
 # Return the next LeafController that is an audio
@@ -123,11 +123,11 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 	
 
 # Play the group in pre-order
-func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
+func play_preorden(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
 	_bus_core.current_node_changed.emit(_class_node)
 	var index = _childrens.find(last_child)
 		
-	if _childrens.size() == 0 or index+1 == _childrens.size():
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
 		var parent = get_parent()
 		if parent != null and parent.has_method("play_preorden"):
 			parent.play_preorden(__duration, __total_real_time, self)
@@ -136,7 +136,6 @@ func play_preorden( __duration: float = 0.0, __total_real_time: float = 0.0, las
 	var next_child_to_play = _childrens[index + 1]
 	if next_child_to_play.has_method("play_preorden"):
 		next_child_to_play.play_preorden(__duration, __total_real_time)
-
 
 
 func play(__duration: float = 0.0, __total_real_time: float = 0.0) -> void:

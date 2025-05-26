@@ -1,8 +1,8 @@
 class_name ParseClassEditor
 extends Node2D
 
-@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
-@onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
+@onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 var file: String
 var entities: Dictionary
@@ -29,7 +29,6 @@ func _ready():
 		return
 	zip_file.close()
 	print("parse._ready")
-
 
 
 func _parse() -> bool:
@@ -65,11 +64,11 @@ func _instantiate() -> bool:
 func _current_node_changed(current_node):
 	_current_node = current_node
 
-func _add_class_leaf_entity( entity : Entity ) -> void:
+func _add_class_leaf_entity(entity: Entity) -> void:
 	if entity == null:
 		return
 
-	var entity_id : int = entities.size()
+	var entity_id: int = entities.size()
 	entity.entity_id = entity_id
 	entities[entity_id] = entity
 
@@ -77,7 +76,7 @@ func _add_class_leaf_entity( entity : Entity ) -> void:
 		"entity_id": entity_id,
 		"entity_properties": [],
 	}
-	var entity_wrapper_new : EntityWrapper = EntityWrapper.deserialize(data_new)
+	var entity_wrapper_new: EntityWrapper = EntityWrapper.deserialize(data_new)
 	var class_node = ClassLeaf.new()
 	class_node._value = entity_wrapper_new
 	
@@ -101,7 +100,7 @@ func _add_class_leaf_entity( entity : Entity ) -> void:
 	_bus_core.current_node_changed.emit(class_node)
 
 
-func _add_class_leaf(class_node : ClassNode) -> void:
+func _add_class_leaf(class_node: ClassNode) -> void:
 	if class_node == null:
 		return
 
@@ -124,7 +123,7 @@ func _add_class_leaf(class_node : ClassNode) -> void:
 	_bus_core.current_node_changed.emit(class_node)
 
 
-func _add_class_group(class_node : ClassNode, order : bool) -> void:
+func _add_class_group(class_node: ClassNode, order: bool) -> void:
 	if class_node == null:
 		return
 	

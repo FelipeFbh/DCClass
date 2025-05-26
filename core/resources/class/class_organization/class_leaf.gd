@@ -15,7 +15,7 @@ extends ClassNode
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var _value : EntityWrapper
+@export var _value: EntityWrapper
 @export var _parent: ClassNode
 
 

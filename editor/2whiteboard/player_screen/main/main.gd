@@ -7,7 +7,6 @@ static var context: ClassContextEditor = ClassContextEditor.new()
 @onready var window: ConceptClassWindowEditor = $ClassWindow
 
 
-
 func _ready():
 	class_scene._setup_play()
 	print("ClassScene._ready")

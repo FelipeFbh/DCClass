@@ -2,7 +2,7 @@ extends Control
 
 @export var file: String = ""
 @onready var parse_class: ParseClassEditor = $ParseClass
-@onready var metadata : MetadataEditor = %Metadata
+@onready var metadata: MetadataEditor = %Metadata
 @onready var panel_control: PanelControl = %PanelControl
 var current_window: WindowWhiteboard
 
@@ -16,8 +16,6 @@ func _ready() -> void:
 	editor_signals.request_detach.connect(_on_request_detach)
 	metadata._setup_metadata_class(parse_class.class_index)
 	panel_control._setup_parse_class(parse_class)
-
-
 
 
 func _on_request_detach() -> void:

@@ -50,7 +50,6 @@ func _find_item_recursive(item: TreeItem, target: ClassNode) -> TreeItem:
 	return null
 
 
-
 func get_next_leaf_item(current_node: ClassNode) -> TreeItem:
 	var current_item = find_item_by_node(current_node)
 	if current_item == null:
@@ -62,7 +61,6 @@ func get_next_leaf_item(current_node: ClassNode) -> TreeItem:
 			return next_item
 		next_item = next_item.get_next_visible()
 	return null
-
 
 
 func get_previous_leaf_item(current_node: ClassNode) -> TreeItem:

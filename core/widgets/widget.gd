@@ -25,9 +25,6 @@ func compute_duration() -> float:
 func init(_properties: Dictionary) -> void:
 	pass
 
-func _ready() -> void:
-	_bus_core.clear_widget.connect(_clear)
-
 ## Called when it's time to play the widget.
 ## The animation should be played for the given [param duration].
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
@@ -56,5 +53,6 @@ func set_speed_scale(_speed: float) -> void:
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
 
-func _clear():
+func clear():
+	remove_from_group(&"widget_finished")
 	reset()

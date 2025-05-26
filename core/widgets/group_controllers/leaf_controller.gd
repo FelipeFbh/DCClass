@@ -17,7 +17,7 @@ func _compute_duration() -> float:
 
 func play(__duration: float = _duration, __total_real_time: float = _total_real_time):
 	_bus_core.current_node_changed.emit(_class_node)
-	var sigs : Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
+	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.play(__duration, __total_real_time, _duration_leaf)
 	if !state._done:
@@ -27,9 +27,7 @@ func play(__duration: float = _duration, __total_real_time: float = _total_real_
 			return 1
 
 func play_preorden(__duration: float = _duration, __total_real_time: float = _total_real_time, last_child: NodeController = null) -> void:
-	
-	
-	if __duration == 0.0:
+	if __duration == 0.0 or is_audio():
 		var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
 		__duration = _duration_calculated[0]
 		__total_real_time = _duration_calculated[1]
@@ -140,9 +138,12 @@ func compute_duration_play(current_node: NodeController, _duration: float = _dur
 		_duration = _previous_audio.compute_duration()
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf_node()
+	
 	var _next_audio = get_next_audio_after()
+	
 	if _next_audio == null:
-		_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
+		if _next_leaf_paudio != null:
+			_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
 	else:
 		var _prev_leaf_naudio = _next_audio.get_previous_leaf_node()
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)

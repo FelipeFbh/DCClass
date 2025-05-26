@@ -2,7 +2,7 @@ class_name ClassSceneEditor
 extends Node2D
 
 var WHITEBOARD_SIZE: Vector2i
-@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
 var file: String
 @export var class_index: ClassIndex
@@ -12,7 +12,7 @@ var root_tree_structure: ClassNode
 
 var root_tree_structure_controller: GroupController
 var tree_manager: TreeManagerEditor
-var entry_point : NodeController
+var entry_point: NodeController
 var _current_node: ClassNode
 
 @onready var root: Node2D = $Class

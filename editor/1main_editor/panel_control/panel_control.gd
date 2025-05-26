@@ -3,26 +3,26 @@ extends MarginContainer
 
 @export var detach_window: PackedScene
 
-@onready var _bus_core : CoreEventBus = Engine.get_singleton(&"CoreSignals")
-@onready var _bus : EditorEventBus = Engine.get_singleton(&"EditorSignals")
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
+@onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 signal pen_toggled(active: bool)
 signal request_detach
 
-@onready var btn_pen : Button = %PenButton
-@onready var btn_detach : Button  = %DetachButton
-@onready var btn_add_group : Button = %AddGroupButton
-@onready var btn_add_clear : Button = %ClearButton
-@onready var btn_remove : Button = %RemoveButton
-@onready var btn_push_group : Button = %PushGroupButton
+@onready var btn_pen: Button = %PenButton
+@onready var btn_detach: Button = %DetachButton
+@onready var btn_add_group: Button = %AddGroupButton
+@onready var btn_add_clear: Button = %ClearButton
+@onready var btn_remove: Button = %RemoveButton
+@onready var btn_push_group: Button = %PushGroupButton
 
-@onready var index_tree_parent : Control = %IndexClass
+@onready var index_tree_parent: Control = %IndexClass
 
 
 var _parse_class: ParseClassEditor
 var tree_manager: TreeManagerEditor
 var _current_node: ClassNode
-var _class_index : ClassIndex
+var _class_index: ClassIndex
 
 
 func _ready() -> void:
@@ -37,8 +37,7 @@ func _ready() -> void:
 	btn_push_group.pressed.connect(_on_button_push_group_pressed)
 
 
-
-func _setup_parse_class (parse_class : ParseClassEditor = _parse_class):
+func _setup_parse_class(parse_class: ParseClassEditor = _parse_class):
 	_parse_class = parse_class
 	_setup_index_class()
 	_current_node_changed(parse_class._current_node)
@@ -58,10 +57,10 @@ func _setup_index_class():
 	tree_manager.tree_manager_index.item_activated.connect(_on_item_activated)
 
 func _on_button_pen_toggled(active: bool) -> void:
-	_bus.pen_toggled.emit(active) 
+	_bus.pen_toggled.emit(active)
 
 func _on_button_detach_pressed() -> void:
-	_bus.request_detach.emit() 
+	_bus.request_detach.emit()
 
 
 var current_item_tree
