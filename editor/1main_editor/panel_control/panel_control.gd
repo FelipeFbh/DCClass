@@ -79,11 +79,13 @@ func _on_item_activated() -> void:
 
 func _on_button_add_clear_pressed() -> void:
 	var entity_clear = ClearEntity.new()
-	var class_node = ClassLeaf.new()
-	var entity_wrapper_new = EntityWrapper.new()
-	entity_wrapper_new.entity_id = entity_clear.entity_id
+	var data_new = {
+		"type": "ClassLeaf",
+		"entity_id": entity_clear.entity_id,
+		"entity_properties": [],
+	}
+	var class_node = ClassLeaf.deserialize(data_new)
 
-	class_node._value = entity_wrapper_new
 	_bus.add_class_leaf.emit(class_node)
 
 func _on_button_add_group_pressed() -> void:

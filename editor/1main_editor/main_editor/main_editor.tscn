@@ -38,6 +38,14 @@ visible = false
 clip_contents = true
 layout_mode = 2
 
-[node name="ParseClass" type="Node2D" parent="."]
+[node name="Class" type="Node" parent="."]
+
+[node name="ResourceClass" type="Node" parent="Class"]
 unique_name_in_owner = true
 script = ExtResource("4_sli3p")
+
+[node name="NodeClass" type="Node" parent="Class"]
+unique_name_in_owner = true
+
+[node name="AudioClass" type="Node2D" parent="Class"]
+unique_name_in_owner = true

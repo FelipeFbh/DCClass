@@ -1,11 +1,8 @@
 class_name LeafController
 extends NodeController
 
-var _duration: float = 0.0
-var _total_real_time: float = 0.0
 var _duration_leaf: float = 0.0
 var leaf_value: Widget
-signal termino
 
 func compute_duration() -> float:
 	if is_zero_approx(_duration_leaf):
@@ -15,7 +12,14 @@ func compute_duration() -> float:
 func _compute_duration() -> float:
 	return 0.0
 
-func play(__duration: float = _duration, __total_real_time: float = _total_real_time):
+func play(__duration: float , __total_real_time: float):
+	if leaf_value == null:
+		load_data(_class_node)
+		if is_audio():
+			root_audio_controller.add_child(leaf_value)
+		else:
+			root_visual_controller_snapshot.add_child(leaf_value)
+	
 	_bus_core.current_node_changed.emit(_class_node)
 	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -26,8 +30,9 @@ func play(__duration: float = _duration, __total_real_time: float = _total_real_
 			leaf_value.stop()
 			return 1
 
-func play_preorden(__duration: float = _duration, __total_real_time: float = _total_real_time, last_child: NodeController = null) -> void:
-	if __duration == 0.0 or is_audio():
+func play_preorden(__duration: float, __total_real_time: float, last_child: NodeController = null) -> void:
+	
+	if __duration == 0.0 or is_audio() or __total_real_time == 0.0:
 		var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
 		__duration = _duration_calculated[0]
 		__total_real_time = _duration_calculated[1]
@@ -37,45 +42,38 @@ func play_preorden(__duration: float = _duration, __total_real_time: float = _to
 	if state == 1:
 		return
 	
-	var parent = get_parent()
+	var parent = _class_node.get_parent_controller()
 	if parent != null and parent.has_method("play_preorden"):
 		parent.play_preorden(__duration, __total_real_time, self)
 
 func is_audio() -> bool:
-	if leaf_value.has_method("is_audio"):
-		return leaf_value.is_audio()
+	if _class_node.entity is AudioEntity:
+		return true
 	return false
 
-func reset() -> void:
-	pass
 
-
-func skip_to_end() -> void:
-	pass
-
-static func instantiate(leaf: ClassNode, entities: Dictionary) -> LeafController:
+static func instantiate(leaf: ClassNode) -> LeafController:
 	var _class: String = leaf.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: LeafController = CustomClassDB.instantiate(_class)
-	controller.load_data(leaf, entities)
 	controller._class_node = leaf
+	controller._duration = leaf.entity.duration
 	return controller
 
-func load_data(leaf: ClassLeaf, entities: Dictionary) -> void:
-	var entity_node: Widget = _instantiate_entity(leaf._value, entities)
+func load_data(leaf: ClassLeaf) -> void:
+	var entity_node: Widget = _instantiate_entity()
 	if is_instance_valid(entity_node):
 		leaf_value = entity_node
-		_duration_leaf = leaf_value.compute_duration()
-		add_child(leaf_value)
+		
 
-func _instantiate_entity(wrapper: EntityWrapper, entities: Dictionary) -> Widget:
-	var entity: Entity = entities[wrapper.entity_id]
+func _instantiate_entity() -> Widget:
+	var entity: Entity = _class_node.entity
 	if !_has_widget(entity):
 		push_error("Error instantiating entity: " + entity.get_class_name() + ", widget not found")
 		return null
 	var widget: Widget = _get_widget(entity)
 	widget.entity = entity
-	widget.init(wrapper.get_properties())
+	widget.init(_class_node.get_properties())
 	return widget
 
 func _has_widget(entity: Entity) -> bool:
@@ -89,14 +87,14 @@ func _get_widget(entity: Entity) -> Widget:
 
 # Return the next leaf node
 func get_next_leaf_node() -> LeafController:
-	var parent = get_parent()
+	var parent = _class_node.get_parent_controller()
 	if parent != null:
 		return parent.get_next_leaf_node(self)
 	return null
 
 # Return the previous leaf node
 func get_previous_leaf_node() -> LeafController:
-	var parent = get_parent()
+	var parent = _class_node.get_parent_controller()
 	if parent != null:
 		return parent.get_previous_leaf_node(self)
 	return null
@@ -128,7 +126,7 @@ func compute_total_duration_between(end_leaf: LeafController) -> float:
 	return total
 
 
-func compute_duration_play(current_node: NodeController, _duration: float = _duration, _total_real_time: float = _total_real_time) -> Array[float]:
+func compute_duration_play(current_node: NodeController, _duration: float, _total_real_time: float) -> Array[float]:
 	var _previous_audio
 	if current_node.has_method("is_audio") and current_node.is_audio():
 		_previous_audio = current_node

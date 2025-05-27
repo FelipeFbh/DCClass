@@ -40,6 +40,7 @@ func serialize() -> Dictionary:
 
 func load_data(data: Dictionary) -> void:
 	audio_path = data["audio_path"]
+	duration = data["duration"]
 
 # 13. private methods: define all private methods here, use _ as preffix
 

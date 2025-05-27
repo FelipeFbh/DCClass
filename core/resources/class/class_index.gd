@@ -47,7 +47,8 @@ static func deserialize(data: Dictionary) -> ClassIndex:
 	for entity_data in data["entities"]:
 		var entity = Entity.deserialize(entity_data)
 		instance.entities[entity.get_entity_id()] = entity
-
+	
+	ClassLeaf.entities = instance.entities
 	instance.tree_structure = ClassNode.deserialize(data["tree_structure"])
 	return instance
 

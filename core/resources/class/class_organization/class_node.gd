@@ -14,8 +14,12 @@ extends Resource
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
+@export var _parent: ClassNode
+
+var _node_controller : NodeController
 
 # 7. public variables: define all public variables here
+
 
 # 8. private variables: define all private variables here, use _ as preffix
 
@@ -26,16 +30,26 @@ extends Resource
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
-func get_class_name():
+func get_parent_controller():
+	if _parent != null:
+		return _parent._node_controller
+	return null
+
+func set_parent(parent):
+	_parent = parent
+
+func get_class_name() -> String:
 	return "ClassNode"
 
-func get_editor_name(entities: Dictionary):
-	pass
+func get_editor_name() -> String:
+	return "Class_Node"
 
-func serialize():
-	pass
+func serialize() -> Dictionary:
+	return {
+		"type": get_class_name()
+	}
 
-static func deserialize(data: Dictionary):
+static func deserialize(data: Dictionary) -> ClassNode:
 	var instance: ClassNode = CustomClassDB.instantiate(data["type"]).deserialize(data)
 	return instance
 
@@ -43,5 +57,6 @@ static func deserialize(data: Dictionary):
 # 13. private methods: define all private methods here, use _ as preffix
 func _validate():
 	pass
-	
+
+
 # 14. subclasses: define all subclasses here

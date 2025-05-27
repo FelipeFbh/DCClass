@@ -10,7 +10,7 @@ var entities: Dictionary
 var root_tree_structure: ClassNode
 
 
-var root_tree_structure_controller: GroupController
+var root_tree_structure_controller: NodeController
 var tree_manager: TreeManagerEditor
 var entry_point: NodeController
 var _current_node: ClassNode
@@ -30,10 +30,12 @@ func _setup_play():
 	if !_parse():
 		push_error("Error parsing file: " + file)
 		return
+
 	if !_instantiate():
 		push_error("Error instantiating class: " + class_index.name)
 		return
-	zip_file.close()
+	#zip_file.close()
+
 	print("play._ready")
 
 
@@ -54,7 +56,6 @@ func _parse() -> bool:
 		push_error("Error %d opening file: " % err)
 		return false
 	Widget.zip_file = zip_file
-	# aqui se cae, ya que, dice que parse_class es null
 	class_index = ClassUIEditor.context.parse_class.class_index
 	return class_index != null
 
@@ -62,11 +63,13 @@ func _parse() -> bool:
 func _instantiate() -> bool:
 	entities = class_index.entities
 	root_tree_structure = class_index.tree_structure
-	root_tree_structure_controller = GroupController.instantiate(root_tree_structure, entities)
+	#root_tree_structure_controller = GroupController.instantiate(root_tree_structure, entities)
+	print(ClassUIEditor.context.parse_class)
+	root_tree_structure_controller = ClassUIEditor.context.parse_class.root_tree_structure._node_controller
+	var snapshot_visual : Node2D = Node2D.new()
+	root.add_child(snapshot_visual)
+	NodeController.root_visual_controller_snapshot = snapshot_visual
 	entry_point = root_tree_structure_controller
-	var node: Node2D = Node2D.new()
-	node.add_child(root_tree_structure_controller)
-	root.add_child(node)
 	#tree_manager = TreeManagerEditor.new()
 	#tree_manager.build(root_tree_structure, entities)
 	return true
@@ -82,6 +85,7 @@ func play():
 		return
 	#entry_point = entry_point.get_first_leaf()
 	#entry_point = entry_point.get_next_audio_after()
+	NodeController.root_visual_controller = root
 	entry_point.play_preorden()
 
 func _current_node_changed(current_node):

@@ -48,8 +48,14 @@ func load_data(data: Dictionary) -> void:
 	for point in data["points"]:
 		points_array.append(Vector2(point["x"], point["y"]))
 	points = PackedVector2Array(points_array)
-
 	delays = data["delays"]
+	duration = compute_duration()
+
+func compute_duration() -> float:
+	var total_duration: float = 0.0
+	for delay in delays:
+		total_duration += delay
+	return total_duration 
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here

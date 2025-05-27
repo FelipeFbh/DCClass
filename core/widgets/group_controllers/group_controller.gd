@@ -2,43 +2,54 @@ class_name GroupController
 extends NodeController
 
 
-var _childrens: Array[NodeController] = []
+var _childrens: Array[ClassNode] = []
+
+# Indexa por controlador, pero busca por su ClassNode
+func _index_of(ctrl: NodeController) -> int:
+	if ctrl == null:
+		return -1
+	return _childrens.find(ctrl._class_node)
+
+# Saca el controlador a partir de un index en _childrens
+func _ctrl_at(idx: int) -> NodeController:
+	return _childrens[idx]._node_controller as NodeController
+
 
 # Return the first LeafController in this group
 func get_first_leaf() -> LeafController:
 	if _childrens.is_empty():
 		return null
-	var first = _childrens[0]
-	if first is LeafController:
-		return first
-	for i in range(_childrens.size()):
-		if _childrens[i] is LeafController:
-			return _childrens[i]
-		var leaf = _childrens[i].get_first_leaf()
+	for child_node in _childrens:
+		var child_ctrl := child_node._node_controller
+		if child_ctrl is LeafController:
+			return child_ctrl
+		var leaf = child_ctrl.get_first_leaf()
 		if leaf != null:
 			return leaf
 	return null
 
 # Return the next controller in the group
 # If there is no next controller, it will return the next controller in the parent group
-func next(current_node: NodeController) -> NodeController:
-	var index = _childrens.find(current_node)
-	if index >= 0 and index + 1 < _childrens.size():
-		return _childrens[index + 1]
-	var parent = get_parent()
-	if parent != null and parent is GroupController:
-		return parent.next(current_node)
+func next(current_ctrl: NodeController) -> NodeController:
+	var idx := _index_of(current_ctrl)
+	if idx >= 0 and idx + 1 < _childrens.size():
+		return _ctrl_at(idx + 1)
+
+	var parent_ctrl = _class_node.get_parent_controller()
+	if parent_ctrl != null and parent_ctrl is GroupController:
+		return parent_ctrl.next(current_ctrl)
 	return null
 
 # Return the previous controller in the group
 # If there is no previous controller, it will return the previous controller in the parent group
-func previous(current_node: NodeController) -> NodeController:
-	var index = _childrens.find(current_node)
-	if index > 0:
-		return _childrens[index - 1]
-	var parent = get_parent()
-	if parent != null and parent is NodeController:
-		return parent.previous(current_node)
+func previous(current_ctrl: NodeController) -> NodeController:
+	var idx = _index_of(current_ctrl)
+	if idx > 0:
+		return _ctrl_at(idx - 1)
+
+	var parent_ctrl = _class_node.get_parent_controller()
+	if parent_ctrl != null and parent_ctrl is GroupController:
+		return parent_ctrl.previous(current_ctrl)
 	return null
 
 # Return the next LeafController after current_node
@@ -125,47 +136,22 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 # Play the group in pre-order
 func play_preorden(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
 	_bus_core.current_node_changed.emit(_class_node)
-	var index = _childrens.find(last_child)
+	var index = _index_of(last_child)
 		
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
-		var parent = get_parent()
-		if parent != null and parent.has_method("play_preorden"):
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
 			parent.play_preorden(__duration, __total_real_time, self)
 		return
 	
-	var next_child_to_play = _childrens[index + 1]
-	if next_child_to_play.has_method("play_preorden"):
-		next_child_to_play.play_preorden(__duration, __total_real_time)
+	var next_child_to_play = _childrens[index + 1]._node_controller
+	next_child_to_play.play_preorden(__duration, __total_real_time, self)
 
 
-func play(__duration: float = 0.0, __total_real_time: float = 0.0) -> void:
-	if _childrens.size() == 0:
-		return
-	
-	if _childrens[0].has_method("play_preorden"):
-		_childrens[0].play_preorden(__duration, __total_real_time)
-	
-
-## Called when the player seeked to a point before this group was played.
-## The widgets should be reset to its initial state.
-func reset() -> void:
-	pass
-
-## Called when the player seeked to a point after this group was played.
-## The widgets should be set to its final state.
-func skip_to_end() -> void:
-	pass
-
-static func instantiate(group: ClassNode, entities: Dictionary) -> NodeController:
+static func instantiate(group: ClassNode) -> NodeController:
 	var _class: String = group.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: GroupController = CustomClassDB.instantiate(_class)
-	controller.load_data(group, entities)
 	controller._class_node = group
+	controller._childrens = controller._class_node._childrens
 	return controller
-
-func load_data(group: ClassGroup, entities: Dictionary) -> void:
-	for children in group._childrens:
-		var child_node: NodeController = NodeController.instantiate(children, entities)
-		_childrens.append(child_node)
-		add_child(child_node)

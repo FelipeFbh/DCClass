@@ -1,5 +1,5 @@
 class_name ParseClassEditor
-extends Node2D
+extends Node
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
@@ -8,6 +8,8 @@ var file: String
 var entities: Dictionary
 @export var class_index: ClassIndex
 
+@onready var root_node_controller : Node = %NodeClass
+@onready var root_audio_controller : Node2D = %AudioClass
 
 var root_tree_structure: ClassNode
 var _current_node: ClassNode
@@ -19,6 +21,8 @@ func _ready():
 	_bus.add_class_leaf_entity.connect(_add_class_leaf_entity)
 	_bus.add_class_leaf.connect(_add_class_leaf)
 	_bus.add_class_group.connect(_add_class_group)
+	NodeController.root_node_controller = root_node_controller
+	NodeController.root_audio_controller = root_audio_controller
 
 
 	if !_parse():
@@ -73,12 +77,11 @@ func _add_class_leaf_entity(entity: Entity) -> void:
 	entities[entity_id] = entity
 
 	var data_new = {
+		"type": "ClassLeaf",
 		"entity_id": entity_id,
 		"entity_properties": [],
 	}
-	var entity_wrapper_new: EntityWrapper = EntityWrapper.deserialize(data_new)
-	var class_node = ClassLeaf.new()
-	class_node._value = entity_wrapper_new
+	var class_node = ClassLeaf.deserialize(data_new)
 	
 
 	if _current_node is ClassGroup:

@@ -133,7 +133,7 @@ func _toggle_playback_stop() -> void:
 	_stop_playback()
 
 func _stop_playback() -> void:
-	_bus_core.stop_widget.emit()
+	_bus_core.stop_widget.emit() #<--
 	get_tree().call_group(&"widget_playing", "stop")
 	#is_stopped = true
 	#stop_button.icon = continue_icon

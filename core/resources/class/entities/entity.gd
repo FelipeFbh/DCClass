@@ -3,6 +3,7 @@ class_name Entity
 extends Resource
 
 var entity_id
+var duration : float = 0.0
 
 ## Base class for Entity types
 

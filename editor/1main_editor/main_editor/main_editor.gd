@@ -1,7 +1,7 @@
 extends Control
 
 @export var file: String = ""
-@onready var parse_class: ParseClassEditor = $ParseClass
+@onready var parse_class: ParseClassEditor = %ResourceClass
 @onready var metadata: MetadataEditor = %Metadata
 @onready var panel_control: PanelControl = %PanelControl
 var current_window: WindowWhiteboard

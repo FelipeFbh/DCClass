@@ -107,8 +107,10 @@ func _handle_drawing(event: InputEvent) -> void:
 			var entity := LineEntity.new()
 			entity.points = _line.points
 			entity.delays = _delays.duplicate()
-			# Eliminamos ahora la linea
-			var parent := _line.get_parent()
+			entity.duration = entity.compute_duration()
+
+
+			var parent = _line.get_parent()
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null

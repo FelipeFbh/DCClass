@@ -18,7 +18,6 @@ extends ClassNode
 # 6. export variables: define all export variables in groups here
 @export var _name: String = "Group"
 @export var _childrens: Array[ClassNode] = []
-@export var _parent: ClassNode
 
 # 7. public variables: define all public variables here
 
@@ -35,13 +34,10 @@ extends ClassNode
 func add_child(child):
 	_childrens.append(child)
 
-func set_parent(parent):
-	_parent = parent
-
 func get_class_name():
 	return "ClassGroup"
 
-func get_editor_name(entities: Dictionary):
+func get_editor_name():
 	return _name
 
 func serialize():
@@ -55,6 +51,13 @@ static func deserialize(data: Dictionary):
 		var child = ClassNode.deserialize(child_data)
 		child.set_parent(instance)
 		instance.add_child(child)
+
+	var _class: String = instance.get_class_name().replace("Class", "") + "Controller"
+	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
+	var controller: GroupController = CustomClassDB.instantiate(_class)
+	controller._class_node = instance
+	controller._childrens = controller._class_node._childrens
+	instance._node_controller = controller
 	return instance
 
 # 13. private methods: define all private methods here, use _ as preffix

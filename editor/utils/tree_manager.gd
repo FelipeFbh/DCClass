@@ -17,7 +17,7 @@ func build(root_group: ClassGroup, entities: Dictionary) -> Tree:
 
 func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary) -> void:
 	var item = tree_manager_index.create_item(parent_item)
-	item.set_text(0, node.get_editor_name(entities))
+	item.set_text(0, node.get_editor_name())
 	item.set_metadata(0, node)
 	if node is ClassGroup:
 		for child in node._childrens:
