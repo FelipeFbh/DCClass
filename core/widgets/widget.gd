@@ -12,6 +12,7 @@ static var zip_file: ZIPReader
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
+var class_node : ClassNode
 
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:
@@ -54,5 +55,4 @@ func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
 
 func clear():
-	remove_from_group(&"widget_finished")
-	reset()
+	pass

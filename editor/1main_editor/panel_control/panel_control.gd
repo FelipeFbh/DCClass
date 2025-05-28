@@ -1,8 +1,6 @@
 class_name PanelControl
 extends MarginContainer
 
-@export var detach_window: PackedScene
-
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
@@ -76,22 +74,33 @@ func _on_item_activated() -> void:
 	var item = tree_manager.tree_manager_index.get_selected()
 	var node = item.get_metadata(0)
 	_bus_core.current_node_changed.emit(node)
+	_bus.seek_node.emit(node)
 
 func _on_button_add_clear_pressed() -> void:
 	var entity_clear = ClearEntity.new()
 	var data_new = {
 		"type": "ClassLeaf",
 		"entity_id": entity_clear.entity_id,
-		"entity_properties": [],
+		"entity_properties": []
 	}
 	var class_node = ClassLeaf.deserialize(data_new)
 
 	_bus.add_class_leaf.emit(class_node)
 
 func _on_button_add_group_pressed() -> void:
-	var class_node = ClassGroup.new()
+	var data_new = {
+		"name": "Group",
+		"type": "ClassGroup",
+		"childrens": []
+	}
+	var class_node = ClassGroup.deserialize(data_new)
 	_bus.add_class_group.emit(class_node, true)
 
 func _on_button_push_group_pressed() -> void:
-	var class_node = ClassGroup.new()
+	var data_new = {
+		"name": "Group",
+		"type": "ClassGroup",
+		"childrens": []
+	}
+	var class_node = ClassGroup.deserialize(data_new)
 	_bus.add_class_group.emit(class_node, false)

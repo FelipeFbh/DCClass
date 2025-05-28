@@ -4,101 +4,51 @@ extends NodeController
 
 var _childrens: Array[ClassNode] = []
 
-# Indexa por controlador, pero busca por su ClassNode
-func _index_of(ctrl: NodeController) -> int:
-	if ctrl == null:
+# Returns the index of the controller in _childrens
+func _index_of(current_node: NodeController) -> int:
+	if current_node == null:
 		return -1
-	return _childrens.find(ctrl._class_node)
+	return _childrens.find(current_node._class_node)
 
-# Saca el controlador a partir de un index en _childrens
-func _ctrl_at(idx: int) -> NodeController:
-	return _childrens[idx]._node_controller as NodeController
+# Return the next LeafController after last_child
+func get_next_leaf(last_child: NodeController) -> LeafController:
+	var index = _index_of(last_child)
+		
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			return parent.get_next_leaf(self)
+		return
+	
+	var next_child = _childrens[index + 1]._node_controller
+	return next_child.get_next_leaf(self)
 
 
-# Return the first LeafController in this group
-func get_first_leaf() -> LeafController:
-	if _childrens.is_empty():
-		return null
-	for child_node in _childrens:
-		var child_ctrl := child_node._node_controller
-		if child_ctrl is LeafController:
-			return child_ctrl
-		var leaf = child_ctrl.get_first_leaf()
-		if leaf != null:
-			return leaf
-	return null
-
-# Return the next controller in the group
-# If there is no next controller, it will return the next controller in the parent group
-func next(current_ctrl: NodeController) -> NodeController:
-	var idx := _index_of(current_ctrl)
-	if idx >= 0 and idx + 1 < _childrens.size():
-		return _ctrl_at(idx + 1)
-
-	var parent_ctrl = _class_node.get_parent_controller()
-	if parent_ctrl != null and parent_ctrl is GroupController:
-		return parent_ctrl.next(current_ctrl)
-	return null
-
-# Return the previous controller in the group
-# If there is no previous controller, it will return the previous controller in the parent group
-func previous(current_ctrl: NodeController) -> NodeController:
-	var idx = _index_of(current_ctrl)
-	if idx > 0:
-		return _ctrl_at(idx - 1)
-
-	var parent_ctrl = _class_node.get_parent_controller()
-	if parent_ctrl != null and parent_ctrl is GroupController:
-		return parent_ctrl.previous(current_ctrl)
-	return null
-
-# Return the next LeafController after current_node
-func get_next_leaf_node(current_node: NodeController) -> LeafController:
-	var next = self.next(current_node)
-	while next != null:
-		if next is LeafController:
-			return next
-		var first_leaf_inside = next.get_first_leaf()
-		if first_leaf_inside != null:
-			return first_leaf_inside
-		next = self.next(next)
-	return null
-
-# Return the last LeafController in this group
-func get_last_leaf() -> LeafController:
-	for i in range(_childrens.size() - 1, -1, -1): # Iterate backwards to find the last leaf, in case of a final groups without leaves
-		var child = _childrens[i]
-		if child is LeafController:
-			return child
-		var leaf = child.get_last_leaf()
-		if leaf != null:
-			return leaf
-	return null
-
-# Return the previous LeafController before current_node
-func get_previous_leaf_node(current_node: NodeController) -> LeafController:
-	var prev = self.previous(current_node)
-	while prev != null:
-		if prev is LeafController:
-			return prev
-		var last_leaf_inside = prev.get_last_leaf()
-		if last_leaf_inside != null:
-			return last_leaf_inside
-		prev = self.previous(prev)
-	return null
+# Return the previous LeafController before last_child
+func get_previous_leaf(last_child: NodeController) -> LeafController:
+	var index = _index_of(last_child)
+		
+	if _childrens.size() == 0 or index <= 0:
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			return parent.get_previous_leaf(self)
+		return
+	
+	var prev_child = _childrens[index - 1]._node_controller
+	return prev_child.get_previous_leaf(self)
 
 # Return the next LeafController that is an audio
 func get_next_audio_after(current_node: NodeController) -> LeafController:
-	var leaf = get_next_leaf_node(current_node)
+	var leaf = get_next_leaf(current_node)
 	while leaf != null and not leaf.is_audio():
-		leaf = get_next_leaf_node(leaf)
+		leaf = get_next_leaf(leaf)
 	return leaf
 
 # Return the previous LeafController that is an audio
 func get_previous_audio_before(current_node: NodeController) -> LeafController:
-	var leaf = get_previous_leaf_node(current_node)
+	var leaf = get_previous_leaf(current_node)
 	while leaf != null and not leaf.is_audio():
-		leaf = get_previous_leaf_node(leaf)
+		leaf = get_previous_leaf(leaf)
 	return leaf
 
 # Return the total duration between start_leaf and end_leaf
@@ -109,7 +59,7 @@ func compute_total_duration_between(start_leaf: LeafController, end_leaf: LeafCo
 		total += current.compute_duration()
 		if current == end_leaf:
 			break
-		current = get_next_leaf_node(current)
+		current = current.get_next_leaf(current)
 	return total
 
 
@@ -122,12 +72,12 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 		_previous_audio = get_previous_audio_before(current_node)
 		_duration = _previous_audio.compute_duration()
 	
-	var _next_leaf_paudio = _previous_audio.get_next_leaf_node()
+	var _next_leaf_paudio = _previous_audio.get_next_leaf()
 	var _next_audio = get_next_audio_after(current_node)
 	if _next_audio == null:
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
 	else:
-		var _prev_leaf_naudio = _next_audio.get_previous_leaf_node()
+		var _prev_leaf_naudio = _next_audio.get_previous_leaf(self)
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)
 	
 	return [_duration, _total_real_time]
@@ -135,7 +85,6 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 
 # Play the group in pre-order
 func play_preorden(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
-	_bus_core.current_node_changed.emit(_class_node)
 	var index = _index_of(last_child)
 		
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
@@ -155,3 +104,28 @@ static func instantiate(group: ClassNode) -> NodeController:
 	controller._class_node = group
 	controller._childrens = controller._class_node._childrens
 	return controller
+
+
+func get_last_clear() -> LeafController:
+	var prev = get_previous_leaf(self)
+	while prev != null and not (prev._class_node.entity is ClearEntity):
+		prev = prev.get_previous_leaf(prev)
+	return prev
+
+
+
+func seek(node_seek: NodeController, last_child: NodeController = null ) -> void:
+
+	if node_seek == self:
+		return
+
+	var index = _index_of(last_child)
+		
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			parent.seek(node_seek, self)
+		return
+	
+	var next_child = _childrens[index + 1]._node_controller
+	next_child.seek(node_seek, self)

@@ -12,7 +12,6 @@ func serialize() -> Dictionary:
 	return entity.serialize()
 
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
-	_bus_core.emit_signal("clear_widget")
 	get_tree().call_group(&"widget_finished", "clear")
 
 	var visual_root : Node2D = NodeController.root_visual_controller
@@ -22,10 +21,12 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	visual_root.add_child(new_visual_snapshot)
 	emit_signal("termino")
 	visual_root.remove_child(visual_snapshot)
-	visual_snapshot.queue_free()
+	#visual_snapshot.queue_free()
+	#visual_snapshot.call_deferred("free")
+	visual_snapshot.free()
 
 func reset():
 	pass
 
 func skip_to_end():
-	reset()
+	play(0.0, 0.0, 0.0)

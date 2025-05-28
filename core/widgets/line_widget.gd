@@ -46,6 +46,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 
 	#var now = Time.get_ticks_msec() / 1000.0
 	add_to_group(&"playing_widget")
+	_bus_core.current_node_changed.emit(class_node)
 	tween.play()
 	
 	await tween.finished
@@ -61,6 +62,9 @@ func reset():
 		tween.kill()
 	line.hide()
 	line.clear_points()
+	remove_from_group(&"widget_playing")
+	remove_from_group(&"widget_finished")
+	emit_signal("termino")
 
 
 func stop() -> void:
@@ -72,11 +76,16 @@ func skip_to_end() -> void:
 		tween.kill()
 	line.points = entity.points
 	line.show()
+	add_to_group(&"widget_finished")
+	emit_signal("termino")
 
 func _add_points(i: int) -> void:
 	if not line.points.is_empty() and line.points[-1] == entity.points[i]:
 		return # to avoid duplicate points
 	line.add_point(entity.points[i])
+
+func clear():
+	reset()
 
 
 ## Returns the duration of the line in seconds.

@@ -4,8 +4,11 @@
 [ext_resource type="PackedScene" uid="uid://bwf4trwm5o7s0" path="res://editor/2whiteboard/player_screen/main/main.tscn" id="2_f02me"]
 
 [node name="WindowWhiteboard" type="Window"]
-initial_position = 1
+mode = 2
+title = "Whiteboard"
+initial_position = 3
 size = Vector2i(1080, 720)
+current_screen = 0
 script = ExtResource("1_cjejt")
 
 [node name="UI" parent="." instance=ExtResource("2_f02me")]

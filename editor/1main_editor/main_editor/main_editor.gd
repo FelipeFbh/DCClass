@@ -1,11 +1,14 @@
 extends Control
 
+@export var window_whiteboard: PackedScene
+
 @export var file: String = ""
 @onready var parse_class: ParseClassEditor = %ResourceClass
 @onready var metadata: MetadataEditor = %Metadata
 @onready var panel_control: PanelControl = %PanelControl
-var current_window: WindowWhiteboard
+var _window_whiteboard: WindowWhiteboard
 
+@onready var core_signals: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var editor_signals: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 func _enter_tree() -> void:
@@ -19,22 +22,19 @@ func _ready() -> void:
 
 
 func _on_request_detach() -> void:
-	if current_window and is_instance_valid(current_window):
-		current_window.popup_centered()
+	if _window_whiteboard and is_instance_valid(_window_whiteboard):
 		return
-
-	var detach_scene: PackedScene = panel_control.detach_window
 	
-	current_window = detach_scene.instantiate() as WindowWhiteboard
-	#current_window.get_node("UI").get_node("PlayClass").parse_class = parse_class
-	current_window.get_node("UI").context.parse_class = parse_class
+	_window_whiteboard = window_whiteboard.instantiate() as WindowWhiteboard
+	_window_whiteboard.get_node("UI").context.parse_class = parse_class
 
-	get_tree().root.add_child(current_window)
-	current_window.close_requested.connect(_on_window_close_requested)
-	current_window.popup_centered()
+	get_tree().root.add_child(_window_whiteboard)
+	
+	_window_whiteboard.close_requested.connect(_on_window_close_requested)
 	
 
 func _on_window_close_requested() -> void:
-	if current_window:
-		current_window.queue_free()
-		current_window = null
+	if _window_whiteboard:
+		_window_whiteboard.queue_free()
+		_window_whiteboard = null
+		core_signals.stop_widget.emit()

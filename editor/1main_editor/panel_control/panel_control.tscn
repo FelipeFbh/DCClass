@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://bkt85dfs5q52u"]
+[gd_scene load_steps=2 format=3 uid="uid://bkt85dfs5q52u"]
 
 [ext_resource type="Script" uid="uid://c63f4j1umyt6q" path="res://editor/1main_editor/panel_control/panel_control.gd" id="1_1n5vg"]
-[ext_resource type="PackedScene" uid="uid://ctbhart5orqu0" path="res://editor/2whiteboard/window_whiteboard.tscn" id="2_l7ki5"]
 
 [node name="PanelControl" type="MarginContainer"]
 anchors_preset = 15
@@ -11,7 +10,6 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
 script = ExtResource("1_1n5vg")
-detach_window = ExtResource("2_l7ki5")
 metadata/_tab_index = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]

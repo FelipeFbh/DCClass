@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://c876bpobo68ux"]
+[gd_scene load_steps=6 format=3 uid="uid://c876bpobo68ux"]
 
 [ext_resource type="Script" uid="uid://bcdfoy8ne6av6" path="res://editor/1main_editor/main_editor/main_editor.gd" id="1_dhey8"]
+[ext_resource type="PackedScene" uid="uid://ctbhart5orqu0" path="res://editor/2whiteboard/window_whiteboard.tscn" id="2_35r6u"]
 [ext_resource type="PackedScene" uid="uid://bdspal4chhhh5" path="res://editor/1main_editor/metadata/metadata.tscn" id="3_0im0g"]
 [ext_resource type="PackedScene" uid="uid://bkt85dfs5q52u" path="res://editor/1main_editor/panel_control/panel_control.tscn" id="4_4yc00"]
 [ext_resource type="Script" uid="uid://gjjscxmdrlxg" path="res://editor/1main_editor/main_editor/parse_class.gd" id="4_sli3p"]
@@ -13,6 +14,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_dhey8")
+window_whiteboard = ExtResource("2_35r6u")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1

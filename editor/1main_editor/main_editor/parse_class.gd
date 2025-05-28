@@ -8,8 +8,8 @@ var file: String
 var entities: Dictionary
 @export var class_index: ClassIndex
 
-@onready var root_node_controller : Node = %NodeClass
-@onready var root_audio_controller : Node2D = %AudioClass
+@onready var root_node_controller: Node = %NodeClass
+@onready var root_audio_controller: Node2D = %AudioClass
 
 var root_tree_structure: ClassNode
 var _current_node: ClassNode
@@ -101,6 +101,7 @@ func _add_class_leaf_entity(entity: Entity) -> void:
 	
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
+	_bus.seek_node.emit(class_node)
 
 
 func _add_class_leaf(class_node: ClassNode) -> void:
@@ -112,6 +113,7 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 		var _current_class_group_childrens = _current_node._childrens
 		var index_current = _current_class_group_childrens.find(_current_node)
 		_current_class_group_childrens.insert(index_current + 1, class_node)
+
 		
 
 	if _current_node is ClassLeaf:
@@ -121,24 +123,32 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
 			_current_class_group_childrens.insert(index_current + 1, class_node)
-	
+
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
+	_bus.seek_node.emit(class_node)
 
-
-func _add_class_group(class_node: ClassNode, order: bool) -> void:
+func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	if class_node == null:
 		return
 	
-	if _current_node is ClassLeaf or order:
-		_add_class_leaf(class_node)
-		return
-	
-	class_node.set_parent(_current_node)
-	var _current_class_group_childrens = _current_node._childrens
-	var index_current = _current_class_group_childrens.size()
-	
-	_current_class_group_childrens.insert(index_current, class_node)
+	if _current_node is ClassLeaf:
+		var parent_node = _current_node._parent
+		if parent_node is ClassGroup:
+			class_node.set_parent(parent_node)
+			var _current_class_group_childrens = parent_node._childrens
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+
+	if _current_node is ClassGroup:
+		class_node.set_parent(_current_node)
+		var _current_class_group_childrens = _current_node._childrens
+		if back:
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+		else:
+			var index_current = _current_class_group_childrens.size()
+			_current_class_group_childrens.insert(index_current, class_node)
 	
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)

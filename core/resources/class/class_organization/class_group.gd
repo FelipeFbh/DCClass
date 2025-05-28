@@ -16,7 +16,7 @@ extends ClassNode
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var _name: String = "Group"
+@export var _name: String
 @export var _childrens: Array[ClassNode] = []
 
 # 7. public variables: define all public variables here
@@ -45,8 +45,7 @@ func serialize():
 
 static func deserialize(data: Dictionary):
 	var instance: ClassGroup = ClassGroup.new()
-	if data.has("name"):
-		instance._name = data["name"]
+	instance._name = data["name"]
 	for child_data in data["childrens"]:
 		var child = ClassNode.deserialize(child_data)
 		child.set_parent(instance)

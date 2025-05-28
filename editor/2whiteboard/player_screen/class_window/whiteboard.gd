@@ -31,7 +31,7 @@ func _gui_input(event):
 		_dragging = event.is_pressed()
 	elif event is InputEventMouseMotion and _dragging:
 		get_viewport().set_input_as_handled()
-
+		
 		if _warped:
 			_warped = false
 			return
@@ -70,6 +70,7 @@ func _on_pen_toggled(active: bool) -> void:
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
+
 		if not is_instance_valid(_viewport):
 			return
 		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
@@ -79,6 +80,7 @@ func _handle_drawing(event: InputEvent) -> void:
 			var now = Time.get_ticks_msec() / 1000.0
 
 			if not _pressed:
+				
 				_pressed = true
 				_line = _new_line()
 				_viewport.add_child(_line)
@@ -87,14 +89,20 @@ func _handle_drawing(event: InputEvent) -> void:
 
 
 				_delays.clear()
-				_delays.append(now - _last_time)
+				var delta_time = now - _last_time
+				if delta_time > 5: 
+					delta_time = 5
+				_delays.append( delta_time )
 				_last_time = now
 			else:
 				_line.set_point_position(_line.get_point_count() - 1, pos)
 
 				if _last_point.distance_squared_to(pos) > SQUARED_THRESHOLD:
 					_line.add_point(pos)
-					_delays.append(now - _last_time)
+					var delta_time = now - _last_time
+					if delta_time > 5: 
+						delta_time = 5
+					_delays.append(delta_time)
 					_last_time = now
 					_last_point = pos
 
@@ -102,12 +110,18 @@ func _handle_drawing(event: InputEvent) -> void:
 			_line.add_point(pos)
 			_pressed = false
 			_last_point = Vector2.INF
-			_delays.append((Time.get_ticks_msec() / 1000.0) - _last_time)
+
+			var now = Time.get_ticks_msec() / 1000.0
+			var delta_time = now - _last_time
+			if delta_time > 5: 
+				delta_time = 5
+			_delays.append(delta_time)
 
 			var entity := LineEntity.new()
 			entity.points = _line.points
 			entity.delays = _delays.duplicate()
 			entity.duration = entity.compute_duration()
+			#print(entity.duration)
 
 
 			var parent = _line.get_parent()
@@ -122,6 +136,7 @@ func _handle_drawing(event: InputEvent) -> void:
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()
+	l.width = 2.0
 	l.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	l.joint_mode = Line2D.LINE_JOINT_ROUND

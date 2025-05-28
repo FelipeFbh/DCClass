@@ -6,7 +6,6 @@ var audio: AudioStreamPlayer
 
 signal termino
 
-
 func init(_properties: Dictionary) -> void:
 	if !zip_file.file_exists(entity.audio_path):
 		push_error("Audio file not found: " + entity.audio_path)
@@ -22,33 +21,47 @@ func serialize() -> Dictionary:
 	return entity.serialize()
 
 func _ready():
-	_bus_core.clear_widget.connect(_clear)
 	add_to_group(&"speed_scale_handler")
 
 
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
+	var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
+	
+	if audio_current_playing.size() > 0:
+		var sigs: Array[Signal] = [ audio_current_playing[0].audio.finished, _bus_core.stop_widget]
+		var state = SignalsCore.await_any_once(sigs)
+		if !state._done:
+			await state.completed
+			if state._signal_source == _bus_core.stop_widget:
+				return
+	
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
+	_bus_core.current_node_changed.emit(class_node)
 	audio.play()
+	
+	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
 	emit_signal("termino")
 	if !state._done:
 		await state.completed
-		stop()
-		remove_from_group(&"widget_playing")
+		reset()
 
-
-func is_audio() -> bool:
-	return true
 
 func stop():
-	audio.stop()
+	reset()
+	emit_signal("termino")
+
 
 func reset():
 	audio.stop()
+	remove_from_group(&"audio_playing")
+	remove_from_group(&"widget_playing")
 
 func skip_to_end():
 	reset()
+	emit_signal("termino")
+
 
 
 func _clear():

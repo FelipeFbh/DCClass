@@ -13,7 +13,7 @@ extends ClassNode
 
 
 # 5. constants: define constants here
-static var entities : Dictionary
+static var entities: Dictionary
 
 # 6. export variables: define all export variables in groups here
 var entity_id

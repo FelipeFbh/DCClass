@@ -16,7 +16,7 @@ extends Resource
 # 6. export variables: define all export variables in groups here
 @export var _parent: ClassNode
 
-var _node_controller : NodeController
+var _node_controller: NodeController
 
 # 7. public variables: define all public variables here
 
