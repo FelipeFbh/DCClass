@@ -70,7 +70,7 @@ class AnySignalCore:
 		for entry in _entries:
 			var signal_entry : Signal = entry[0]
 			var fun_connected = entry[1]
-			if signal_entry.is_connected(fun_connected):
+			if fun_connected!= null and signal_entry.is_connected(fun_connected):
 				signal_entry.disconnect(fun_connected)
 		_entries.clear()
 

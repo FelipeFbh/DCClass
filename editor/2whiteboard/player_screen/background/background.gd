@@ -1,13 +1,13 @@
 class_name BackgroundEditor
 extends Node2D
 
-const MULTIPLIER = 5
+const MULTIPLIER = 2
 
 @export var grid_size: int = 10:
 	set(value):
 		grid_size = value
 		queue_redraw()
-@export var show_grid: bool = true:
+@export var show_grid: bool = false:
 	set(value):
 		if value == show_grid:
 			return
@@ -20,6 +20,7 @@ var SCREEN_SIZE: Vector2i
 func _enter_tree():
 	SCREEN_SIZE = _load_whiteboard_size()
 
+		
 func _ready():
 	get_parent().motion_mirroring = SCREEN_SIZE * MULTIPLIER
 	$ColorRect.size = SCREEN_SIZE * MULTIPLIER

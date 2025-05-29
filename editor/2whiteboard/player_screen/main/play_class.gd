@@ -86,7 +86,7 @@ func play():
 	#entry_point = entry_point.get_first_leaf()
 	#entry_point = entry_point.get_next_audio_after()
 	NodeController.root_visual_controller = root
-	entry_point.play_preorden()
+	entry_point.play_tree()
 
 
 func _seek_node(node_seek: ClassNode) -> void:
@@ -96,4 +96,4 @@ func _seek_node(node_seek: ClassNode) -> void:
 	entry_point = root_tree_structure_controller
 	if last_clear != null:
 		entry_point = last_clear
-	entry_point.seek(node_seek_controller)
+	entry_point.seek(node_seek_controller, entry_point)

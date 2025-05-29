@@ -38,7 +38,9 @@ func get_editor_name() -> String:
 func serialize() -> Dictionary:
 	var points_array: Array = Array(points)
 	return {
+		"entity_id": entity_id,
 		"entity_type": get_class_name(),
+		"duration": duration,
 		"points": points_array.map(func(v): return {"x": v.x, "y": v.y}),
 		"delays": delays
 	}

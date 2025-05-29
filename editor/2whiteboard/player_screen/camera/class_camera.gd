@@ -53,7 +53,8 @@ func _process(_delta):
 	update_grid_visibility()
 
 func update_grid_visibility():
-	background.show_grid = zoom.x > GRID_ZOOM_THRESHOLD
+	#background.show_grid = zoom.x > GRID_ZOOM_THRESHOLD
+	pass
 
 ## Move the camera to the target position in global coordinates
 func move_to(target_position: Vector2, target_zoom: float = -1.0) -> void:
@@ -71,7 +72,7 @@ func _recenter():
 	var target_node := get_tree().get_first_node_in_group(&"current_slide") as SlideNode
 	if not is_instance_valid(target_node):
 		return
-	move_to(target_node.get_camera_target_position())
+	#move_to(target_node.get_camera_target_position())
 
 func interpolate_zoom(target_zoom: float):
 	if is_instance_valid(tween):

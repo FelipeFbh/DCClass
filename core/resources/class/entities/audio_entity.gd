@@ -14,6 +14,7 @@ extends Entity
 
 # 6. export variables: define all export variables in groups here
 @export_file() var audio_path: String
+
 # 7. public variables: define all public variables here
 
 # 8. private variables: define all private variables here, use _ as preffix
@@ -34,8 +35,10 @@ func get_editor_name() -> String:
 
 func serialize() -> Dictionary:
 	return {
+		"entity_id": entity_id,
 		"entity_type": get_class_name(),
-		"audio_path": audio_path
+		"audio_path": audio_path,
+		"duration": duration
 	}
 
 func load_data(data: Dictionary) -> void:

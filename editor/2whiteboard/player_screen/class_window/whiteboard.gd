@@ -68,6 +68,7 @@ func _on_pen_toggled(active: bool) -> void:
 	_pen_enabled = active
 	_last_time = Time.get_ticks_msec() / 1000.0
 
+
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 
@@ -80,7 +81,6 @@ func _handle_drawing(event: InputEvent) -> void:
 			var now = Time.get_ticks_msec() / 1000.0
 
 			if not _pressed:
-				
 				_pressed = true
 				_line = _new_line()
 				_viewport.add_child(_line)
@@ -119,9 +119,14 @@ func _handle_drawing(event: InputEvent) -> void:
 
 			var entity := LineEntity.new()
 			entity.points = _line.points
+			
+			var _position_origin : Vector2 = _line.points[0]
+			for i in range(entity.points.size()):
+				
+				entity.points[i] -= _position_origin
+			
 			entity.delays = _delays.duplicate()
 			entity.duration = entity.compute_duration()
-			#print(entity.duration)
 
 
 			var parent = _line.get_parent()
@@ -129,7 +134,15 @@ func _handle_drawing(event: InputEvent) -> void:
 			_line.queue_free()
 			_line = null
 
-			_bus.emit_signal("add_class_leaf_entity", entity)
+			var new_entity_properties = [
+									{
+										"position:x": _position_origin.x,
+										"position:y": _position_origin.y,
+										"property_type": "PositionEntityProperty"
+									}
+								]
+
+			_bus.emit_signal("add_class_leaf_entity", entity, new_entity_properties)
 
 			#print(entity.serialize())
 

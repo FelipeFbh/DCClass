@@ -41,7 +41,11 @@ func get_editor_name():
 	return _name
 
 func serialize():
-	pass
+	return {
+		"name": _name,
+		"type": get_class_name(),
+		"childrens": _childrens.map(func(p): return p.serialize()),
+	}
 
 static func deserialize(data: Dictionary):
 	var instance: ClassGroup = ClassGroup.new()

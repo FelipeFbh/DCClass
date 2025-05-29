@@ -37,7 +37,9 @@ func get_editor_name() -> String:
 
 func serialize() -> Dictionary:
 	return {
-		"entity_type": get_class_name()
+		"entity_id": entity_id,
+		"entity_type": get_class_name(),
+		"duration": duration
 	}
 
 func load_data(data: Dictionary) -> void:

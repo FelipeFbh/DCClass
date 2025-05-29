@@ -20,7 +20,7 @@ script = ExtResource("3_swejl")
 
 [node name="Camera2D" type="Camera2D" parent="PlayClass" node_paths=PackedStringArray("background")]
 process_mode = 3
-position = Vector2(540, 360)
+anchor_mode = 0
 script = ExtResource("5_5gb6c")
 background = NodePath("../ParallaxBackground/ParallaxLayer/Background")
 

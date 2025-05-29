@@ -68,7 +68,7 @@ func _instantiate() -> bool:
 func _current_node_changed(current_node):
 	_current_node = current_node
 
-func _add_class_leaf_entity(entity: Entity) -> void:
+func _add_class_leaf_entity(entity: Entity, entity_properties) -> void:
 	if entity == null:
 		return
 
@@ -79,7 +79,7 @@ func _add_class_leaf_entity(entity: Entity) -> void:
 	var data_new = {
 		"type": "ClassLeaf",
 		"entity_id": entity_id,
-		"entity_properties": [],
+		"entity_properties": entity_properties
 	}
 	var class_node = ClassLeaf.deserialize(data_new)
 	
@@ -152,3 +152,21 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
+
+
+const DEFAULT_EXPORT_PATH = "user://tmp/index.json"
+
+func _export_class():
+	var path: String = "user://path/to/save/index.json"
+	if path.is_empty():
+		path = DEFAULT_EXPORT_PATH
+	var relative_dir := path.replace("user://", "").replace("index.json", "")
+	var dir := DirAccess.open("user://")
+	if not dir.dir_exists(relative_dir):
+		dir.make_dir_recursive(relative_dir)
+	var final_path := "user://" + relative_dir + "index.json"
+	var file := FileAccess.open(final_path, FileAccess.WRITE)
+	file.store_string(JSON.stringify(class_index.serialize(), "\t"))
+	print(class_index.entities.size())
+	file.close()
+	OS.shell_open(OS.get_user_data_dir() + "/" + relative_dir + "/")

@@ -3,7 +3,7 @@ class_name Entity
 extends Resource
 
 var entity_id
-var duration: float = 0.0
+@export var duration: float = 0.0
 
 ## Base class for Entity types
 
@@ -22,6 +22,7 @@ func get_editor_name() -> String:
 ## Returns a dictionary representation of this entity.
 func serialize() -> Dictionary:
 	return {
+		"entity_id": entity_id,
 		"entity_type": get_class_name()
 	}
 
