@@ -10,6 +10,8 @@ extends Node2D
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
 
+static var dir_class: String
+
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
 var class_node : ClassNode

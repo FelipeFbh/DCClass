@@ -60,12 +60,36 @@ func play_tree(__duration: float, __total_real_time: float, last_child: NodeCont
 	if parent != null:
 		parent.play_tree(__duration, __total_real_time, self)
 
+func play_seek() -> void:
+	var __duration = 0.0
+	var __total_real_time = 0.0
+	var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
+	__duration = _duration_calculated[0]
+	__total_real_time = _duration_calculated[1]
+	
+	leaf_value.reset()
+	
+	if not is_audio():
+		var last_audio = get_previous_audio()
+		var next_leaf_paudio = last_audio.get_next_leaf(last_audio)
+		var time_seek = next_leaf_paudio.compute_total_duration_between(self.get_previous_leaf(self))
+		last_audio._seek_play(time_seek/__total_real_time*__duration)
+	
+	var state = await play(__duration, __total_real_time)
+	if state == 1:
+		return
+	
+	var parent = _class_node.get_parent_controller()
+	if parent != null:
+		parent.play_tree(__duration, __total_real_time, self)
 
 func is_audio() -> bool:
 	if _class_node.entity is AudioEntity:
 		return true
 	return false
 
+func _seek_play(seek_time : float) -> void:
+	leaf_value.seek(seek_time)
 
 static func instantiate(leaf: ClassNode) -> LeafController:
 	var _class: String = leaf.get_class_name().replace("Class", "") + "Controller"
@@ -149,7 +173,7 @@ func get_next_audio_after() -> LeafController:
 
 
 # Return the previous audio leaf node
-func get_previous_audio_before() -> LeafController:
+func get_previous_audio() -> LeafController:
 	var leaf = get_previous_leaf(self)
 	while leaf != null:
 		if leaf.has_method("is_audio") and leaf.is_audio():
@@ -178,7 +202,7 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 		_previous_audio = current_node
 		_duration = current_node.compute_duration()
 	else:
-		_previous_audio = get_previous_audio_before()
+		_previous_audio = get_previous_audio()
 		_duration = _previous_audio.compute_duration()
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf(_previous_audio)
@@ -190,7 +214,7 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 		if _next_leaf_paudio != null:
 			_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
 	else:
-		var _prev_leaf_naudio = _next_audio.get_previous_leaf(_next_audio) #aqui
+		var _prev_leaf_naudio = _next_audio.get_previous_leaf(_next_audio)
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)
 	
 	return [_duration, _total_real_time]
@@ -266,10 +290,10 @@ func _get_next_audio_after() -> LeafController:
 	return leaf
 
 # Return the previous audio leaf node
-func _get_previous_audio_before() -> LeafController:
+func _get_previous_audio() -> LeafController:
 	var leaf = get_previous_leaf(self)
 	while leaf != null and not leaf.is_audio():
-		leaf = leaf.get_previous_audio_before()
+		leaf = leaf.get_previous_audio()
 	return leaf
 
 func recursive_seek(node_seek: NodeController, last_child: NodeController = null) -> void:

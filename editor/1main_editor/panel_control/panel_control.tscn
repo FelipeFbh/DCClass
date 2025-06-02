@@ -34,6 +34,7 @@ text = "Push Group"
 
 [node name="RemoveButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Remove"
 
@@ -50,18 +51,19 @@ size_flags_horizontal = 6
 [node name="HBoxContainerControl" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="AudioButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+[node name="AudioButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Audio"
 
-[node name="PenButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+[node name="PenButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Pen"
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "Color Selected"
 
@@ -80,6 +82,7 @@ layout_mode = 2
 
 [node name="TextEdit" type="TextEdit" parent="VBoxContainer/PanelContainer"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 text = "Hola Profesor Luis Mateu!"

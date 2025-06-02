@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://ylcd0tj6y1r6" path="res://concept/widgets/widgets_concept.gd" id="1_lhdbk"]
 [ext_resource type="Script" uid="uid://b82ncy6voqs37" path="res://core/resources/class/entities/entity.gd" id="2_hpi3h"]
-[ext_resource type="Script" uid="uid://dnlnyky4u0vqg" path="res://core/resources/class/entities/audio_entity.gd" id="2_s2y32"]
+[ext_resource type="Script" uid="uid://dnlnyky4u0vqg" path="res://core/resources/class/entities/audio/audio_entity.gd" id="2_s2y32"]
 [ext_resource type="Script" uid="uid://dx2q27j577nnv" path="res://core/resources/class/entities/image_entity.gd" id="4_88h83"]
-[ext_resource type="Script" uid="uid://bt8n1edkc13f0" path="res://core/resources/class/entities/entity_wrapper/entity_wrapper.gd" id="5_gu6sp"]
+[ext_resource type="Script" path="res://core/resources/class/entities/entity_wrapper/entity_wrapper.gd" id="5_gu6sp"]
 [ext_resource type="Script" uid="uid://ct0q6veq04lgn" path="res://core/resources/class/entities/entity_wrapper/size_entity_property.gd" id="6_5un15"]
 [ext_resource type="Script" uid="uid://71d7lexgo62h" path="res://core/resources/class/entities/line_entity.gd" id="6_8qqxi"]
 [ext_resource type="Script" uid="uid://dyng6otmmxqbv" path="res://core/resources/class/entities/entity_wrapper/entity_property.gd" id="7_7is85"]

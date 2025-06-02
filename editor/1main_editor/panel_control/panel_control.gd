@@ -4,10 +4,14 @@ extends MarginContainer
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
+signal audio_record(active: bool)
 signal pen_toggled(active: bool)
 signal request_detach
 
-@onready var btn_pen: Button = %PenButton
+
+@onready var btn_audio: CheckButton = %AudioButton
+@onready var btn_pen: CheckButton = %PenButton
+
 @onready var btn_detach: Button = %DetachButton
 @onready var btn_add_group: Button = %AddGroupButton
 @onready var btn_add_clear: Button = %ClearButton
@@ -26,8 +30,7 @@ var _class_index: ClassIndex
 func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.update_treeindex.connect(_setup_index_class)
-	
-	btn_pen.toggle_mode = true
+	btn_audio.toggled.connect(_on_toggle_audio_pressed)
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	btn_detach.pressed.connect(_on_button_detach_pressed)
 	btn_add_clear.pressed.connect(_on_button_add_clear_pressed)
@@ -58,7 +61,7 @@ func _on_button_pen_toggled(active: bool) -> void:
 	_bus.pen_toggled.emit(active)
 
 func _on_button_detach_pressed() -> void:
-	_bus.request_detach.emit()
+	request_detach.emit()
 
 
 var current_item_tree
@@ -104,3 +107,7 @@ func _on_button_push_group_pressed() -> void:
 	}
 	var class_node = ClassGroup.deserialize(data_new)
 	_bus.add_class_group.emit(class_node, false)
+
+
+func _on_toggle_audio_pressed(active : bool) -> void:
+	audio_record.emit(active)

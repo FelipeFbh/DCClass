@@ -27,6 +27,7 @@ func _enter_tree():
 
 func _ready():
 	_bus.seek_node.connect(_seek_node)
+	_bus.seek_play.connect(_seek_play)
 
 func _setup_play():
 	if !_parse():
@@ -46,18 +47,19 @@ func _load_whiteboard_size() -> Vector2i:
 
 
 func _parse() -> bool:
-	zip_file = ZIPReader.new()
-	if file == null or file.is_empty():
-		file = PersistenceEditor.class_path
-	print("File: " + file)
-	if file == null or file.is_empty():
-		push_error("Error: file not set")
-		return false
-	var err := zip_file.open(file)
-	if err != OK:
-		push_error("Error %d opening file: " % err)
-		return false
-	Widget.zip_file = zip_file
+	#zip_file = ZIPReader.new()
+	#if file == null or file.is_empty():
+	#	file = PersistenceEditor.class_path
+	#print("File: " + file)
+	#if file == null or file.is_empty():
+	#	push_error("Error: file not set")
+	#	return false
+	#var err := zip_file.open(file)
+	#if err != OK:
+	#	push_error("Error %d opening file: " % err)
+	#	return false
+	#Widget.zip_file = zip_file
+	Widget.dir_class = "user://tmp/class_editor/"
 	class_index = ClassUIEditor.context.parse_class.class_index
 	return class_index != null
 
@@ -88,6 +90,9 @@ func play():
 	NodeController.root_visual_controller = root
 	entry_point.play_tree()
 
+func _seek_play():
+	entry_point = ClassUIEditor.context.parse_class._current_node._node_controller
+	entry_point.play_seek()
 
 func _seek_node(node_seek: ClassNode) -> void:
 	get_tree().call_group(&"widget_finished", "clear")

@@ -126,6 +126,17 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	next_child_to_play.play_tree(__duration, __total_real_time, self)
 
 
+func play_seek() -> void:
+	var index = -1
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			parent.play_seek()
+		return
+	
+	var next_child_to_play = _childrens[index + 1]._node_controller
+	next_child_to_play.play_seek()
+
 static func instantiate(group: ClassNode) -> NodeController:
 	var _class: String = group.get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")

@@ -3,13 +3,13 @@ extends Control
 
 @export var metadata: ClassMetadata
 var editor_signals: EditorEventBus
+var parse_class: ParseClassEditor
 
+@onready var btn_export_class : Button = %ExportButton
 
-#func _ready():
-	#editor_signals = Engine.get_singleton(&"EditorSignals") as EditorEventBus
-	#if is_instance_valid(metadata):
-	#	_update()
-	#%SaveButton.pressed.connect(save)
+func _ready():
+	%SaveButton.pressed.connect(save)
+	btn_export_class.pressed.connect(export_class)
 
 
 func _setup_metadata_class(index: ClassIndex):
@@ -50,4 +50,55 @@ func save():
 	new_metadata.editor_version = %Editor.text
 	# Save
 	metadata = new_metadata
-	editor_signals.class_metadata_change_requested.emit(metadata)
+	parse_class.class_index.metadata = metadata
+
+
+func export_class():
+	var path: String = "user://tmp/class_editor/"
+	var path_index : String = path + "index.json"
+	var file := FileAccess.open(path_index, FileAccess.WRITE)
+	file.store_string(JSON.stringify(parse_class.class_index.serialize(), "\t"))
+	file.close()
+	
+	var zip_dest := "user://export_newclass.dcclass"
+	var resultado := zip_folder(path, zip_dest)
+	print("Export class path: ", zip_dest)
+
+
+func zip_folder(source_dir: String, zip_path: String) -> Error:
+	var zipper := ZIPPacker.new()
+	var err := zipper.open(zip_path)
+	if err != OK:
+		push_error("Can't open the file to write:: %s (Error %d)" % [zip_path, err])
+		return err
+
+	_add_folder_to_zip(zipper, source_dir, "")
+	zipper.close()
+	return OK
+
+
+func _add_folder_to_zip(zipper: ZIPPacker, current_dir: String, relative_path: String) -> void:
+	for file_name in DirAccess.get_files_at(current_dir):
+		var file_path := current_dir.path_join(file_name)
+		var path_in_zip := relative_path + file_name
+		
+		var f := FileAccess.open(file_path, FileAccess.READ)
+		if f == null:
+			push_error("Can't open the file to read: %s" % file_path)
+			continue
+		var data := f.get_buffer(f.get_length())
+		f.close()
+
+		var err_start := zipper.start_file(path_in_zip)
+		if err_start != OK:
+			push_error("Error Zip: %s (Error %d)" % [path_in_zip, err_start])
+			continue
+
+		zipper.write_file(data)
+		zipper.close_file()
+
+	for subdir in DirAccess.get_directories_at(current_dir):
+		var subdir_path := current_dir.path_join(subdir) + "/"
+		var new_relative := relative_path + subdir + "/"
+
+		_add_folder_to_zip(zipper, subdir_path, new_relative)

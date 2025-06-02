@@ -31,30 +31,44 @@ func _ready():
 	if !_instantiate():
 		push_error("Error instantiating class: " + class_index.name)
 		return
-	zip_file.close()
 	print("parse._ready")
 
 
 func _parse() -> bool:
-	zip_file = ZIPReader.new()
-	if file == null or file.is_empty():
-		file = PersistenceEditor.class_path
-	print("File: " + file)
-	if file == null or file.is_empty():
-		push_error("Error: file not set")
+	var zip_path := PersistenceEditor.class_path
+	var dir_tmp := "user://tmp/class_editor/"
+
+	if decompress_zip(zip_path, dir_tmp):
+		print("Temporal Class Path: ", dir_tmp)
+	else:
+		push_error("Error %d opening file: " % zip_path)
 		return false
-	var err := zip_file.open(file)
-	if err != OK:
-		push_error("Error %d opening file: " % err)
-		return false
-	if !zip_file.file_exists("index.json"):
-		push_error("Error: index.json not found in zip file")
-		return false
-	var index_string := zip_file.read_file("index.json").get_string_from_utf8()
+
+	#zip_file = ZIPReader.new()
+	#if file == null or file.is_empty():
+	#	file = PersistenceEditor.class_path
+	#print("File: " + file)
+	#if file == null or file.is_empty():
+	#	push_error("Error: file not set")
+	#	return false
+	#var err := zip_file.open(file)
+	#if err != OK:
+	#	push_error("Error %d opening file: " % err)
+	#	return false
+	#if !zip_file.file_exists("index.json"):
+	#	push_error("Error: index.json not found in zip file")
+	#	return false
+	
+	var index_path = dir_tmp.path_join("index.json")
+	var file = FileAccess.open(index_path, FileAccess.READ)
+	
+	#var index_string := zip_file.read_file("index.json").get_string_from_utf8()
+	var index_string := file.get_as_text()
+	file.close()
+	
 	var index = JSON.parse_string(index_string)
 	if index == null or typeof(index) != TYPE_DICTIONARY:
 		return false
-	Widget.zip_file = zip_file
 	class_index = ClassIndex.deserialize(index)
 	return class_index != null
 
@@ -154,19 +168,44 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	_bus_core.current_node_changed.emit(class_node)
 
 
-const DEFAULT_EXPORT_PATH = "user://tmp/index.json"
+func decompress_zip(__zip_path: String, __dir_tmp: String) -> bool:
+	var reader := ZIPReader.new()
+	var err := reader.open(__zip_path)
+	if err != OK:
+		return false
 
-func _export_class():
-	var path: String = "user://path/to/save/index.json"
-	if path.is_empty():
-		path = DEFAULT_EXPORT_PATH
-	var relative_dir := path.replace("user://", "").replace("index.json", "")
-	var dir := DirAccess.open("user://")
-	if not dir.dir_exists(relative_dir):
-		dir.make_dir_recursive(relative_dir)
-	var final_path := "user://" + relative_dir + "index.json"
-	var file := FileAccess.open(final_path, FileAccess.WRITE)
-	file.store_string(JSON.stringify(class_index.serialize(), "\t"))
-	print(class_index.entities.size())
-	file.close()
-	OS.shell_open(OS.get_user_data_dir() + "/" + relative_dir + "/")
+	if not __dir_tmp.ends_with("/"):
+		__dir_tmp += "/"
+
+	if DirAccess.dir_exists_absolute(__dir_tmp):                                             
+		_remove_dir_recursively(__dir_tmp)
+
+	DirAccess.make_dir_recursive_absolute(__dir_tmp)                                         
+
+	for internal_path in reader.get_files():
+		var absolute_path := __dir_tmp + internal_path
+		if internal_path.ends_with("/"):
+			DirAccess.make_dir_recursive_absolute(absolute_path) 
+			continue
+
+		DirAccess.make_dir_recursive_absolute(absolute_path.get_base_dir())                 
+
+		var file := FileAccess.open(absolute_path, FileAccess.WRITE)
+		if not file:
+			reader.close()
+			return false
+		file.store_buffer(reader.read_file(internal_path))
+		file.close()
+
+	reader.close()
+	return true
+
+
+func _remove_dir_recursively(ruta: String) -> void:
+	for sub_dir in DirAccess.get_directories_at(ruta):                                       
+		_remove_dir_recursively(ruta.path_join(sub_dir) + "/")
+
+	for file_name in DirAccess.get_files_at(ruta):                                            
+		DirAccess.remove_absolute(ruta.path_join(file_name))                                  
+
+	DirAccess.remove_absolute(ruta)      

@@ -1,7 +1,7 @@
 class_name LineWidget
 extends Widget
 
-const scene = preload("res://core/widgets/line_widget.tscn")
+const scene = preload("res://core/widgets/entities/line_widget.tscn")
 signal termino
 
 @export var entity: LineEntity

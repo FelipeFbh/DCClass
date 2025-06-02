@@ -113,7 +113,5 @@ text = "Save file"
 [node name="RecordAudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamMicrophone_0j0ic")
 autoplay = true
-bus = &"Record"
 
 [node name="RecordReplay" type="AudioStreamPlayer" parent="."]
-bus = &"RecordReplay"

@@ -3,6 +3,7 @@ extends Control
 
 var find_group_by_timestamp: Callable
 var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
+var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 
 #region Index Tree
@@ -130,22 +131,15 @@ var stopped_section: TreeItem
 
 
 func _toggle_playback_stop() -> void:
-	_stop_playback()
-
-func _stop_playback() -> void:
+	if is_stopped:
+		_bus.seek_play.emit()
+		is_stopped = false
+		return
+		
 	_bus_core.stop_widget.emit()
 	get_tree().call_group(&"widget_playing", "stop")
-	#is_stopped = true
-	#stop_button.icon = continue_icon
+	is_stopped = true
 	return
-	
-	stopwatch.stop()
-	var current_slide := get_tree().get_first_node_in_group("current_slide") as SlideNode
-	if is_instance_valid(current_slide):
-		current_slide.stop()
-
-	get_tree().call_group("slide_nodes", "skip_to_end")
-	get_tree().call_group("group_controllers", "_disconnect_signals")
 
 
 func _resume_playback() -> void:
@@ -234,7 +228,7 @@ func _ready():
 	fullscreen_button.toggled.connect(_toggle_fullscreen)
 	center_camera_button.pressed.connect(func(): ClassUIEditor.context.camera.user_controlled = false)
 	play_button.pressed.connect(_toggle_playback)
-	stop_button.pressed.connect(_stop_playback)
+	stop_button.pressed.connect(_toggle_playback_stop)
 	time_slider.value_selected.connect(_slider_value_selected)
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
