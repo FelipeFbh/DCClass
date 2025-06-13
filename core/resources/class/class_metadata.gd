@@ -28,8 +28,7 @@ extends Resource
 @export var date: Date
 ## Relative path to license file
 @export_file var license: String
-## Version of the editor used to create or modify the file
-@export var editor_version: String
+
 
 func serialize() -> Dictionary:
 	return {
@@ -41,17 +40,16 @@ func serialize() -> Dictionary:
 		"file_version": file_version,
 		"date": date.serialize(),
 		"license": license,
-		"editor_version": editor_version
 	}
 
 static func deserialize(data: Dictionary) -> ClassMetadata:
 	var instance: ClassMetadata = ClassMetadata.new()
 	instance.name = data["name"]
 	instance.description = data["description"]
+	instance.course = data["course"]
 	instance.author_name = data["author_name"]
 	instance.author_description = data["author_description"]
 	instance.file_version = data["file_version"]
 	instance.date = Date.deserialize(data["date"])
 	instance.license = data["license"]
-	instance.editor_version = data["editor_version"]
 	return instance

@@ -37,3 +37,12 @@ static func deserialize(data: Dictionary) -> Entity:
 ## Loads data from a dictionary into this entity.
 func load_data(_data: Dictionary) -> void:
 	pass
+
+func copy_tmp() -> Entity:
+	var new_entity: Entity = CustomClassDB.instantiate(get_class_name())
+	new_entity.load_data(serialize())
+	return new_entity
+
+## Deletes this entity.
+func self_delete() -> void:
+	pass

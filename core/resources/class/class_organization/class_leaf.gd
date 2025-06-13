@@ -1,4 +1,3 @@
-@tool
 # 1. class name: fill the class name
 class_name ClassLeaf
 extends ClassNode
@@ -54,17 +53,17 @@ static func deserialize(data: Dictionary) -> ClassLeaf:
 	instance.entity = entities[instance.entity_id]
 	for property_data in data["entity_properties"]:
 		instance.entity_properties.append(EntityProperty.deserialize(property_data))
-	
-	var _class: String = instance.get_class_name().replace("Class", "") + "Controller"
+	return instance
+
+func _setup_controller(is_child_root : bool) -> void:
+	var _class: String = get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: LeafController = CustomClassDB.instantiate(_class)
 
-	instance._node_controller = controller
-	controller._class_node = instance
-	controller._duration_leaf = instance.entity.duration
-
-	return instance
-
+	_node_controller = controller
+	controller._setup(self)
+	if is_child_root:
+		controller._add_child_root()
 
 ## Return a dictionary with all the properties of the entity.
 ## Keys with the same name will be overwritten.
@@ -74,6 +73,25 @@ func get_properties() -> Dictionary:
 		var _prop: Dictionary = property.get_property()
 		_properties.merge(_prop, true)
 	return _properties
+
+
+func self_delete() -> void:
+	if entity_id is int and entity_id in entities:
+		entity.self_delete()
+		entities.erase(entity_id)
+	
+	if _parent == null:
+		return
+	_parent.child_delete(self)
+	_node_controller.self_delete()
+
+func copy_tmp() -> ClassLeaf:
+	var new_leaf: ClassLeaf = ClassLeaf.new()
+	new_leaf.entity = entity.copy_tmp()
+	new_leaf.entity_properties = []
+	for property in entity_properties:
+		new_leaf.entity_properties.append(property.copy_tmp())
+	return new_leaf
 
 # 13. private methods: define all private methods here, use _ as preffix
 func _validate():

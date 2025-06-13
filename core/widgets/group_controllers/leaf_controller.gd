@@ -4,6 +4,11 @@ extends NodeController
 var _duration_leaf: float = 0.0
 var leaf_value: Widget
 
+func _setup(instance : ClassLeaf):
+	_class_node = instance
+	_duration_leaf = instance.entity.duration
+
+
 func compute_duration() -> float:
 	if is_zero_approx(_duration_leaf):
 		_duration_leaf = _compute_duration()
@@ -13,9 +18,6 @@ func _compute_duration() -> float:
 	return 0.0
 
 func play(__duration: float, __total_real_time: float):
-	#print(_class_node.entity.get_class_name() )
-	#print(__duration," | - - - | ", __total_real_time)
-	#print(_duration_leaf)
 	if leaf_value == null:
 		load_data(_class_node)
 		var parent = leaf_value.get_parent()
@@ -50,7 +52,6 @@ func play_tree(__duration: float, __total_real_time: float, last_child: NodeCont
 		var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
 		__duration = _duration_calculated[0]
 		__total_real_time = _duration_calculated[1]
-
 	
 	var state = await play(__duration, __total_real_time)
 	if state == 1:
@@ -60,20 +61,43 @@ func play_tree(__duration: float, __total_real_time: float, last_child: NodeCont
 	if parent != null:
 		parent.play_tree(__duration, __total_real_time, self)
 
-func play_seek() -> void:
+func play_seek(last_child: NodeController = null) -> void:
 	var __duration = 0.0
 	var __total_real_time = 0.0
 	var _duration_calculated = compute_duration_play(self, __duration, __total_real_time)
 	__duration = _duration_calculated[0]
 	__total_real_time = _duration_calculated[1]
 	
+	if leaf_value == null:
+		load_data(_class_node)
+		var parent = leaf_value.get_parent()
+		if parent != null:
+			if is_audio():
+				if leaf_value.get_parent() != root_audio_controller:
+					#root_audio_controller.add_child(leaf_value)
+					leaf_value.reparent(root_audio_controller)
+		
+			elif leaf_value.get_parent() != root_visual_controller_snapshot:
+					#root_visual_controller_snapshot.add_child(leaf_value)
+					leaf_value.reparent(root_visual_controller_snapshot)
+		
+		else:
+			if is_audio():
+				root_audio_controller.add_child(leaf_value)
+			else:
+				root_visual_controller_snapshot.add_child(leaf_value)
+	
 	leaf_value.reset()
 	
 	if not is_audio():
 		var last_audio = get_previous_audio()
 		var next_leaf_paudio = last_audio.get_next_leaf(last_audio)
-		var time_seek = next_leaf_paudio.compute_total_duration_between(self.get_previous_leaf(self))
-		last_audio._seek_play(time_seek/__total_real_time*__duration)
+		var prev_leaf = get_previous_leaf(self)
+		if prev_leaf.is_audio():
+			last_audio._seek_play(0.0)
+		else:
+			var time_seek = next_leaf_paudio.compute_total_duration_between(prev_leaf)
+			last_audio._seek_play(time_seek * (__duration / __total_real_time))
 	
 	var state = await play(__duration, __total_real_time)
 	if state == 1:
@@ -88,16 +112,8 @@ func is_audio() -> bool:
 		return true
 	return false
 
-func _seek_play(seek_time : float) -> void:
+func _seek_play(seek_time: float) -> void:
 	leaf_value.seek(seek_time)
-
-static func instantiate(leaf: ClassNode) -> LeafController:
-	var _class: String = leaf.get_class_name().replace("Class", "") + "Controller"
-	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
-	var controller: LeafController = CustomClassDB.instantiate(_class)
-	controller._class_node = leaf
-	controller._duration = leaf.entity.duration
-	return controller
 
 func load_data(leaf: ClassLeaf) -> void:
 	var entity_node: Widget = _instantiate_entity()
@@ -124,48 +140,108 @@ func _get_widget(entity: Entity) -> Widget:
 	var _class: String = entity.get_class_name().replace("Entity", "Widget")
 	return CustomClassDB.instantiate(_class)
 
+func skip_to_end() -> void:
+	if leaf_value == null:
+		load_data(_class_node)
+		
+	var parent = leaf_value.get_parent()
+	if parent != null:
+		if is_audio():
+			if leaf_value.get_parent() != root_audio_controller:
+				#root_audio_controller.add_child(leaf_value)
+				leaf_value.reparent(root_audio_controller)
+	
+		elif leaf_value.get_parent() != root_visual_controller_snapshot:
+			#root_visual_controller_snapshot.add_child(leaf_value)
+			leaf_value.reparent(root_visual_controller_snapshot)
+	
+	else:
+		if is_audio():
+			root_audio_controller.add_child(leaf_value)
+		else:
+			root_visual_controller_snapshot.add_child(leaf_value)
+	
+	
+	var sigs: Array[Signal] = [leaf_value.termino]
+	var state = SignalsCore.await_any_once(sigs)
+	leaf_value.skip_to_end()
+	
+	if !state._done:
+		await state.completed
+
+
+func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
+	var current: NodeController = last_child
+	var current_node = [current, null]
+	while current != null:
+		current.skip_to_end()
+		if current == node_seek:
+			return
+		current_node = current.get_next(current_node)
+		current = current_node[0]
+
+
+func self_delete() -> void:
+	queue_free()
+
+
+#region Tree Navigation
 
 # Return the next node
 func get_next(__current_node: Array) -> Array:
-	var current_node =  __current_node[0]
+	var current_node = __current_node[0]
 
 	var parent = current_node._class_node.get_parent_controller()
 	if parent != null:
-		return [parent,current_node]
+		return [parent, current_node]
 	return [null, null]
 
 # Return the previous node
 func get_previous(__current_node: Array) -> Array:
-	var current_node =  __current_node[0]
+	var current_node = __current_node[0]
 
 	var parent = current_node._class_node.get_parent_controller()
 	if parent != null:
-		return [parent,current_node]
+		return [parent, current_node]
 	return [null, null]
 	
 
 # Return the next leaf node
-func get_next_leaf( last_child: NodeController ) -> LeafController:
+func get_next_leaf(last_child: NodeController) -> LeafController:
 	var parent = _class_node.get_parent_controller()
 	if parent != null:
 		return parent.get_next_leaf(self)
 	return null
 
 # Return the previous leaf node
-func get_previous_leaf( last_child: NodeController ) -> LeafController:
+func get_previous_leaf(last_child: NodeController) -> LeafController:
 	var parent = _class_node.get_parent_controller()
 	if parent != null:
 		return parent.get_previous_leaf(self)
 	return null
 
+#endregion
+
+
+#region Playing Tree Utilities
+
+func get_last_clear() -> LeafController:
+	if _class_node.entity is ClearEntity:
+		return self
+	var prev = get_previous_leaf(self)
+	while prev != null:
+		if prev._class_node.entity is ClearEntity:
+			break
+		prev = prev.get_previous_leaf(prev)
+	return prev
 
 
 # Return the next audio leaf node
-func get_next_audio_after() -> LeafController:
+func get_next_audio() -> LeafController:
 	var leaf = get_next_leaf(self)
 	var i = 0
 	while leaf != null:
-		i+=1
+		i += 1
 		if leaf.has_method("is_audio") and leaf.is_audio():
 			break
 		leaf = leaf.get_next_leaf(leaf)
@@ -180,7 +256,6 @@ func get_previous_audio() -> LeafController:
 			break
 		leaf = leaf.get_previous_leaf(leaf)
 	return leaf
-
 
 
 # Return the total duration between start_leaf and end_leaf
@@ -207,7 +282,7 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf(_previous_audio)
 	
-	var _next_audio = get_next_audio_after()
+	var _next_audio = get_next_audio()
 	
 	
 	if _next_audio == null:
@@ -219,74 +294,15 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 	
 	return [_duration, _total_real_time]
 
-
-func get_last_clear() -> LeafController:
-	if _class_node.entity is ClearEntity:
-		return self
-	var prev = get_previous_leaf(self)
-	while prev != null:
-		if prev._class_node.entity is ClearEntity:
-			break
-		prev = prev.get_previous_leaf(prev)
-	return prev
-
-func skip_to_end() -> void:
-	
-	if leaf_value == null:
-		load_data(_class_node)
-		
-	var parent = leaf_value.get_parent()
-	if parent != null:
-		if is_audio():
-			if leaf_value.get_parent() != root_audio_controller:
-				#root_audio_controller.add_child(leaf_value)
-				leaf_value.reparent(root_audio_controller)
-	
-		elif leaf_value.get_parent() != root_visual_controller_snapshot:
-			#root_visual_controller_snapshot.add_child(leaf_value)
-			leaf_value.reparent(root_visual_controller_snapshot)
-	
-	else:
-		if is_audio():
-			root_audio_controller.add_child(leaf_value)
-		else:
-			root_visual_controller_snapshot.add_child(leaf_value)
-	
-	
-	
-	var sigs: Array[Signal] = [leaf_value.termino]
-	var state = SignalsCore.await_any_once(sigs)
-	leaf_value.skip_to_end()
-	
-	if !state._done:
-		await state.completed
-
-
-
-
-
-
-func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	var current: NodeController = last_child
-	var current_node = [current, null]
-	while current != null:
-		current.skip_to_end()
-		if current == node_seek:
-			return
-		current_node = current.get_next(current_node)
-		current = current_node[0]
-
-
-
-
+#endregion
 
 ######## Warning !!! Recursive calls can overflow the stack! #########
 
 # Return the next audio leaf node
-func _get_next_audio_after() -> LeafController:
+func _get_next_audio() -> LeafController:
 	var leaf = get_next_leaf(self)
 	while leaf != null and not leaf.is_audio():
-		leaf = leaf.get_next_audio_after()
+		leaf = leaf.get_next_audio()
 	return leaf
 
 # Return the previous audio leaf node
@@ -297,7 +313,6 @@ func _get_previous_audio() -> LeafController:
 	return leaf
 
 func recursive_seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	
 	skip_to_end()
 	
 	if node_seek == self:

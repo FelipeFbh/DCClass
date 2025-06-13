@@ -1,4 +1,3 @@
-@tool
 # 1. class name: fill the class name
 class_name ClassNode
 extends Resource
@@ -52,6 +51,12 @@ func serialize() -> Dictionary:
 static func deserialize(data: Dictionary) -> ClassNode:
 	var instance: ClassNode = CustomClassDB.instantiate(data["type"]).deserialize(data)
 	return instance
+
+func self_delete() -> void:
+	pass
+
+func child_delete(child: ClassNode) -> void:
+	pass
 
 
 # 13. private methods: define all private methods here, use _ as preffix

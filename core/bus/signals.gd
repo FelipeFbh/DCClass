@@ -1,5 +1,6 @@
 @tool
 class_name SignalsCore
+extends Node
 
 # Return a AnySignalCore that will emit when any of the signals in the array are emitted and then disconnect.
 # But the data will be stored in the class. [_done, _signal_source, _signal_value]
@@ -16,13 +17,12 @@ static func await_any_once(signals: Array[Signal]) -> Variant:
 		watcher.add_signal_once(sig)
 	return watcher
 
-
-
+# A class to manage multiple signals.
 class AnySignalCore:
 	signal completed(value)
 
-	var _done     := false
-	var _entries  := []
+	var _done := false
+	var _entries := []
 	var _signal_source
 	var _signal_value
 
@@ -42,7 +42,7 @@ class AnySignalCore:
 		_done = true
 		
 		_signal_source = sig
-		_signal_value  = value
+		_signal_value = value
 		emit_signal("completed", value)
 
 	#Add a signal that will emit when the signal is emitted and then disconnect the rest if the signal is received
@@ -60,7 +60,7 @@ class AnySignalCore:
 		_done = true
 		
 		_signal_source = sig
-		_signal_value  = value
+		_signal_value = value
 		emit_signal("completed", value)
 
 		_disconnect_all()
@@ -68,9 +68,9 @@ class AnySignalCore:
 	# Disconnect all signals
 	func _disconnect_all():
 		for entry in _entries:
-			var signal_entry : Signal = entry[0]
+			var signal_entry: Signal = entry[0]
 			var fun_connected = entry[1]
-			if fun_connected!= null and signal_entry.is_connected(fun_connected):
+			if fun_connected != null and signal_entry.is_connected(fun_connected):
 				signal_entry.disconnect(fun_connected)
 		_entries.clear()
 
@@ -78,4 +78,4 @@ class AnySignalCore:
 	func restart():
 		_done = false
 		_signal_source = null
-		_signal_value  = null
+		_signal_value = null

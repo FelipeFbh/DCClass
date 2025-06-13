@@ -29,14 +29,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	var count = pts.size()
 	if count == 0:
 		return
-	#var needed := count - 1
-	#if delays.size() < needed:
-	#	for i in range(delays.size(), needed):
-	#		delays.append((_duration_leaf / _total_real_time) * _duration / needed)
 
 	tween = create_tween()
 	tween.set_speed_scale(1 / (_duration / _total_real_time))
-	tween.pause()
 	
 	
 	for i in range(count):
@@ -53,9 +48,10 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	
 	remove_from_group(&"widget_playing")
 	add_to_group(&"widget_finished")
-	emit_signal("termino")
 	#var finish = Time.get_ticks_msec() / 1000.0
 	#print("LineWidget: Play time: ", finish - now, " seconds")
+	emit_signal("termino")
+
 
 func reset():
 	if tween:

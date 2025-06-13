@@ -89,10 +89,10 @@ func _instantiate_section(section: ClassNode) -> Node2D:
 func _instantiate_slide(slide: ClassNode) -> SlideNode:
 	var node: SlideNode = SlideNode.new()
 	node.name = slide.name
-	var group: GroupController = GroupController.instantiate(slide.content_root)
+	#var group: GroupController = GroupController.instantiate(slide.content_root)
 	if !is_instance_valid(entry_point):
 		entry_point = node
-	node.add_child(group)
+	#node.add_child(group)
 	return node
 
 func compute_duration() -> void:

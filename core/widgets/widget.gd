@@ -14,7 +14,7 @@ static var dir_class: String
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
-var class_node : ClassNode
+var class_node: ClassNode
 
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:

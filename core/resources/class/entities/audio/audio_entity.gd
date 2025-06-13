@@ -45,6 +45,13 @@ func load_data(data: Dictionary) -> void:
 	audio_path = data["audio_path"]
 	duration = data["duration"]
 
+func self_delete() -> void:
+	var path_tmp: String = "user://tmp/class_editor/"
+	# Remove the audio file from the filesystem if needed
+	if audio_path != "":
+		DirAccess.remove_absolute(path_tmp + audio_path)
+	audio_path = ""
+
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here

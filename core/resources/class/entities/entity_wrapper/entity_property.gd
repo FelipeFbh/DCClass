@@ -22,3 +22,8 @@ static func deserialize(data: Dictionary) -> EntityProperty:
 
 func load_data(_data: Dictionary) -> void:
 	pass
+
+func copy_tmp() -> EntityProperty:
+	var new_property: EntityProperty = CustomClassDB.instantiate(get_class_name())
+	new_property.load_data(serialize())
+	return new_property

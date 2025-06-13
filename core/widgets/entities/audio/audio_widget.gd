@@ -40,7 +40,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
 	
 	if audio_current_playing.size() > 0:
-		var sigs: Array[Signal] = [ audio_current_playing[0].audio.finished, _bus_core.stop_widget]
+		var sigs: Array[Signal] = [audio_current_playing[0].audio.finished, _bus_core.stop_widget]
 		var state = SignalsCore.await_any_once(sigs)
 		if !state._done:
 			await state.completed
@@ -63,7 +63,7 @@ func seek(_seek_time: float) -> void:
 	var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
 	
 	if audio_current_playing.size() > 0:
-		var sigs: Array[Signal] = [ audio_current_playing[0].audio.finished, _bus_core.stop_widget]
+		var sigs: Array[Signal] = [audio_current_playing[0].audio.finished, _bus_core.stop_widget]
 		var state = SignalsCore.await_any_once(sigs)
 		if !state._done:
 			await state.completed
@@ -73,6 +73,9 @@ func seek(_seek_time: float) -> void:
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	_bus_core.current_node_changed.emit(class_node)
+	if is_zero_approx(_seek_time - compute_duration()):
+		emit_signal("termino")
+		return
 	audio.play(_seek_time)
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
@@ -95,7 +98,6 @@ func reset():
 func skip_to_end():
 	reset()
 	emit_signal("termino")
-
 
 
 func _clear():

@@ -1,0 +1,112 @@
+[gd_scene load_steps=3 format=3 uid="uid://bkt85dfs5q52u"]
+
+[ext_resource type="Script" uid="uid://c63f4j1umyt6q" path="res://editor/main_editor/control_panel/control_panel.gd" id="1_1n5vg"]
+[ext_resource type="Script" uid="uid://cqighbl4pvak0" path="res://editor/utils/tree_manager.gd" id="2_vyrmg"]
+
+[node name="Control Panel" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+script = ExtResource("1_1n5vg")
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="HBoxContainerAdd" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="EditMenuButton" type="MenuButton" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Edit"
+item_count = 6
+popup/item_0/text = "Clipboard"
+popup/item_0/id = 0
+popup/item_0/disabled = true
+popup/item_0/separator = true
+popup/item_1/text = "Copy"
+popup/item_1/id = 1
+popup/item_2/text = "Cut"
+popup/item_2/id = 2
+popup/item_3/text = "Paste"
+popup/item_3/id = 3
+popup/item_4/id = 0
+popup/item_4/disabled = true
+popup/item_4/separator = true
+popup/item_5/text = "Delete"
+popup/item_5/id = 4
+
+[node name="InsertMenuButton" type="MenuButton" parent="VBoxContainer/HBoxContainer/HBoxContainerAdd"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Insert"
+item_count = 3
+popup/item_0/text = "Add Group"
+popup/item_0/id = 1
+popup/item_1/text = "Push Group"
+popup/item_1/id = 2
+popup/item_2/text = "Clear"
+popup/item_2/id = 3
+
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainerControl" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="AudioButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Audio"
+
+[node name="PenButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Pen"
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Color Selected"
+
+[node name="DetachButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Detach Window"
+
+[node name="IndexClass" type="PanelContainer" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IndexTree" type="Tree" parent="VBoxContainer/IndexClass"]
+unique_name_in_owner = true
+layout_mode = 2
+hide_root = true
+select_mode = 2
+script = ExtResource("2_vyrmg")
+metadata/_custom_type_script = "uid://cqighbl4pvak0"
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="TextEdit" type="TextEdit" parent="VBoxContainer/PanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+text = "Placeholder."

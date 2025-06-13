@@ -1,4 +1,3 @@
-@tool
 # 1. class name: fill the class name
 class_name ClassGroup
 extends ClassNode
@@ -54,14 +53,38 @@ static func deserialize(data: Dictionary):
 		var child = ClassNode.deserialize(child_data)
 		child.set_parent(instance)
 		instance.add_child(child)
+	return instance
 
-	var _class: String = instance.get_class_name().replace("Class", "") + "Controller"
+func _setup_controller(is_child_root : bool) -> void:
+	var _class: String = get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: GroupController = CustomClassDB.instantiate(_class)
-	controller._class_node = instance
-	controller._childrens = controller._class_node._childrens
-	instance._node_controller = controller
-	return instance
+	
+	for child in _childrens:
+		child._setup_controller(is_child_root)
+
+	_node_controller = controller
+	controller._setup(self)
+	if is_child_root:
+		controller._add_child_root()
+
+
+func self_delete() -> void:
+	var children_copy = _childrens.duplicate()
+	
+	for child in children_copy:
+		child.self_delete()
+
+	if _parent == null:
+		return
+	
+	_parent.child_delete(self)
+	_node_controller.self_delete()
+
+func child_delete(child: ClassNode) -> void:
+	if child in _childrens:
+		_childrens.erase(child)
+	
 
 # 13. private methods: define all private methods here, use _ as preffix
 func _validate():

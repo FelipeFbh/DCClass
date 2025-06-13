@@ -10,9 +10,60 @@ func _index_of(current_node: NodeController) -> int:
 		return -1
 	return _childrens.find(current_node._class_node)
 
+
+func _setup(instance : ClassGroup):
+	_class_node = instance
+	_childrens = instance._childrens
+
+
+# Play the group in pre-order
+func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
+	var index = _index_of(last_child)
+		
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			parent.play_tree(__duration, __total_real_time, self)
+		return
+	
+	var next_child_to_play = _childrens[index + 1]._node_controller
+	next_child_to_play.play_tree(__duration, __total_real_time, self)
+
+
+func play_seek(last_child: NodeController = null) -> void:
+	var index = _index_of(last_child)
+	if _childrens.size() == 0 or index + 1 == _childrens.size():
+		var parent = _class_node.get_parent_controller()
+		if parent != null:
+			parent.play_seek(self)
+		return
+	
+	var next_child_to_play = _childrens[index + 1]._node_controller
+	next_child_to_play.play_seek(self)
+
+func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
+	var current: NodeController = last_child
+	var current_node = [self, last_child]
+	while current != null:
+		current.skip_to_end()
+		if current == node_seek:
+			return
+		current_node = current.get_next(current_node)
+		current = current_node[0]
+	return
+
+
+func skip_to_end():
+	pass
+
+func self_delete() -> void:
+	queue_free()
+
+#region Tree Navigation
+
 # Return the next NodeController after __current_node
 func get_next(__current_node: Array) -> Array:
-	var current_node =  __current_node[0]
+	var current_node = __current_node[0]
 	var last_child = __current_node[1]
 	var index = current_node._index_of(last_child)
 		
@@ -20,7 +71,7 @@ func get_next(__current_node: Array) -> Array:
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
 			return [parent, current_node]
-		return [null , null]
+		return [null, null]
 	
 	var next_child = current_node._childrens[index + 1]._node_controller
 	return [next_child, null]
@@ -28,14 +79,14 @@ func get_next(__current_node: Array) -> Array:
 
 # Return the previous LeafController before last_child
 func get_previous(__current_node: Array) -> Array:
-	var current_node =  __current_node[0]
+	var current_node = __current_node[0]
 	var last_child = __current_node[1]
 	var index = current_node._index_of(last_child)
 	
 	if index == -1:
 		index = current_node._childrens.size()
 	
-	if current_node._childrens.size() == 0 or index-1 <= -1:
+	if current_node._childrens.size() == 0 or index - 1 <= -1:
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
 			return [parent, current_node]
@@ -66,15 +117,33 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 		prev_child = prev_child[0].get_previous([prev_child[0], prev_child[1]])
 	return null
 
+#endregion
+
+
+#region Playing Tree Utilities
+
+# Return the last ClearEntity before the current node
+func get_last_clear() -> LeafController:
+	var last_children
+	if _childrens.is_empty():
+		last_children = self
+	else:
+		last_children = _childrens[0]._node_controller
+	
+	var prev = get_previous_leaf(last_children)
+	while prev != null and not (prev._class_node.entity is ClearEntity):
+		prev = prev.get_previous_leaf(prev)
+	return prev
+
 # Return the next LeafController that is an audio
-func get_next_audio_after(current_node: NodeController) -> LeafController:
+func get_next_audio(current_node: NodeController) -> LeafController:
 	var leaf = get_next_leaf(current_node)
 	while leaf != null and not leaf.is_audio():
 		leaf = get_next_leaf(leaf)
 	return leaf
 
 # Return the previous LeafController that is an audio
-func get_previous_audio_before(current_node: NodeController) -> LeafController:
+func get_previous_audio(current_node: NodeController) -> LeafController:
 	var leaf = get_previous_leaf(current_node)
 	while leaf != null and not leaf.is_audio():
 		leaf = get_previous_leaf(leaf)
@@ -98,11 +167,11 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 		_previous_audio = current_node
 		_duration = current_node.compute_duration()
 	else:
-		_previous_audio = get_previous_audio_before(current_node)
+		_previous_audio = get_previous_audio(current_node)
 		_duration = _previous_audio.compute_duration()
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf()
-	var _next_audio = get_next_audio_after(current_node)
+	var _next_audio = get_next_audio(current_node)
 	if _next_audio == null:
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(null)
 	else:
@@ -110,77 +179,12 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)
 	
 	return [_duration, _total_real_time]
-	
 
-# Play the group in pre-order
-func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
-	var index = _index_of(last_child)
-		
-	if _childrens.size() == 0 or index + 1 == _childrens.size():
-		var parent = _class_node.get_parent_controller()
-		if parent != null:
-			parent.play_tree(__duration, __total_real_time, self)
-		return
-	
-	var next_child_to_play = _childrens[index + 1]._node_controller
-	next_child_to_play.play_tree(__duration, __total_real_time, self)
-
-
-func play_seek() -> void:
-	var index = -1
-	if _childrens.size() == 0 or index + 1 == _childrens.size():
-		var parent = _class_node.get_parent_controller()
-		if parent != null:
-			parent.play_seek()
-		return
-	
-	var next_child_to_play = _childrens[index + 1]._node_controller
-	next_child_to_play.play_seek()
-
-static func instantiate(group: ClassNode) -> NodeController:
-	var _class: String = group.get_class_name().replace("Class", "") + "Controller"
-	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
-	var controller: GroupController = CustomClassDB.instantiate(_class)
-	controller._class_node = group
-	controller._childrens = controller._class_node._childrens
-	return controller
-
-
-func get_last_clear() -> LeafController:
-	var last_children
-	if _childrens.is_empty():
-		last_children = self
-	else:
-		last_children = _childrens[0]._node_controller
-	
-	var prev = get_previous_leaf(last_children)
-	while prev != null and not (prev._class_node.entity is ClearEntity):
-		prev = prev.get_previous_leaf(prev)
-	return prev
-
-
-
-
-
-func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	var current: NodeController = last_child
-	var current_node = [self, last_child]
-	while current != null:
-		current.skip_to_end()
-		if current == node_seek:
-			return
-		current_node = current.get_next(current_node)
-		current = current_node[0]
-	return
-
-
-func skip_to_end():
-	pass
+#endregion
 
 
 # Warning !!! Recursive calls can overflow the stack!
-func recursive_seek(node_seek: NodeController, last_child: NodeController = null ) -> void:
-
+func recursive_seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	if node_seek == self:
 		return
 
