@@ -136,6 +136,7 @@ func _paste_class_nodes() -> void:
 			class_index.entities_last_uid += 1
 			var entity_id: int = class_index.entities_last_uid
 			node.entity.entity_id = entity_id
+			node.entity.tmp_to_persistent()
 			entities[entity_id] = node.entity
 
 

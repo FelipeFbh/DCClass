@@ -46,3 +46,6 @@ func copy_tmp() -> Entity:
 ## Deletes this entity.
 func self_delete() -> void:
 	pass
+
+func tmp_to_persistent() -> void:
+	pass

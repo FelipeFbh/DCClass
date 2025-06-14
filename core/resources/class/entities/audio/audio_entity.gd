@@ -47,10 +47,24 @@ func load_data(data: Dictionary) -> void:
 
 func self_delete() -> void:
 	var path_tmp: String = "user://tmp/class_editor/"
-	# Remove the audio file from the filesystem if needed
+
 	if audio_path != "":
 		DirAccess.remove_absolute(path_tmp + audio_path)
 	audio_path = ""
+
+func tmp_to_persistent() -> void:
+	var path_tmp: String = "user://tmp/class_editor/"
+	var path_audio : String = "resources/audio/"
+	var path_persistent: String = path_audio + str(entity_id) + ".ogg"
+	if audio_path != "":
+		if FileAccess.file_exists(path_tmp + audio_path):
+			DirAccess.copy_absolute(path_tmp + audio_path, path_tmp + path_persistent)
+			audio_path = path_persistent
+		else:
+			push_error("Audio file does not exist: " + path_tmp + audio_path)
+
+		
+	audio_path = path_persistent
 
 # 13. private methods: define all private methods here, use _ as preffix
 
