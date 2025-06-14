@@ -17,6 +17,13 @@ enum Status {
 
 var _status: Status
 
+
+func _setup():
+	core_signals.tree_play_finished.connect(_tree_play_finished)
+
+func _tree_play_finished():
+	_epilog(Status.STOPPED)
+
 # Update the status of the editor
 func _epilog(status: Status = _status):
 	if status == Status.STOPPED:

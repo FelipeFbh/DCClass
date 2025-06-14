@@ -40,6 +40,4 @@ func skip_to_end():
 	visual_root.add_child(new_visual_snapshot)
 	emit_signal("termino")
 	visual_root.remove_child(visual_snapshot)
-	#visual_snapshot.free() # Inmediato EN ejecucion. Para objetos.
-	#visual_snapshot.call_deferred("free") # Al final del frame llama free.
-	visual_snapshot.queue_free() #Al final del Frame. Solo para Node.
+	visual_snapshot.queue_free()

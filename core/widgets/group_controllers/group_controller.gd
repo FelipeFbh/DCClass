@@ -24,6 +24,8 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
 			parent.play_tree(__duration, __total_real_time, self)
+			return
+		_bus_core.tree_play_finished.emit()
 		return
 	
 	var next_child_to_play = _childrens[index + 1]._node_controller

@@ -80,10 +80,10 @@ var is_stopped: bool = true
 
 func _toggle_playback_stop() -> void:
 	if is_stopped:
-		_bus.seek_play.emit()
 		is_stopped = false
 		stop_button.icon = play_icon
 		PersistenceEditor._epilog(PersistenceEditor.Status.PLAYING)
+		_bus.seek_play.emit()
 		return
 		
 	_bus_core.stop_widget.emit()
@@ -92,10 +92,16 @@ func _toggle_playback_stop() -> void:
 	is_stopped = true
 	stop_button.icon = pause_icon
 	PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
-	return
+
+
+func _tree_play_finished():
+	is_stopped = true
+	stop_button.icon = pause_icon
+
 
 func _disabled_toggle_stop_button(active: bool) -> void:
 	stop_button.disabled = active
+
 
 #endregion
 
@@ -172,10 +178,11 @@ func _ready():
 	fullscreen_button.toggled.connect(_toggle_fullscreen)
 	center_camera_button.pressed.connect(func(): ClassUIEditor.context.camera.user_controlled = false)
 	
-	
 	#play_button.pressed.connect(_toggle_playback)
 	stop_button.pressed.connect(_toggle_playback_stop)
+	_bus_core.tree_play_finished.connect(_tree_play_finished)
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
+	
 
 	#time_slider.value_selected.connect(_slider_value_selected)
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
@@ -184,6 +191,6 @@ func _ready():
 	speed_slider.value_changed.connect(_speed_slider_value_selected)
 
 func _process(_delta: float):
-	time_slider.change_value(stopwatch.running_time)
-	current_time_label.text = _get_time_string(floori(stopwatch.running_time))
+	#time_slider.change_value(stopwatch.running_time)
+	#current_time_label.text = _get_time_string(floori(stopwatch.running_time))
 	_update_zoom_slider_value()

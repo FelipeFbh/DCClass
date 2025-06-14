@@ -23,6 +23,7 @@ func _ready() -> void:
 	PersistenceEditor.core_signals = core_signals
 	PersistenceEditor.editor_signals = editor_signals
 	PersistenceEditor.resources_class = resources_class
+	PersistenceEditor._setup()
 	control_panel.request_detach.connect(_on_request_detach)
 	file_editor._setup()
 	control_panel._setup()
