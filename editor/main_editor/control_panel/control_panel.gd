@@ -84,9 +84,7 @@ func _copy_to_clipboard() -> void:
 			var node_copy: ClassNode = node.copy_tmp()
 			node_copy._setup_controller(false)
 			PersistenceEditor.clipboard.append(node_copy)
-			#var new_entity = node.entity.duplicate()
-			#var new_entity_properties = node.entity_properties.map(func(p): return p.serialize())
-			#_add_class_leaf_entity(new_entity, new_entity_properties)
+
 		
 		elif node is ClassGroup:
 			var data_new = {
@@ -96,13 +94,14 @@ func _copy_to_clipboard() -> void:
 			}
 			var new_node = ClassGroup.deserialize(data_new)
 			PersistenceEditor.clipboard.append(new_node)
-			#_add_class_group(new_node, false)
 
 func _cut_to_clipboard() -> void:
 	_copy_to_clipboard()
 	_delete()
 
 func _paste() -> void:
+	var first = tree_manager.get_next_selected(null)
+	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.paste_class_nodes.emit()
 
 
@@ -143,6 +142,8 @@ func _add_group() -> void:
 		"childrens": []
 	}
 	var class_node = ClassGroup.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_group.emit(class_node, true)
 
 # Push a new group to the end of the current node
@@ -153,6 +154,8 @@ func _push_group() -> void:
 		"childrens": []
 	}
 	var class_node = ClassGroup.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_group.emit(class_node, false)
 
 # Add a clear entity after the current node
@@ -164,7 +167,8 @@ func _add_clear() -> void:
 		"entity_properties": []
 	}
 	var class_node = ClassLeaf.deserialize(data_new)
-
+	var first = tree_manager.get_next_selected(null)
+	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
 
 #endregion

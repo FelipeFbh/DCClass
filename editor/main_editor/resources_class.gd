@@ -129,6 +129,9 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
+	var node_group_parent : ClassNode = _current_node
+	if _current_node is ClassLeaf:
+		node_group_parent = _current_node._parent
 	
 	for node in nodes_paste:
 
@@ -139,10 +142,7 @@ func _paste_class_nodes() -> void:
 			node.entity.tmp_to_persistent()
 			entities[entity_id] = node.entity
 
-
-
 			node._node_controller._add_child_root()
-
 
 			if _current_node is ClassGroup:
 				node.set_parent(_current_node)
@@ -164,6 +164,7 @@ func _paste_class_nodes() -> void:
 			_bus.seek_node.emit(node)
 			
 		elif node is ClassGroup:
+			_current_node = node_group_parent
 			_add_class_group(node, false)
 		
 
