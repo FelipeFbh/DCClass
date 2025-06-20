@@ -33,4 +33,3 @@ func get_class_name() -> String:
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here
-

@@ -5,17 +5,17 @@ extends EntityProperty
 @export var position: Vector2
 
 func get_property() -> Dictionary:
-    return {"position": position}
+	return {"position": position}
 
 func get_class_name() -> String:
-    return "PositionEntityProperty"
+	return "PositionEntityProperty"
 
 func serialize() -> Dictionary:
-    var data: Dictionary = super.serialize()
-    data["position:x"] = position.x
-    data["position:y"] = position.y
-    return data
+	var data: Dictionary = super.serialize()
+	data["position:x"] = position.x
+	data["position:y"] = position.y
+	return data
 
 func load_data(data: Dictionary):
-    super.load_data(data)
-    position = Vector2(data["position:x"], data["position:y"])
+	super.load_data(data)
+	position = Vector2(data["position:x"], data["position:y"])

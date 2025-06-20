@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://devf7w1mel07w"]
-
-[node name="Label" type="Label"]
-visible = false
-offset_right = 40.0
-offset_bottom = 23.0
-auto_translate = false
-localize_numeral_system = false

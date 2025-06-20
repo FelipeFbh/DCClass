@@ -30,9 +30,8 @@ extends TextEntity
 
 # 12. public methods: define all public methods here
 func get_class_name() -> String:
-    return "MathTextEntity"
+	return "MathTextEntity"
 
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here
-

@@ -1,43 +1,25 @@
-@tool
 # 1. class name: fill the class name
 class_name ClassGroup
-extends Resource
+extends ClassNode
+
 
 # 2. docs: use docstring (##) to generate docs for this file
-## Base class for a resource that represents a group of [Entity]s or [ClassGroup]s.
-## See also:
-##   * [ClassChainGroup], a group that is executed in sequence.
-##   * [ClassParallelGroup], a group that is executed in parallel.
+
 
 # 3. signals: define signals here
 
+
 # 4. enums: define enums here
-enum GROUP_STATE { 
-    EMPTY, 
-    ENTITY, 
-    GROUP, 
-}
+
+
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var entities: Array[EntityWrapper] = []:
-    set(value):
-        entities = value
-        _validate()
-
-@export var groups: Array[ClassGroup] = []:
-    set(value):
-        groups = value
-        _validate()
+@export var _name: String
+@export var _childrens: Array[ClassNode] = []
 
 # 7. public variables: define all public variables here
-var state: GROUP_STATE = GROUP_STATE.EMPTY:
-    get:
-        if not entities.is_empty():
-            return GROUP_STATE.ENTITY
-        if not groups.is_empty():
-            return GROUP_STATE.GROUP
-        return GROUP_STATE.EMPTY
+
 # 8. private variables: define all private variables here, use _ as preffix
 
 # 9. onready variables: define all onready variables here
@@ -48,39 +30,64 @@ var state: GROUP_STATE = GROUP_STATE.EMPTY:
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
-func get_class_name() -> String:
-    return "ClassGroup"
+func add_child(child):
+	_childrens.append(child)
 
-func get_editor_name() -> String:
-    if not entities.is_empty():
-        return "group: %d entities" % len(entities)
-    if not groups.is_empty():
-        return "group: %d groups" % len(groups)
-    return "group: Empty"
+func get_class_name():
+	return "ClassGroup"
 
-func serialize() -> Dictionary:
-    var serialized: Dictionary = {
-        "entities": entities.map(func(e): return e.serialize()),
-        "groups": groups.map(func(g): return g.serialize()),
-        "group_type": get_class_name(),
-    }
-    return serialized
+func get_editor_name():
+	return _name
 
-static func deserialize(data: Dictionary) -> ClassGroup:
-    var instance: ClassGroup = CustomClassDB.instantiate(data["group_type"])
-    for entity in data["entities"]:
-        instance.entities.append(EntityWrapper.deserialize(entity))
-    for group in data["groups"]:
-        instance.groups.append(ClassGroup.deserialize(group))
-    instance.load_data(data)
-    return instance
+func serialize():
+	return {
+		"name": _name,
+		"type": get_class_name(),
+		"childrens": _childrens.map(func(p): return p.serialize()),
+	}
+
+static func deserialize(data: Dictionary):
+	var instance: ClassGroup = ClassGroup.new()
+	instance._name = data["name"]
+	for child_data in data["childrens"]:
+		var child = ClassNode.deserialize(child_data)
+		child.set_parent(instance)
+		instance.add_child(child)
+	return instance
+
+func _setup_controller(is_child_root : bool) -> void:
+	var _class: String = get_class_name().replace("Class", "") + "Controller"
+	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
+	var controller: GroupController = CustomClassDB.instantiate(_class)
+	
+	for child in _childrens:
+		child._setup_controller(is_child_root)
+
+	_node_controller = controller
+	controller._setup(self)
+	if is_child_root:
+		controller._add_child_root()
+
+
+func self_delete() -> void:
+	var children_copy = _childrens.duplicate()
+	
+	for child in children_copy:
+		child.self_delete()
+
+	if _parent == null:
+		return
+	
+	_parent.child_delete(self)
+	_node_controller.self_delete()
+
+func child_delete(child: ClassNode) -> void:
+	if child in _childrens:
+		_childrens.erase(child)
+	
 
 # 13. private methods: define all private methods here, use _ as preffix
 func _validate():
-    var null_group: bool = groups == null
-    var null_entity: bool = entities == null
-    if null_group or null_entity:
-        return
-    if len(entities) > 0 and len(groups) > 0:
-        push_error("Error: One of entites or groups must be empty.")
+	pass
+	
 # 14. subclasses: define all subclasses here

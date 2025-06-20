@@ -14,9 +14,12 @@ extends Resource
 
 # 6. export variables: define all export variables in groups here
 @export var metadata: ClassMetadata
-@export var entities: Array[Entity] = []
-@export var sections: Array[ClassSection] = []
-@export var class_script: Array[ScriptEntry] = []
+
+@export var entities_last_uid: int = 0
+@export var entities: Dictionary = {}
+
+@export var tree_structure: ClassNode
+
 # 7. public variables: define all public variables here
 
 # 8. private variables: define all private variables here, use _ as preffix
@@ -26,28 +29,41 @@ extends Resource
 
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
 
+
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
 
+
+# Convert the ClassIndex to a string representation. Useful to make the index.json
 func serialize() -> Dictionary:
+	var entities_array = entities.values().map(func(e): return e.serialize())
+
+	var data_entities = {
+		"last_uid": entities_last_uid,
+		"entities_array": entities_array
+	}
+
 	var data = {
 		"metadata": metadata.serialize(),
-		"entities": entities.map(func(e): return e.serialize()),
-		"sections": sections.map(func(e): return e.serialize()),
-		"script": class_script.map(func(e): return e.serialize()),
+		"entities": data_entities,
+		"tree_structure": tree_structure.serialize(),
 	}
 	return data
 
+# Deserialize a ClassIndex from a Dictionary. Useful to load the index.json
 static func deserialize(data: Dictionary) -> ClassIndex:
 	var instance = ClassIndex.new()
 	instance.metadata = ClassMetadata.deserialize(data["metadata"])
-	for entity in data["entities"]:
-		instance.entities.append(Entity.deserialize(entity))
-	for section in data["sections"]:
-		instance.sections.append(ClassSection.deserialize(section))
-	for _script in data["script"]:
-		instance.class_script.append(ScriptEntry.deserialize(_script))
+
+	var data_entities = data["entities"]
+	instance.entities_last_uid = data_entities["last_uid"]
+	for entity_data in data_entities["entities_array"]:
+		var entity = Entity.deserialize(entity_data)
+		instance.entities[entity.get_entity_id()] = entity
+	
+	ClassLeaf.entities = instance.entities
+	instance.tree_structure = ClassNode.deserialize(data["tree_structure"])
 	return instance
 
 # 13. private methods: define all private methods here, use _ as preffix

@@ -5,7 +5,7 @@ var WHITEBOARD_SIZE: Vector2i
 
 var file: String
 @export var class_index: ClassIndex
-var entities: Array
+var entities: Dictionary
 
 @onready var root: Node2D = $Class
 
@@ -70,7 +70,7 @@ func _instantiate() -> bool:
 		root.add_child(node)
 	return true
 
-func _instantiate_section(section: ClassSection) -> Node2D:
+func _instantiate_section(section: ClassNode) -> Node2D:
 	var node: Node2D = Node2D.new()
 	var section_tree_item := section_manager.register_section(section.name)
 	var slide_x_position := 0.0
@@ -86,13 +86,13 @@ func _instantiate_section(section: ClassSection) -> Node2D:
 	section_tree_item.set_metadata(0, node.get_child(0))
 	return node
 
-func _instantiate_slide(slide: ClassSlide) -> SlideNode:
+func _instantiate_slide(slide: ClassNode) -> SlideNode:
 	var node: SlideNode = SlideNode.new()
 	node.name = slide.name
-	var group: GroupController = GroupController.instantiate(slide.content_root, entities)
+	#var group: GroupController = GroupController.instantiate(slide.content_root)
 	if !is_instance_valid(entry_point):
 		entry_point = node
-	node.add_child(group)
+	#node.add_child(group)
 	return node
 
 func compute_duration() -> void:

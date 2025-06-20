@@ -1,15 +1,20 @@
 class_name Widget
 extends Node2D
 
+
 ## A widget is a visual element that can be played and reset.
 ## This class defines the main API for a widget.
-
-signal animation_finished
 
 ## The ZIP file containing the widget assets.
 ## Use [method ZIPReader.file_exists] to check if a file exists in the ZIP file.
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
+
+static var dir_class: String
+
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
+
+var class_node: ClassNode
 
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:
@@ -25,12 +30,18 @@ func init(_properties: Dictionary) -> void:
 
 ## Called when it's time to play the widget.
 ## The animation should be played for the given [param duration].
-func play(_duration: float) -> void:
+func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	pass
+
+func play_seek(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
+	play(_duration, _total_real_time, _duration_leaf)
 
 ## Called when the player seeked to a point before the widget was played.
 ## The widget should be reset to its initial state.
 func reset() -> void:
+	pass
+
+func stop() -> void:
 	pass
 
 ## Called when the player seeked to a point after the widget was played.
@@ -48,5 +59,5 @@ func set_speed_scale(_speed: float) -> void:
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
 
-func _emit_animation_finished() -> void:
-	animation_finished.emit()
+func clear():
+	pass

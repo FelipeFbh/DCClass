@@ -4,4 +4,4 @@ extends ScriptEntry
 
 ## A [ScriptEntry] that represents a comment
 func get_class_name() -> String:
-    return "CommentEntry"
+	return "CommentEntry"

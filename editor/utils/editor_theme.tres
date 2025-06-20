@@ -1,0 +1,61 @@
+[gd_resource type="Theme" load_steps=11 format=3 uid="uid://m3cwg0uvxfau"]
+
+[ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="1_dvj3a"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ai0gx"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(300, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rmpqr"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(150, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5jrdl"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(200, 450, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ar7p2"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(200, 350, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fo4b0"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(350, 350, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mw2kf"]
+atlas = ExtResource("1_dvj3a")
+region = Rect2(200, 150, 50, 50)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6bjw7"]
+draw_center = false
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c821a"]
+bg_color = Color(0.156863, 0.156863, 0.156863, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0hpmv"]
+bg_color = Color(0.121569, 0.2, 0.109804, 1)
+border_width_bottom = 2
+border_color = Color(0.121569, 0.2, 0.109804, 1)
+
+[resource]
+FullscreenIconButton/icons/enter = SubResource("AtlasTexture_ai0gx")
+FullscreenIconButton/icons/exit = SubResource("AtlasTexture_rmpqr")
+PlayerIconButton/base_type = &"Button"
+PlayerIconButton/icons/next = SubResource("AtlasTexture_5jrdl")
+PlayerIconButton/icons/pause = SubResource("AtlasTexture_ar7p2")
+PlayerIconButton/icons/play = SubResource("AtlasTexture_fo4b0")
+PlayerIconButton/icons/prev = SubResource("AtlasTexture_mw2kf")
+PlayerScreenIndicator/base_type = &"Panel"
+PlayerScreenIndicator/colors/paused = Color(0.815686, 0.356863, 0.211765, 1)
+PlayerScreenIndicator/colors/playing = Color(0.196078, 0.803922, 0.196078, 1)
+PlayerScreenIndicator/styles/panel = SubResource("StyleBoxFlat_6bjw7")
+SplitContainer/constants/autohide = 0
+TabBar/styles/button_highlight = SubResource("StyleBoxFlat_c821a")
+TabBar/styles/tab_selected = SubResource("StyleBoxFlat_0hpmv")
+TextEdit/colors/background_color = Color(0.0980392, 0.0980392, 0.0980392, 1)

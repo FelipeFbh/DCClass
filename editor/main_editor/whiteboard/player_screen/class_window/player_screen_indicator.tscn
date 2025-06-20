@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bfxw21a4i2jsp"]
+
+[ext_resource type="Theme" uid="uid://m3cwg0uvxfau" path="res://editor/utils/editor_theme.tres" id="1_c1640"]
+[ext_resource type="Script" uid="uid://d2jpesei5ky68" path="res://editor/main_editor/whiteboard/player_screen/class_window/player_screen_indicator.gd" id="2_p54gs"]
+
+[node name="PlayerScreenIndicator" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_c1640")
+theme_type_variation = &"PlayerScreenIndicator"
+script = ExtResource("2_p54gs")
