@@ -29,18 +29,18 @@ extends Entity
 
 # 12. public methods: define all public methods here
 func get_class_name() -> String:
-    return "PlaybackControlEntity"
+	return "PlaybackControlEntity"
 
 func get_editor_name() -> String:
-    return "Unnamed playback control"
+	return "Unnamed playback control"
 
 func serialize() -> Dictionary:
-    return {
-        "entity_type": get_class_name()
-    }
+	return {
+		"entity_type": get_class_name()
+	}
 
 func load_data(_data: Dictionary) -> void:
-    pass
+	pass
 
 # 13. private methods: define all private methods here, use _ as preffix
 

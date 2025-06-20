@@ -53,4 +53,6 @@ signal seek_play()
 # Toggle the Stop button
 signal disabled_toggle_stop_button(active: bool)
 
+signal status_playback_stop(active : bool)
+
 #endregion

@@ -69,6 +69,10 @@ func _disabled_toggle_edit_button(active: bool) -> void:
 
 func _copy_to_clipboard() -> void:
 	var first = tree_manager.get_next_selected(null)
+
+	if first == null:
+		return
+	
 	var nodes_copy: Array[ClassNode] = []
 	var current = first
 	
@@ -77,9 +81,9 @@ func _copy_to_clipboard() -> void:
 		current = tree_manager.get_next_selected(current)
 	
 	PersistenceEditor.clipboard.clear()
+	PersistenceEditor.clipboard_clear_files()
 
 	for node in nodes_copy:
-		
 		if node is ClassLeaf:
 			var node_copy: ClassNode = node.copy_tmp()
 			node_copy._setup_controller(false)
@@ -101,12 +105,15 @@ func _cut_to_clipboard() -> void:
 
 func _paste() -> void:
 	var first = tree_manager.get_next_selected(null)
-	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.paste_class_nodes.emit()
 
 
 func _delete() -> void:
 	var first = tree_manager.get_next_selected(null)
+	if first == null:
+		return
 	var nodes_del: Array[ClassNode] = []
 	var current = first
 	
@@ -130,6 +137,8 @@ func _on_menu_btn_insert(id: int) -> void:
 		_push_group()
 	if id == 3:
 		_add_clear()
+	if id == 4:
+		_add_pause()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -143,7 +152,8 @@ func _add_group() -> void:
 	}
 	var class_node = ClassGroup.deserialize(data_new)
 	var first = tree_manager.get_next_selected(null)
-	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_group.emit(class_node, true)
 
 # Push a new group to the end of the current node
@@ -155,7 +165,8 @@ func _push_group() -> void:
 	}
 	var class_node = ClassGroup.deserialize(data_new)
 	var first = tree_manager.get_next_selected(null)
-	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_group.emit(class_node, false)
 
 # Add a clear entity after the current node
@@ -168,9 +179,22 @@ func _add_clear() -> void:
 	}
 	var class_node = ClassLeaf.deserialize(data_new)
 	var first = tree_manager.get_next_selected(null)
-	PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
 
+func _add_pause() -> void:
+	var entity_pause = PausePlaybackEntity.new()
+	var data_new = {
+		"type": "ClassLeaf",
+		"entity_id": entity_pause.entity_id,
+		"entity_properties": []
+	}
+	var class_node = ClassLeaf.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_leaf.emit(class_node)
 #endregion
 
 

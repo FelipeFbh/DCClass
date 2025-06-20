@@ -46,6 +46,38 @@ func play(__duration: float, __total_real_time: float):
 			if leaf_value != null:
 				leaf_value.stop()
 			return 1
+	return state._signal_value
+
+func _play_seek(__duration: float, __total_real_time: float):
+	if leaf_value == null:
+		load_data(_class_node)
+		var parent = leaf_value.get_parent()
+		if parent != null:
+			if is_audio():
+				if leaf_value.get_parent() != root_audio_controller:
+					#root_audio_controller.add_child(leaf_value)
+					leaf_value.reparent(root_audio_controller)
+		
+			elif leaf_value.get_parent() != root_visual_controller_snapshot:
+					#root_visual_controller_snapshot.add_child(leaf_value)
+					leaf_value.reparent(root_visual_controller_snapshot)
+		
+		else:
+			if is_audio():
+				root_audio_controller.add_child(leaf_value)
+			else:
+				root_visual_controller_snapshot.add_child(leaf_value)
+	
+	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
+	var state = SignalsCore.await_any_once(sigs)
+	leaf_value.play_seek(__duration, __total_real_time, _duration_leaf)
+	if !state._done:
+		await state.completed
+		if state._signal_source == _bus_core.stop_widget:
+			if leaf_value != null:
+				leaf_value.stop()
+			return 1
+	return state._signal_value
 
 func play_tree(__duration: float, __total_real_time: float, last_child: NodeController = null) -> void:
 	if __duration == 0.0 or is_audio() or __total_real_time == 0.0:
@@ -54,7 +86,7 @@ func play_tree(__duration: float, __total_real_time: float, last_child: NodeCont
 		__total_real_time = _duration_calculated[1]
 	
 	var state = await play(__duration, __total_real_time)
-	if state == 1:
+	if state == 1 or state == 2:
 		return
 	
 	var parent = _class_node.get_parent_controller()
@@ -99,7 +131,7 @@ func play_seek(last_child: NodeController = null) -> void:
 			var time_seek = next_leaf_paudio.compute_total_duration_between(prev_leaf)
 			last_audio._seek_play(time_seek * (__duration / __total_real_time))
 	
-	var state = await play(__duration, __total_real_time)
+	var state = await _play_seek(__duration, __total_real_time)
 	if state == 1:
 		return
 	

@@ -76,7 +76,7 @@ func get_properties() -> Dictionary:
 
 
 func self_delete() -> void:
-	if entity_id is int and entity_id in entities:
+	if (entity_id is int or entity_id is float) and entity_id in entities:
 		entity.self_delete()
 		entities.erase(entity_id)
 	

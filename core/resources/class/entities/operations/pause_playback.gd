@@ -1,10 +1,10 @@
 @tool
 # 1. class name: fill the class name
-class_name PausePlaybackControlEntity
-extends PlaybackControlEntity
+class_name PausePlaybackEntity
+extends Entity
 
 # 2. docs: use docstring (##) to generate docs for this file
-## A [PlaybackControlEntity] that represents an infinite pause
+## Represents an infinite pause
 
 # 3. signals: define signals here
 
@@ -22,13 +22,26 @@ extends PlaybackControlEntity
 
 
 # 10. init virtual methods: define _init, _enter_tree and _ready mothods here
+func _init() -> void:
+	entity_id = "PausePlayback"
+
 
 # 11. virtual methods: define other virtual methos here
 func get_class_name() -> String:
-	return "PausePlaybackControlEntity"
+	return "PausePlaybackEntity"
 
 func get_editor_name() -> String:
 	return "Pause"
+
+func serialize() -> Dictionary:
+	return {
+		"entity_id": entity_id,
+		"entity_type": get_class_name(),
+		"duration": duration
+	}
+
+func load_data(data: Dictionary) -> void:
+	pass
 
 # 12. public methods: define all public methods here
 

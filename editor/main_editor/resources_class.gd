@@ -129,15 +129,15 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
-	var node_group_parent : ClassNode = _current_node
+	var node_group_parent: ClassNode = _current_node
 	if _current_node is ClassLeaf:
 		node_group_parent = _current_node._parent
 	
 	for node in nodes_paste:
-
 		if node is ClassLeaf:
 			class_index.entities_last_uid += 1
 			var entity_id: int = class_index.entities_last_uid
+			node.entity_id = entity_id
 			node.entity.entity_id = entity_id
 			node.entity.tmp_to_persistent()
 			entities[entity_id] = node.entity

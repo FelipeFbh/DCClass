@@ -80,18 +80,20 @@ var is_stopped: bool = true
 
 func _toggle_playback_stop() -> void:
 	if is_stopped:
-		is_stopped = false
-		stop_button.icon = play_icon
 		PersistenceEditor._epilog(PersistenceEditor.Status.PLAYING)
 		_bus.seek_play.emit()
 		return
-		
+	
 	_bus_core.stop_widget.emit()
 	get_tree().call_group(&"widget_playing", "stop")
-	
-	is_stopped = true
-	stop_button.icon = pause_icon
 	PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _status_playback_stop(active : bool = is_stopped ) -> void:
+	is_stopped = active
+	if is_stopped:
+		stop_button.icon = pause_icon
+		return
+	stop_button.icon = play_icon
 
 
 func _tree_play_finished():
@@ -182,6 +184,7 @@ func _ready():
 	stop_button.pressed.connect(_toggle_playback_stop)
 	_bus_core.tree_play_finished.connect(_tree_play_finished)
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
+	_bus.status_playback_stop.connect(_status_playback_stop)
 	
 
 	#time_slider.value_selected.connect(_slider_value_selected)

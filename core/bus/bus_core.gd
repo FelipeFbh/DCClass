@@ -9,3 +9,5 @@ signal tree_play_finished()
 
 # Emitted when the widget have to be stopped.
 signal stop_widget()
+
+signal pause_playback_widget()
