@@ -88,16 +88,12 @@ func _toggle_playback_stop() -> void:
 	get_tree().call_group(&"widget_playing", "stop")
 	PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
 
+# 0: playing, 1: stopped
 func _status_playback_stop(active : bool = is_stopped ) -> void:
 	is_stopped = active
 	if is_stopped:
-		stop_button.icon = pause_icon
+		stop_button.icon = play_icon
 		return
-	stop_button.icon = play_icon
-
-
-func _tree_play_finished():
-	is_stopped = true
 	stop_button.icon = pause_icon
 
 
@@ -182,7 +178,6 @@ func _ready():
 	
 	#play_button.pressed.connect(_toggle_playback)
 	stop_button.pressed.connect(_toggle_playback_stop)
-	_bus_core.tree_play_finished.connect(_tree_play_finished)
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
 	_bus.status_playback_stop.connect(_status_playback_stop)
 	

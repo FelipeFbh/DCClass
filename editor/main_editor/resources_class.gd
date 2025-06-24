@@ -23,6 +23,7 @@ func _ready():
 	_bus.add_class_group.connect(_add_class_group)
 	_bus.paste_class_nodes.connect(_paste_class_nodes)
 	_bus.delete_class_nodes.connect(_delete_class_nodes)
+	_bus.make_group.connect(_make_group)
 	NodeController.root_node_controller = root_node_controller
 	NodeController.root_audio_controller = root_audio_controller
 
@@ -172,6 +173,31 @@ func _paste_class_nodes() -> void:
 func _delete_class_nodes(nodes_del: Array[ClassNode]):
 	for node in nodes_del:
 		node.self_delete()
+	_bus.update_treeindex.emit()
+
+func _make_group():
+	var first = PersistenceEditor.clipboard[0]
+	var parent_group : ClassGroup = first._parent
+	if parent_group == null:
+		return
+	var first_current = parent_group._node_controller.get_previous([parent_group._node_controller, first._node_controller])
+	if first_current[0] == null:
+		first_current[0] = root_tree_structure._node_controller
+	var data_new = {
+		"name": "Group",
+		"type": "ClassGroup",
+		"childrens": []
+	}
+	var class_node = ClassGroup.deserialize(data_new)
+	PersistenceEditor.resources_class._current_node = first_current[0]._class_node
+
+	_bus.add_class_group.emit(class_node, true)
+	
+	for node in PersistenceEditor.clipboard:
+		if node in parent_group._childrens:
+			node._parent = class_node
+			parent_group._childrens.erase(node)
+			class_node.add_child(node)
 	_bus.update_treeindex.emit()
 
 

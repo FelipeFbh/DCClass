@@ -25,6 +25,14 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 		if parent != null:
 			parent.play_tree(__duration, __total_real_time, self)
 			return
+		var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
+		if audio_current_playing.size() > 0:
+			var sigs: Array[Signal] = [audio_current_playing[0].audio.finished, _bus_core.stop_widget]
+			var state = SignalsCore.await_any_once(sigs)
+			if !state._done:
+				await state.completed
+				if state._signal_source == _bus_core.stop_widget:
+					return
 		_bus_core.tree_play_finished.emit()
 		return
 	

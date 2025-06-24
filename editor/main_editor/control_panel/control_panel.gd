@@ -136,8 +136,10 @@ func _on_menu_btn_insert(id: int) -> void:
 	if id == 2:
 		_push_group()
 	if id == 3:
-		_add_clear()
+		_make_group()
 	if id == 4:
+		_add_clear()
+	if id == 5:
 		_add_pause()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
@@ -168,6 +170,27 @@ func _push_group() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_group.emit(class_node, false)
+
+func _make_group() -> void:
+	var first = tree_manager.get_next_selected(null)
+
+	if first == null:
+		return
+	
+	var nodes_to_group: Array[ClassNode] = []
+	var current = first
+	
+	while current:
+		nodes_to_group.append(current.get_metadata(0))
+		current = tree_manager.get_next_selected(current)
+	
+	PersistenceEditor.clipboard.clear()
+	PersistenceEditor.clipboard_clear_files()
+
+	for node in nodes_to_group:
+		PersistenceEditor.clipboard.append(node)
+	_bus.make_group.emit()
+
 
 # Add a clear entity after the current node
 func _add_clear() -> void:

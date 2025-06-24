@@ -36,6 +36,8 @@ signal paste_class_nodes()
 
 signal delete_class_nodes(node: Array[ClassNode])
 
+signal make_group()
+
 #endregion
 
 
