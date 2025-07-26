@@ -90,7 +90,7 @@ text = "Color Selected"
 [node name="DetachButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Detach Window"
+text = "Detach Whiteboard"
 
 [node name="IndexClass" type="PanelContainer" parent="VBoxContainer"]
 unique_name_in_owner = true

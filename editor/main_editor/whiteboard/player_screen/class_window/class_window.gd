@@ -21,7 +21,6 @@ func set_index_tree(tree: Tree) -> void:
 
 func set_class_node(node: Node) -> void:
 	node.reparent(viewport)
-
 #endregion
 
 #region Playback

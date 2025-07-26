@@ -168,5 +168,5 @@ text = "Export Class"
 
 [node name="ExportFileDialog" type="FileDialog" parent="."]
 unique_name_in_owner = true
-access = 1
-filters = PackedStringArray("*.dcc_class")
+access = 2
+filters = PackedStringArray("*.dcc")

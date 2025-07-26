@@ -4,17 +4,18 @@ extends Resource
 
 # 2. docs: use docstring (##) to generate docs for this file
 
-
 # 3. signals: define signals here
 
 # 4. enums: define enums here
 
-
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var _parent: ClassNode
 
+## Reference to the parent node of this node in the tree.
+@export var _parent: ClassNode 
+
+## Reference to the node controller that manages this node.
 var _node_controller: NodeController
 
 # 7. public variables: define all public variables here
@@ -29,6 +30,7 @@ var _node_controller: NodeController
 # 11. virtual methods: define other virtual methos here
 
 # 12. public methods: define all public methods here
+
 func get_parent_controller():
 	if _parent != null:
 		return _parent._node_controller

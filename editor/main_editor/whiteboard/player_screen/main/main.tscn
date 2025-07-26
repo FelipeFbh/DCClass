@@ -12,7 +12,10 @@ script = ExtResource("1_j0vtf")
 [node name="ClassWindow" parent="." instance=ExtResource("2_0jrey")]
 process_mode = 3
 
+[node name="Timer" type="Timer" parent="."]
+
 [node name="PlayClass" type="Node2D" parent="."]
+unique_name_in_owner = true
 process_mode = 1
 script = ExtResource("3_swejl")
 
@@ -20,12 +23,9 @@ script = ExtResource("3_swejl")
 
 [node name="Camera2D" type="Camera2D" parent="PlayClass" node_paths=PackedStringArray("background")]
 process_mode = 3
-anchor_mode = 0
 script = ExtResource("5_5gb6c")
 background = NodePath("../ParallaxBackground/ParallaxLayer/Background")
 
 [node name="Class" type="Node2D" parent="PlayClass"]
-
-[node name="Timer" type="Timer" parent="."]
 
 [editable path="PlayClass/ParallaxBackground"]

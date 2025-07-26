@@ -55,10 +55,10 @@ func save():
 
 func _setup_expoty_dialog() -> void:
 	export_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
-	export_file_dialog.access = FileDialog.ACCESS_USERDATA
-	export_file_dialog.filters = ["*.dcc_class"]
-	export_file_dialog.current_file = "export_newclass.dcc_class"
-	export_file_dialog.title = "Guardar clase como…"
+	export_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	export_file_dialog.filters = ["*.dcc"]
+	export_file_dialog.current_file = "export_newclass.dcc"
+	export_file_dialog.title = "Save class ass…"
 	export_file_dialog.use_native_dialog = true
 
 ## Export the class to a zip file.

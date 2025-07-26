@@ -18,7 +18,7 @@ func _compute_duration() -> float:
 	return 0.0
 
 func play(__duration: float, __total_real_time: float):
-	if leaf_value == null:
+	if leaf_value == null or is_instance_valid(leaf_value.get_parent()):
 		load_data(_class_node)
 		var parent = leaf_value.get_parent()
 		if parent != null:

@@ -25,7 +25,6 @@ driver/enable_input=true
 
 [autoload]
 
-Persistence="*res://player/ui/main_menu/persistence.gd"
 PersistenceEditor="*res://editor/persistence_editor.gd"
 ModLoader="*res://core/mods/module_loader.tscn"
 
@@ -41,7 +40,7 @@ window/size/viewport_height=720
 window/subwindows/embed_subwindows=false
 window/handheld/orientation=4
 window/stretch/scale.android=2.0
-whiteboard/size=Vector2i(2400, 1145)
+whiteboard/size=Vector2i(2400, 1274)
 
 [editor_plugins]
 
@@ -54,7 +53,6 @@ folder_colors={
 "res://core/": "green",
 "res://editor/": "purple",
 "res://mods/": "red",
-"res://player/": "yellow",
 "res://script_templates/": "gray"
 }
 
