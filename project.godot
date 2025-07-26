@@ -49,6 +49,7 @@ enabled=PackedStringArray("res://addons/godot_file_picker/plugin.cfg", "res://ad
 [file_customization]
 
 folder_colors={
+"res://POODLE/": "gray",
 "res://assets/": "teal",
 "res://core/": "green",
 "res://editor/": "purple",

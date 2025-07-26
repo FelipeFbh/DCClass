@@ -14,7 +14,6 @@ var entities: Dictionary
 var root_tree_structure: ClassNode
 var _current_node: ClassNode
 
-#var zip_file: ZIPReader
 
 func _ready():
 	_bus_core.current_node_changed.connect(_current_node_changed)
@@ -205,6 +204,39 @@ func _make_group():
 
 # Parse the class file.
 func _parse() -> bool:
+	return _parse_decompress_tmp()
+
+
+# Parse the class file, but in the process keep the zip file compressed.
+# This is intended to be used only for reproducing the class.
+var zip_file: ZIPReader
+func _parse_keep_compressed() -> bool:
+	var zip_path: String = PersistenceEditor.file_path
+	
+	zip_file = ZIPReader.new()
+	Widget.zip_file = zip_file
+	print("File: " + zip_path)
+	var err := zip_file.open(zip_path)
+	if err != OK:
+		push_error("Error %d opening file: " % err)
+		return false
+	if !zip_file.file_exists("index.json"):
+		push_error("Error: index.json not found in zip file")
+		return false
+	
+	var index_string:= zip_file.read_file("index.json").get_string_from_utf8()
+
+	var index = JSON.parse_string(index_string)
+	if index == null or typeof(index) != TYPE_DICTIONARY:
+		return false
+	class_index = ClassIndex.deserialize(index)
+
+	return class_index != null
+
+
+# Parse the class file, decompressing it to a temporary directory.
+# This is intended to be used only for editing the class.
+func _parse_decompress_tmp():
 	var zip_path: String = PersistenceEditor.file_path
 	var dir_tmp: String = "user://tmp/class_editor/"
 
@@ -214,27 +246,9 @@ func _parse() -> bool:
 		push_error("Error %d opening file: " % zip_path)
 		return false
 	
-	
-	# Version reading directly from zip.
-	#zip_file = ZIPReader.new()
-	#if file == null or file.is_empty():
-	#	file = PersistenceEditor.class_path
-	#print("File: " + file)
-	#if file == null or file.is_empty():
-	#	push_error("Error: file not set")
-	#	return false
-	#var err := zip_file.open(file)
-	#if err != OK:
-	#	push_error("Error %d opening file: " % err)
-	#	return false
-	#if !zip_file.file_exists("index.json"):
-	#	push_error("Error: index.json not found in zip file")
-	#	return false
-	
 	var index_path: String = dir_tmp.path_join("index.json")
 	var file: FileAccess = FileAccess.open(index_path, FileAccess.READ)
 	
-	#var index_string:= zip_file.read_file("index.json").get_string_from_utf8()
 	var index_string: String = file.get_as_text()
 	file.close()
 	
@@ -243,6 +257,7 @@ func _parse() -> bool:
 		return false
 	class_index = ClassIndex.deserialize(index)
 	return class_index != null
+
 
 # Decompress a zip file to a temporary directory.
 func decompress_zip(__zip_path: String, __dir_tmp: String) -> bool:

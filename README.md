@@ -4,7 +4,7 @@
 
 ## Resumen
 
-El objetivo del proyecto se centra en desarrollar un reproductor y editor para clases envasadas basadas en una pizarra, con la finalidad de acercar la experiencia educativa remota al formato en vivo.
+El objetivo del proyecto se centra en desarrollar un reproductor y editor de contenidos para clases envasadas basadas en una pizarra, con la finalidad de acercar la experiencia educativa remota al formato en vivo.
 Se utiliza como base el proyecto [POODLE](./POODLE/README.md).
 
 
@@ -15,7 +15,7 @@ Se utiliza como base el proyecto [POODLE](./POODLE/README.md).
 
 ## Build
 
-Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `export` desde Godot con los siguientes parámetros de `export_presets_DCClass.cfg`. Alternativamente, se puede definir manualmente los siguientes parámetros en el menú de exportación de Godot:
+Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `export` desde Godot con los parámetros de `export_presets_DCClass.cfg`. Alternativamente, se puede definir manualmente los siguientes parámetros en el menú de exportación de Godot:
 
 ```
 # Options
