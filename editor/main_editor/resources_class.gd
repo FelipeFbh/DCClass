@@ -104,6 +104,7 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 	_bus.seek_node.emit(class_node)
 
 func _add_class_group(class_node: ClassNode, back: bool) -> void:
+
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
@@ -174,14 +175,29 @@ func _delete_class_nodes(nodes_del: Array[ClassNode]):
 		node.self_delete()
 	_bus.update_treeindex.emit()
 
+
+# Make a group from the selected nodes in the clipboard.
 func _make_group():
+
+	# The first node in the clipboard is used to determine where the group will be created.
 	var first = PersistenceEditor.clipboard[0]
+
+	# The parent group is to check if a new group is needed, because we only allow to create groups at the same level.
 	var parent_group : ClassGroup = first._parent
+
 	if parent_group == null:
+		push_error("Error: The clipboard does not contain a valid first node.")
 		return
+	
+	# first_current is used to determine the previous node of the new group.
 	var first_current = parent_group._node_controller.get_previous([parent_group._node_controller, first._node_controller])
-	if first_current[0] == null:
+	if first_current[0] == null: # We are at the root level.
 		first_current[0] = root_tree_structure._node_controller
+
+	# Case: We are the first element in the parent group, so the previous is the parent of the parent group!
+	if first_current[0] == parent_group.get_parent_controller():
+		first_current[0] = parent_group._node_controller
+
 	var data_new = {
 		"name": "Group",
 		"type": "ClassGroup",
@@ -256,6 +272,7 @@ func _parse_decompress_tmp():
 	if index == null or typeof(index) != TYPE_DICTIONARY:
 		return false
 	class_index = ClassIndex.deserialize(index)
+	Widget.dir_class = "user://tmp/class_editor/"
 	return class_index != null
 
 

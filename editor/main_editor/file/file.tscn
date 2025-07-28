@@ -170,3 +170,4 @@ text = "Export Class"
 unique_name_in_owner = true
 access = 2
 filters = PackedStringArray("*.dcc")
+use_native_dialog = true

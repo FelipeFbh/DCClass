@@ -30,14 +30,11 @@ func _ready():
 	_bus.seek_play.connect(_seek_play)
 
 func _setup_play():
-	if !_parse():
-		push_error("Error parsing file: " + file)
-		return
+	class_index = PersistenceEditor.resources_class.class_index
 
 	if !_instantiate():
 		push_error("Error instantiating class: " + class_index.name)
 		return
-	#zip_file.close()
 
 	print("play._ready")
 
@@ -46,22 +43,6 @@ func _load_whiteboard_size() -> Vector2i:
 	return ProjectSettings.get_setting("display/whiteboard/size") as Vector2i
 
 
-func _parse() -> bool:
-	#zip_file = ZIPReader.new()
-	#if file == null or file.is_empty():
-	#	file = PersistenceEditor.class_path
-	#print("File: " + file)
-	#if file == null or file.is_empty():
-	#	push_error("Error: file not set")
-	#	return false
-	#var err := zip_file.open(file)
-	#if err != OK:
-	#	push_error("Error %d opening file: " % err)
-	#	return false
-	#Widget.zip_file = zip_file
-	Widget.dir_class = "user://tmp/class_editor/"
-	class_index = PersistenceEditor.resources_class.class_index
-	return class_index != null
 
 
 func _instantiate() -> bool:

@@ -53,13 +53,10 @@ func save():
 
 @onready var export_file_dialog: FileDialog = %ExportFileDialog
 
-func _setup_expoty_dialog() -> void:
-	export_file_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
-	export_file_dialog.access = FileDialog.ACCESS_FILESYSTEM
+func _setup_export_dialog() -> void:
 	export_file_dialog.filters = ["*.dcc"]
 	export_file_dialog.current_file = "export_newclass.dcc"
-	export_file_dialog.title = "Save class ass…"
-	export_file_dialog.use_native_dialog = true
+	export_file_dialog.title = "Save class as…"
 
 ## Export the class to a zip file.
 func export_class():
@@ -68,7 +65,7 @@ func export_class():
 	var file := FileAccess.open(path_index, FileAccess.WRITE)
 	file.store_string(JSON.stringify(resources_class.class_index.serialize(), "\t"))
 	file.close()
-	_setup_expoty_dialog()
+	_setup_export_dialog()
 	export_file_dialog.popup()
 	var zip_dest: String = await export_file_dialog.file_selected
 	if zip_dest.is_empty():
