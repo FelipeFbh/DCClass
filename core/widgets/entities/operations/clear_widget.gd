@@ -3,8 +3,6 @@ extends Widget
 
 @export var entity: ClearEntity
 
-signal termino
-
 func init(_properties: Dictionary) -> void:
 	pass
 
@@ -19,7 +17,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	var new_visual_slide: Node2D = Node2D.new()
 	NodeController.visual_slide = new_visual_slide
 	visual_widgets.add_child(new_visual_slide)
-	emit_signal("termino")
+	emit_signal("widget_finished")
 	_bus_core.current_node_changed.emit(class_node)
 	visual_widgets.remove_child(visual_slide)
 	visual_slide.queue_free()
@@ -36,6 +34,6 @@ func skip_to_end():
 	var new_visual_slide: Node2D = Node2D.new()
 	NodeController.visual_slide = new_visual_slide
 	visual_widgets.add_child(new_visual_slide)
-	emit_signal("termino")
+	emit_signal("widget_finished")
 	visual_widgets.remove_child(visual_slide)
 	visual_slide.queue_free()

@@ -140,12 +140,13 @@ func _insert_class_group(class_node: ClassNode) -> void:
 			_current_class_group_childrens.insert(index_current + 1, class_node)
 
 	if _current_node is ClassGroup:
+		var _current_class_group_childrens
 		if _current_node._parent == null: # We are at the root level.
 			class_node.set_parent(root_tree_structure)
+			_current_class_group_childrens = _current_node._childrens
 		else:
 			class_node.set_parent(_current_node._parent)
-		
-		var _current_class_group_childrens = _current_node._parent._childrens
+			_current_class_group_childrens = _current_node._parent._childrens
 
 		var index_current = _current_class_group_childrens.find(_current_node)
 		_current_class_group_childrens.insert(index_current + 1, class_node)

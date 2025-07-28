@@ -13,11 +13,17 @@ extends Resource
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
+
 @export var metadata: ClassMetadata
 
+# The last used Unique Identifier (UID) for entities.
 @export var entities_last_uid: int = 0
+
+# A dictionary to hold all entities in the index.
+# The key is the entity ID and the value is the entity itself.
 @export var entities: Dictionary = {}
 
+# The tree structure of the class index, represented with ClassNodes.
 @export var tree_structure: ClassNode
 
 # 7. public variables: define all public variables here

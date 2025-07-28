@@ -2,7 +2,6 @@ class_name LineWidget
 extends Widget
 
 const scene = preload("res://core/widgets/entities/visual/line_widget.tscn")
-signal termino
 
 @export var entity: LineEntity
 var line: Line2D
@@ -50,7 +49,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	add_to_group(&"widget_finished")
 	#var finish = Time.get_ticks_msec() / 1000.0
 	#print("LineWidget: Play time: ", finish - now, " seconds")
-	emit_signal("termino")
+	emit_signal("widget_finished")
 
 
 func reset():
@@ -60,7 +59,7 @@ func reset():
 	line.clear_points()
 	remove_from_group(&"widget_playing")
 	remove_from_group(&"widget_finished")
-	emit_signal("termino")
+	emit_signal("widget_finished")
 
 
 func stop() -> void:
@@ -73,7 +72,7 @@ func skip_to_end() -> void:
 	line.points = entity.points
 	line.show()
 	add_to_group(&"widget_finished")
-	emit_signal("termino")
+	emit_signal("widget_finished")
 
 func _add_points(i: int) -> void:
 	if not line.points.is_empty() and line.points[-1] == entity.points[i]:

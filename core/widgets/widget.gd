@@ -16,6 +16,9 @@ static var dir_class: String
 
 var class_node: ClassNode
 
+signal widget_finished
+
+
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:
 	return 0.0

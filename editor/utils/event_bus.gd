@@ -1,6 +1,7 @@
 class_name EditorEventBus
 extends Node
 
+# This bus is used to communicate the editor events in the application.
 
 #region Control Panel
 

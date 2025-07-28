@@ -35,7 +35,7 @@ func play(__duration: float, __total_real_time: float):
 			else:
 				visual_slide.add_child(leaf_value)
 	
-	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
+	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.play(__duration, __total_real_time, _duration_leaf)
 	if !state._done:
@@ -64,7 +64,7 @@ func _play_seek(__duration: float, __total_real_time: float):
 			else:
 				visual_widgets.add_child(leaf_value)
 	
-	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
+	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.play_seek(__duration, __total_real_time, _duration_leaf)
 	if !state._done:
@@ -186,7 +186,7 @@ func skip_to_end() -> void:
 			visual_widgets.add_child(leaf_value)
 	
 	
-	var sigs: Array[Signal] = [leaf_value.termino]
+	var sigs: Array[Signal] = [leaf_value.widget_finished]
 	var state = SignalsCore.await_any_once(sigs)
 	leaf_value.skip_to_end()
 	

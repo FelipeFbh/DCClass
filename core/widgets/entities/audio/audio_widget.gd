@@ -4,7 +4,6 @@ extends Widget
 @export var entity: AudioEntity
 var audio: AudioStreamPlayer
 
-signal termino
 
 func init(_properties: Dictionary) -> void:
 	var data
@@ -63,7 +62,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
-	emit_signal("termino")
+	emit_signal("widget_finished")
 	if !state._done:
 		await state.completed
 		reset()
@@ -83,12 +82,12 @@ func seek(_seek_time: float) -> void:
 	var state = SignalsCore.await_any_once(sigs)
 	_bus_core.current_node_changed.emit(class_node)
 	if is_zero_approx(_seek_time - compute_duration()):
-		emit_signal("termino")
+		emit_signal("widget_finished")
 		return
 	audio.play(_seek_time)
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
-	emit_signal("termino")
+	emit_signal("widget_finished")
 	if !state._done:
 		await state.completed
 		reset()
@@ -96,7 +95,7 @@ func seek(_seek_time: float) -> void:
 
 func stop():
 	reset()
-	emit_signal("termino")
+	emit_signal("widget_finished")
 
 
 func reset():
@@ -106,7 +105,7 @@ func reset():
 
 func skip_to_end():
 	reset()
-	emit_signal("termino")
+	emit_signal("widget_finished")
 
 
 func _clear():
