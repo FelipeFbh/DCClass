@@ -28,7 +28,7 @@ func _select_file():
 
 #region Native Seleccionando Archivo
 func _native_dialog():
-	DisplayServer.file_dialog_show("Open File", "", "", false, DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, ["*.dcc_class", "*.poodle", "*.zip"], _on_native_dialog_file_selected)
+	DisplayServer.file_dialog_show("Open File", "", "", false, DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, ["*.dcc"], _on_native_dialog_file_selected)
 
 func _on_native_dialog_file_selected(status: bool, selected_paths: PackedStringArray, _selected_filter_index: int) -> void:
 	if status == false:
@@ -39,7 +39,7 @@ func _on_native_dialog_file_selected(status: bool, selected_paths: PackedStringA
 
 #region Process file
 func _on_file_selected(path: String) -> void:
-	if not path.ends_with(".dcc_class") and not path.ends_with(".poodle") and not path.ends_with(".zip"):
+	if not path.ends_with(".dcc"):
 		printerr("Invalid file type: ", path)
 		return
 	PersistenceEditor.file_path = path
@@ -50,7 +50,7 @@ func _on_file_selected(path: String) -> void:
 
 #region Create Class
 # Default class for new classes
-const DEFAULT_CLASS_PATH: String = "res://editor/utils/new_class.dcc_class"
+const DEFAULT_CLASS_PATH: String = "res://editor/utils/new_class.dcc"
 func _create_class():
 	PersistenceEditor.file_path = DEFAULT_CLASS_PATH
 	print("Selected file: ", PersistenceEditor.file_path)

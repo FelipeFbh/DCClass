@@ -52,7 +52,7 @@ script = ExtResource("4_sli3p")
 [node name="Controllers" type="Node" parent="Class"]
 unique_name_in_owner = true
 
-[node name="AudioClass" type="Node2D" parent="Class"]
+[node name="AudioWidgets" type="Node2D" parent="Class"]
 unique_name_in_owner = true
 
 [node name="AudioRecord" type="Node" parent="Class"]

@@ -23,6 +23,8 @@ var user_controlled: bool = false:
 		user_controlled_changed.emit(value)
 @export var background: BackgroundEditor
 
+@onready var whiteboard_size: Vector2 = ProjectSettings.get_setting("display/whiteboard/size") as Vector2
+
 func _enter_tree():
 	add_to_group(&"speed_scale_handler")
 	if is_instance_valid(ClassUIEditor.context):
@@ -33,7 +35,19 @@ func set_speed_scale(_speed: float) -> void:
 	if is_instance_valid(tween) and tween.is_valid():
 		tween.set_speed_scale(time_scale)
 
+func _ready() -> void:
+	_recenter()
+
 func _process(_delta):
+	var zoom_input := Input.get_axis("camera_zoom_out", "camera_zoom_in")
+	if is_zero_approx(zoom_input):
+		return
+	zoom_input = zoom_input * ZOOM_CHANGE_SPEED * time_scale + 1.0
+	zoom *= zoom_input
+	zoom = zoom.clamp(Vector2.ONE * MIN_ZOOM, Vector2.ONE * MAX_ZOOM)
+	update_grid_visibility()
+	return
+	
 	if Input.is_action_just_pressed("camera_recenter") and user_controlled:
 		user_controlled = false
 		return
@@ -44,13 +58,7 @@ func _process(_delta):
 		user_controlled = true
 		velocity = velocity.move_toward(input * KEY_MOVEMENT_SPEED, 0.6)
 	position += velocity * zoom
-	var zoom_input := Input.get_axis("camera_zoom_out", "camera_zoom_in")
-	if is_zero_approx(zoom_input):
-		return
-	zoom_input = zoom_input * ZOOM_CHANGE_SPEED * time_scale + 1.0
-	zoom *= zoom_input
-	zoom = zoom.clamp(Vector2.ONE * MIN_ZOOM, Vector2.ONE * MAX_ZOOM)
-	update_grid_visibility()
+
 
 func update_grid_visibility():
 	#background.show_grid = zoom.x > GRID_ZOOM_THRESHOLD
@@ -69,10 +77,8 @@ func move_to(target_position: Vector2, target_zoom: float = -1.0) -> void:
 		tween.chain().tween_callback(update_grid_visibility)
 
 func _recenter():
-	var target_node := get_tree().get_first_node_in_group(&"current_slide") as SlideNode
-	if not is_instance_valid(target_node):
-		return
-	#move_to(target_node.get_camera_target_position())
+	var target_center = whiteboard_size / 2
+	position = target_center
 
 func interpolate_zoom(target_zoom: float):
 	if is_instance_valid(tween):

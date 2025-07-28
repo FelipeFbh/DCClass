@@ -1,17 +1,28 @@
 # DCClass
 
-> **Memorista Actual:** Felipe Olivares \
-> **Profesor Guía:** Luis Mateu B. \
 > **Contribuidores:** Felipe Olivares, Luis Mateu B. y Puntito (_Christopher Marín_)
 
-## Introducción
+## Resumen
 
-El objetivo del proyecto se centra en desarrollar un reproductor y editor para clases envasadas, con la finalidad de acercar la experiencia educativa remota a un formato interactivo y en vivo.
+El objetivo del proyecto se centra en desarrollar un reproductor y editor de contenidos para clases envasadas basadas en una pizarra, con la finalidad de acercar la experiencia educativa remota al formato en vivo.
+Se utiliza como base el proyecto [POODLE](./POODLE/README.md).
 
-## Objetivo
-
-Diseñar e implementar un editor de clases para el prototipo de la aplicación [POODLE](./README_POODLE.md). Además, de continuar con su desarrollo.
 
 ## Requisitos
 
 - FFmpeg 7.1.1 (full_build)
+
+
+## Build
+
+Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `export` desde Godot con los parámetros de `export_presets_DCClass.cfg`. Alternativamente, se puede definir manualmente los siguientes parámetros en el menú de exportación de Godot:
+
+```
+# Options
+Binary Format:
+    Embed PCK : true
+
+#Resources
+Filters to export non-resources files/folders:
+    *.dcc
+```

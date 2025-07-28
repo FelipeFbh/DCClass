@@ -7,21 +7,30 @@ var audio: AudioStreamPlayer
 signal termino
 
 func init(_properties: Dictionary) -> void:
-	#if !zip_file.file_exists(entity.audio_path):
-	#	push_error("Audio file not found: " + entity.audio_path)
-	#	return
-	#var data := zip_file.read_file(entity.audio_path)
-	var relative_path := entity.audio_path
-	var audio_disk_path := dir_class.path_join(relative_path)
-	if not FileAccess.file_exists(audio_disk_path):
-		push_error("Audio file not found: " + audio_disk_path)
-		return
-	var f := FileAccess.open(audio_disk_path, FileAccess.READ)
-	if f == null:
-		push_error("No se pudo abrir: " + audio_disk_path)
-		return
-	var data := f.get_buffer(f.get_length())
-	f.close()
+	var data
+	
+	# Case: Keep data in the .dcc file
+	# This is intended to be used only for reproducing the class.
+	if zip_file != null:
+		if !zip_file.file_exists(entity.audio_path):
+			push_error("Audio file not found: " + entity.audio_path)
+			return
+		data = zip_file.read_file(entity.audio_path)
+		
+	# Case: Decompress the .dcc file
+	# This is intended to be used only for editing the class.
+	else:
+		var relative_path: String = entity.audio_path
+		var audio_disk_path: String = dir_class.path_join(relative_path)
+		if not FileAccess.file_exists(audio_disk_path):
+			push_error("Audio file not found: " + audio_disk_path)
+			return
+		var f := FileAccess.open(audio_disk_path, FileAccess.READ)
+		if f == null:
+			push_error("No se pudo abrir: " + audio_disk_path)
+			return
+		data = f.get_buffer(f.get_length())
+		f.close()
 	
 	var packet_sequence := AudioStreamOggVorbis.load_from_buffer(data)
 	audio = AudioStreamPlayer.new()

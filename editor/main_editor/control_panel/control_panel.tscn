@@ -52,15 +52,17 @@ popup/item_5/id = 4
 unique_name_in_owner = true
 layout_mode = 2
 text = "Insert"
-item_count = 4
+item_count = 5
 popup/item_0/text = "Add Group"
 popup/item_0/id = 1
 popup/item_1/text = "Push Group"
 popup/item_1/id = 2
-popup/item_2/text = "Clear"
+popup/item_2/text = "Make Group"
 popup/item_2/id = 3
-popup/item_3/text = "Pause"
+popup/item_3/text = "Clear"
 popup/item_3/id = 4
+popup/item_4/text = "Pause"
+popup/item_4/id = 5
 
 [node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
@@ -88,7 +90,7 @@ text = "Color Selected"
 [node name="DetachButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Detach Window"
+text = "Detach Whiteboard"
 
 [node name="IndexClass" type="PanelContainer" parent="VBoxContainer"]
 unique_name_in_owner = true

@@ -3,7 +3,7 @@ extends Node
 
 static var context: ClassContextEditor = ClassContextEditor.new()
 
-@onready var class_scene: ClassSceneEditor = $PlayClass
+@onready var class_scene: ClassSceneEditor = %PlayClass
 @onready var window: ConceptClassWindowEditor = $ClassWindow
 
 

@@ -51,6 +51,12 @@ func save():
 	metadata = new_metadata
 	resources_class.class_index.metadata = metadata
 
+@onready var export_file_dialog: FileDialog = %ExportFileDialog
+
+func _setup_export_dialog() -> void:
+	export_file_dialog.filters = ["*.dcc"]
+	export_file_dialog.current_file = "export_newclass.dcc"
+	export_file_dialog.title = "Save class as…"
 
 ## Export the class to a zip file.
 func export_class():
@@ -59,10 +65,14 @@ func export_class():
 	var file := FileAccess.open(path_index, FileAccess.WRITE)
 	file.store_string(JSON.stringify(resources_class.class_index.serialize(), "\t"))
 	file.close()
-	
-	var zip_dest := "user://export_newclass.dcc_class"
-	var resultado := zip_folder(path, zip_dest)
-	print("Export class path: ", zip_dest)
+	_setup_export_dialog()
+	export_file_dialog.popup()
+	var zip_dest: String = await export_file_dialog.file_selected
+	if zip_dest.is_empty():
+		push_warning("Export error.")
+		return
+	zip_folder("user://tmp/class_editor/", zip_dest)
+	print("Export class path:", zip_dest)
 
 
 func zip_folder(source_dir: String, zip_path: String) -> Error:
