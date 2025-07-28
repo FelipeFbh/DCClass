@@ -4,7 +4,7 @@ extends NodeController
 var _duration_leaf: float = 0.0
 var leaf_value: Widget
 
-func _setup(instance : ClassLeaf):
+func _setup(instance: ClassLeaf):
 	_class_node = instance
 	_duration_leaf = instance.entity.duration
 
@@ -23,19 +23,17 @@ func play(__duration: float, __total_real_time: float):
 		var parent = leaf_value.get_parent()
 		if parent != null:
 			if is_audio():
-				if leaf_value.get_parent() != root_audio_controller:
-					#root_audio_controller.add_child(leaf_value)
-					leaf_value.reparent(root_audio_controller)
+				if leaf_value.get_parent() != audio_widgets:
+					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != root_visual_controller_snapshot:
-					#root_visual_controller_snapshot.add_child(leaf_value)
-					leaf_value.reparent(root_visual_controller_snapshot)
+			elif leaf_value.get_parent() != visual_slide:
+					leaf_value.reparent(visual_slide)
 		
 		else:
 			if is_audio():
-				root_audio_controller.add_child(leaf_value)
+				audio_widgets.add_child(leaf_value)
 			else:
-				root_visual_controller_snapshot.add_child(leaf_value)
+				visual_slide.add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -54,19 +52,17 @@ func _play_seek(__duration: float, __total_real_time: float):
 		var parent = leaf_value.get_parent()
 		if parent != null:
 			if is_audio():
-				if leaf_value.get_parent() != root_audio_controller:
-					#root_audio_controller.add_child(leaf_value)
-					leaf_value.reparent(root_audio_controller)
+				if leaf_value.get_parent() != audio_widgets:
+					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != root_visual_controller_snapshot:
-					#root_visual_controller_snapshot.add_child(leaf_value)
-					leaf_value.reparent(root_visual_controller_snapshot)
+			elif leaf_value.get_parent() != visual_slide:
+					leaf_value.reparent(visual_widgets)
 		
 		else:
 			if is_audio():
-				root_audio_controller.add_child(leaf_value)
+				audio_widgets.add_child(leaf_value)
 			else:
-				root_visual_controller_snapshot.add_child(leaf_value)
+				visual_widgets.add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.termino, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -105,19 +101,17 @@ func play_seek(last_child: NodeController = null) -> void:
 		var parent = leaf_value.get_parent()
 		if parent != null:
 			if is_audio():
-				if leaf_value.get_parent() != root_audio_controller:
-					#root_audio_controller.add_child(leaf_value)
-					leaf_value.reparent(root_audio_controller)
+				if leaf_value.get_parent() != audio_widgets:
+					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != root_visual_controller_snapshot:
-					#root_visual_controller_snapshot.add_child(leaf_value)
-					leaf_value.reparent(root_visual_controller_snapshot)
+			elif leaf_value.get_parent() != visual_widgets:
+					leaf_value.reparent(visual_widgets)
 		
 		else:
 			if is_audio():
-				root_audio_controller.add_child(leaf_value)
+				audio_widgets.add_child(leaf_value)
 			else:
-				root_visual_controller_snapshot.add_child(leaf_value)
+				visual_widgets.add_child(leaf_value)
 	
 	leaf_value.reset()
 	
@@ -179,19 +173,17 @@ func skip_to_end() -> void:
 	var parent = leaf_value.get_parent()
 	if parent != null:
 		if is_audio():
-			if leaf_value.get_parent() != root_audio_controller:
-				#root_audio_controller.add_child(leaf_value)
-				leaf_value.reparent(root_audio_controller)
+			if leaf_value.get_parent() != audio_widgets:
+				leaf_value.reparent(audio_widgets)
 	
-		elif leaf_value.get_parent() != root_visual_controller_snapshot:
-			#root_visual_controller_snapshot.add_child(leaf_value)
-			leaf_value.reparent(root_visual_controller_snapshot)
+		elif leaf_value.get_parent() != visual_widgets:
+			leaf_value.reparent(visual_widgets)
 	
 	else:
 		if is_audio():
-			root_audio_controller.add_child(leaf_value)
+			audio_widgets.add_child(leaf_value)
 		else:
-			root_visual_controller_snapshot.add_child(leaf_value)
+			visual_widgets.add_child(leaf_value)
 	
 	
 	var sigs: Array[Signal] = [leaf_value.termino]

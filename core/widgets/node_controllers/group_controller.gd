@@ -11,7 +11,7 @@ func _index_of(current_node: NodeController) -> int:
 	return _childrens.find(current_node._class_node)
 
 
-func _setup(instance : ClassGroup):
+func _setup(instance: ClassGroup):
 	_class_node = instance
 	_childrens = instance._childrens
 

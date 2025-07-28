@@ -77,7 +77,7 @@ func move_to(target_position: Vector2, target_zoom: float = -1.0) -> void:
 		tween.chain().tween_callback(update_grid_visibility)
 
 func _recenter():
-	var target_center = whiteboard_size/2
+	var target_center = whiteboard_size / 2
 	position = target_center
 
 func interpolate_zoom(target_zoom: float):

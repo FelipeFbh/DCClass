@@ -26,6 +26,7 @@ process_mode = 3
 script = ExtResource("5_5gb6c")
 background = NodePath("../ParallaxBackground/ParallaxLayer/Background")
 
-[node name="Class" type="Node2D" parent="PlayClass"]
+[node name="VisualWidgets" type="Node2D" parent="PlayClass"]
+unique_name_in_owner = true
 
 [editable path="PlayClass/ParallaxBackground"]

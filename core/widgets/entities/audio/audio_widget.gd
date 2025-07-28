@@ -20,8 +20,8 @@ func init(_properties: Dictionary) -> void:
 	# Case: Decompress the .dcc file
 	# This is intended to be used only for editing the class.
 	else:
-		var relative_path : String = entity.audio_path
-		var audio_disk_path : String = dir_class.path_join(relative_path)
+		var relative_path: String = entity.audio_path
+		var audio_disk_path: String = dir_class.path_join(relative_path)
 		if not FileAccess.file_exists(audio_disk_path):
 			push_error("Audio file not found: " + audio_disk_path)
 			return

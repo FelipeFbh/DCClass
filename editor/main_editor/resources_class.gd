@@ -9,7 +9,7 @@ var entities: Dictionary
 @export var class_index: ClassIndex
 
 @onready var root_node_controller: Node = %Controllers
-@onready var root_audio_controller: Node2D = %AudioClass
+@onready var audio_widgets: Node2D = %AudioWidgets
 
 var root_tree_structure: ClassNode
 var _current_node: ClassNode
@@ -24,7 +24,7 @@ func _ready():
 	_bus.delete_class_nodes.connect(_delete_class_nodes)
 	_bus.make_group.connect(_make_group)
 	NodeController.root_node_controller = root_node_controller
-	NodeController.root_audio_controller = root_audio_controller
+	NodeController.audio_widgets = audio_widgets
 
 
 	if !_parse():
@@ -45,6 +45,9 @@ func _instantiate() -> bool:
 
 func _current_node_changed(current_node):
 	_current_node = current_node
+
+
+#region Resources Operations
 
 func _add_class_leaf_entity(entity: Entity, entity_properties) -> void:
 	class_index.entities_last_uid += 1
@@ -104,7 +107,6 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 	_bus.seek_node.emit(class_node)
 
 func _add_class_group(class_node: ClassNode, back: bool) -> void:
-
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
@@ -127,13 +129,37 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
 
+func _insert_class_group(class_node: ClassNode) -> void:
+	class_node._setup_controller(true)
+	if _current_node is ClassLeaf:
+		var parent_node = _current_node._parent
+		if parent_node is ClassGroup:
+			class_node.set_parent(parent_node)
+			var _current_class_group_childrens = parent_node._childrens
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+
+	if _current_node is ClassGroup:
+		if _current_node._parent == null: # We are at the root level.
+			class_node.set_parent(root_tree_structure)
+		else:
+			class_node.set_parent(_current_node._parent)
+		
+		var _current_class_group_childrens = _current_node._parent._childrens
+
+		var index_current = _current_class_group_childrens.find(_current_node)
+		_current_class_group_childrens.insert(index_current + 1, class_node)
+
+	
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(class_node)
+
 
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
-	var node_group_parent: ClassNode = _current_node
-	if _current_node is ClassLeaf:
-		node_group_parent = _current_node._parent
 	
+	var node_group_parent: ClassNode = _current_node._parent
+
 	for node in nodes_paste:
 		if node is ClassLeaf:
 			class_index.entities_last_uid += 1
@@ -165,25 +191,40 @@ func _paste_class_nodes() -> void:
 			_bus.seek_node.emit(node)
 			
 		elif node is ClassGroup:
-			_current_node = node_group_parent
-			_add_class_group(node, false)
-		
+			if _current_node._parent == node_group_parent:
+				_insert_class_group(node)
+			else:
+				_current_node = _current_node._parent
+				_insert_class_group(node)
+
+
+	PersistenceEditor.clipboard = []
 
 # Delete nodes from the class structure/tree.
 func _delete_class_nodes(nodes_del: Array[ClassNode]):
+	var first: ClassNode = nodes_del[0]
+	var parent_group: ClassGroup = first._parent
+	
+	# first_current is used to determine the previous node of the deleted nodes.
+	var first_current = parent_group._node_controller.get_previous([parent_group._node_controller, first._node_controller])
+	if first_current[0] == null: # We are at the root level.
+		first_current[0] = root_tree_structure._node_controller
+
+
 	for node in nodes_del:
 		node.self_delete()
 	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(first_current[0]._class_node)
+	_bus.seek_node.emit(first_current[0]._class_node)
 
 
 # Make a group from the selected nodes in the clipboard.
 func _make_group():
-
 	# The first node in the clipboard is used to determine where the group will be created.
 	var first = PersistenceEditor.clipboard[0]
 
 	# The parent group is to check if a new group is needed, because we only allow to create groups at the same level.
-	var parent_group : ClassGroup = first._parent
+	var parent_group: ClassGroup = first._parent
 
 	if parent_group == null:
 		push_error("Error: The clipboard does not contain a valid first node.")
@@ -213,8 +254,12 @@ func _make_group():
 			node._parent = class_node
 			parent_group._childrens.erase(node)
 			class_node.add_child(node)
-	_bus.update_treeindex.emit()
 
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(first_current[0]._class_node)
+	_bus.seek_node.emit(first_current[0]._class_node)
+
+#endregion
 
 #region Parse the class file.
 
@@ -240,7 +285,7 @@ func _parse_keep_compressed() -> bool:
 		push_error("Error: index.json not found in zip file")
 		return false
 	
-	var index_string:= zip_file.read_file("index.json").get_string_from_utf8()
+	var index_string := zip_file.read_file("index.json").get_string_from_utf8()
 
 	var index = JSON.parse_string(index_string)
 	if index == null or typeof(index) != TYPE_DICTIONARY:
@@ -311,13 +356,13 @@ func decompress_zip(__zip_path: String, __dir_tmp: String) -> bool:
 
 # Remove a directory and all its contents recursively.
 # This function is used to clean up temporary directories created during the parsing process.
-func _remove_dir_recursively(ruta: String) -> void:
-	for sub_dir in DirAccess.get_directories_at(ruta):
-		_remove_dir_recursively(ruta.path_join(sub_dir) + "/")
+func _remove_dir_recursively(path_del: String) -> void:
+	for sub_dir in DirAccess.get_directories_at(path_del):
+		_remove_dir_recursively(path_del.path_join(sub_dir) + "/")
 
-	for file_name in DirAccess.get_files_at(ruta):
-		DirAccess.remove_absolute(ruta.path_join(file_name))
+	for file_name in DirAccess.get_files_at(path_del):
+		DirAccess.remove_absolute(path_del.path_join(file_name))
 
-	DirAccess.remove_absolute(ruta)
+	DirAccess.remove_absolute(path_del)
 
 #endregion

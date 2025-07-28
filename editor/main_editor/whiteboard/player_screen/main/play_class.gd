@@ -17,9 +17,7 @@ var tree_manager: TreeManagerEditor
 var entry_point: NodeController
 var _current_node: ClassNode
 
-@onready var root: Node2D = $Class
-
-var zip_file: ZIPReader
+@onready var visual_widgets: Node2D = %VisualWidgets
 
 
 func _enter_tree():
@@ -43,16 +41,14 @@ func _load_whiteboard_size() -> Vector2i:
 	return ProjectSettings.get_setting("display/whiteboard/size") as Vector2i
 
 
-
-
 func _instantiate() -> bool:
 	entities = class_index.entities
 	root_tree_structure = class_index.tree_structure
 	root_tree_structure_controller = PersistenceEditor.resources_class.root_tree_structure._node_controller
-	var snapshot_visual: Node2D = Node2D.new()
-	NodeController.root_visual_controller = root
-	root.add_child(snapshot_visual)
-	NodeController.root_visual_controller_snapshot = snapshot_visual
+	var visual_slide: Node2D = Node2D.new()
+	NodeController.visual_widgets = visual_widgets
+	visual_widgets.add_child(visual_slide)
+	NodeController.visual_slide = visual_slide
 	entry_point = root_tree_structure_controller
 	return true
 
