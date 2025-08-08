@@ -9,9 +9,12 @@ func init(_properties: Dictionary) -> void:
 func serialize() -> Dictionary:
 	return entity.serialize()
 
-func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
-	get_tree().call_group(&"widget_finished", "clear")
 
+# Play the clear operation.
+func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
+	get_tree().call_group(&"widget_finished", "clear") # Call to all widgets to clear themselves if they are in the "widget_finished" group.
+
+	# Then reset the visual_slide by creating a new one and deleting the old one.
 	var visual_widgets: Node2D = NodeController.visual_widgets
 	var visual_slide: Node2D = NodeController.visual_slide
 	var new_visual_slide: Node2D = Node2D.new()
@@ -26,6 +29,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 func reset():
 	pass
 
+# Skip to the end of the clear operation. It is equivalent to play() since it is instant.
 func skip_to_end():
 	get_tree().call_group(&"widget_finished", "clear")
 

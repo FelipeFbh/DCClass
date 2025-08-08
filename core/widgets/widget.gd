@@ -10,12 +10,18 @@ extends Node2D
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
 
+
+# Dir class is the temporary directory where the widget assets are stored. Ex: Audio, Images, etc.
 static var dir_class: String
 
+
+# Bus to manage core signals.
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
+# The class node that this widget belongs to.
 var class_node: ClassNode
 
+# The signal to emit when the widget is finished.
 signal widget_finished
 
 
@@ -35,9 +41,6 @@ func init(_properties: Dictionary) -> void:
 ## The animation should be played for the given [param duration].
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	pass
-
-func play_seek(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
-	play(_duration, _total_real_time, _duration_leaf)
 
 ## Called when the player seeked to a point before the widget was played.
 ## The widget should be reset to its initial state.

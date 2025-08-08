@@ -37,14 +37,16 @@ func init(_properties: Dictionary) -> void:
 	audio.bus = &"AudioWidget"
 	audio.stream = packet_sequence
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
 	return entity.serialize()
 
 func _ready():
 	add_to_group(&"speed_scale_handler")
 
-
+# Play the audio file.
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
+	# Check if another audio is playing to wait for it to finish
 	var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
 	
 	if audio_current_playing.size() > 0:
@@ -55,6 +57,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 			if state._signal_source == _bus_core.stop_widget:
 				return
 	
+	# Now play this audio
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	_bus_core.current_node_changed.emit(class_node)
@@ -67,7 +70,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		await state.completed
 		reset()
 
-func seek(_seek_time: float) -> void:
+# Play the audio file from a specific time.
+func seek_and_play(_seek_time: float) -> void:
+	# Check if another audio is playing to wait for it to finish
 	var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
 	
 	if audio_current_playing.size() > 0:
@@ -78,6 +83,7 @@ func seek(_seek_time: float) -> void:
 			if state._signal_source == _bus_core.stop_widget:
 				return
 	
+	# Now play this audio
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	_bus_core.current_node_changed.emit(class_node)
@@ -93,16 +99,18 @@ func seek(_seek_time: float) -> void:
 		reset()
 	
 
+# Stop the audio.
 func stop():
 	reset()
 	emit_signal("widget_finished")
 
-
+# Reset the audio player. This mean set to the initial state and remove from playing groups.
 func reset():
 	audio.stop()
 	remove_from_group(&"audio_playing")
 	remove_from_group(&"widget_playing")
 
+# Skip to the end of the audio.
 func skip_to_end():
 	reset()
 	emit_signal("widget_finished")

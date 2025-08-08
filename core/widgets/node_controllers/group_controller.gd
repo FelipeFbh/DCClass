@@ -4,27 +4,33 @@ extends NodeController
 
 var _childrens: Array[ClassNode] = []
 
-# Returns the index of the controller in _childrens
+# Returns the index of the controller in _childrens[ClassNode]
 func _index_of(current_node: NodeController) -> int:
 	if current_node == null:
 		return -1
 	return _childrens.find(current_node._class_node)
 
 
+# Setup the controller with the given ClassGroup instance.
 func _setup(instance: ClassGroup):
 	_class_node = instance
 	_childrens = instance._childrens
 
 
-# Play the group in pre-order
+# Play the group in euler-order
 func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_child: NodeController = null) -> void:
 	var index = _index_of(last_child)
-		
+	
+	# Check if we are in a border case
+	## This case is when the group has no children or the last child is the last child of the group.
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
-		var parent = _class_node.get_parent_controller()
+		var parent = _class_node.get_parent_controller() # We keep the playing to the parent controller
+
 		if parent != null:
 			parent.play_tree(__duration, __total_real_time, self)
 			return
+		
+		# We are in the the last node of the tree so we wait for the last audio to finish
 		var audio_current_playing = get_tree().get_nodes_in_group("audio_playing")
 		if audio_current_playing.size() > 0:
 			var sigs: Array[Signal] = [audio_current_playing[0].audio.finished, _bus_core.stop_widget]
@@ -36,12 +42,16 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 		_bus_core.tree_play_finished.emit()
 		return
 	
+	# Play the next child after the last_child
 	var next_child_to_play = _childrens[index + 1]._node_controller
 	next_child_to_play.play_tree(__duration, __total_real_time, self)
 
 
+# We play the group from the seeked point.
+# This is useful to play without 
 func play_seek(last_child: NodeController = null) -> void:
 	var index = _index_of(last_child)
+
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
@@ -51,6 +61,8 @@ func play_seek(last_child: NodeController = null) -> void:
 	var next_child_to_play = _childrens[index + 1]._node_controller
 	next_child_to_play.play_seek(self)
 
+
+# Seek to the given node. Skiping to end all the nodes between node_seek and last_child.
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	var current: NodeController = last_child
 	var current_node = [self, last_child]
@@ -61,13 +73,6 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 		current_node = current.get_next(current_node)
 		current = current_node[0]
 	return
-
-
-func skip_to_end():
-	pass
-
-func self_delete() -> void:
-	queue_free()
 
 #region Tree Navigation
 
@@ -170,7 +175,7 @@ func compute_total_duration_between(start_leaf: LeafController, end_leaf: LeafCo
 		current = current.get_next_leaf(current)
 	return total
 
-
+# Compute the duration and total real time of the previous audio before the current node and the next audio after the current node.
 func _compute_duration_play(current_node: NodeController, _duration: float = 0.0, _total_real_time: float = 0.0) -> Array[float]:
 	var _previous_audio
 	if current_node.has_method("is_audio") and current_node.is_audio():
@@ -191,20 +196,3 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 	return [_duration, _total_real_time]
 
 #endregion
-
-
-# Warning !!! Recursive calls can overflow the stack!
-func recursive_seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	if node_seek == self:
-		return
-
-	var index = _index_of(last_child)
-		
-	if _childrens.size() == 0 or index + 1 == _childrens.size():
-		var parent = _class_node.get_parent_controller()
-		if parent != null:
-			parent.recursive_seek(node_seek, self)
-		return
-	
-	var next_child = _childrens[index + 1]._node_controller
-	next_child.recursive_seek(node_seek, self)
