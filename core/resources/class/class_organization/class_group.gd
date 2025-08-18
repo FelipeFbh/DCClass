@@ -39,6 +39,7 @@ func get_class_name():
 func get_editor_name():
 	return _name
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize():
 	return {
 		"name": _name,
@@ -46,6 +47,7 @@ func serialize():
 		"childrens": _childrens.map(func(p): return p.serialize()),
 	}
 
+# Deserialize from a dictionary format(.json) to resource(ClassGroup).
 static func deserialize(data: Dictionary):
 	var instance: ClassGroup = ClassGroup.new()
 	instance._name = data["name"]
@@ -55,7 +57,8 @@ static func deserialize(data: Dictionary):
 		instance.add_child(child)
 	return instance
 
-func _setup_controller(is_child_root : bool) -> void:
+# Setup the controller associated with this classnode.
+func _setup_controller(is_child_root: bool) -> void:
 	var _class: String = get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: GroupController = CustomClassDB.instantiate(_class)
@@ -69,6 +72,7 @@ func _setup_controller(is_child_root : bool) -> void:
 		controller._add_child_root()
 
 
+# Delete this classnode and all its children.
 func self_delete() -> void:
 	var children_copy = _childrens.duplicate()
 	
@@ -81,6 +85,7 @@ func self_delete() -> void:
 	_parent.child_delete(self)
 	_node_controller.self_delete()
 
+# Delete a child from this classnode.
 func child_delete(child: ClassNode) -> void:
 	if child in _childrens:
 		_childrens.erase(child)

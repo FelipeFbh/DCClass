@@ -30,8 +30,10 @@ func _pause_playback_widget():
 
 # Update the status of the editor
 func _epilog(status: Status = _status):
+	_status = status
 	if status == Status.STOPPED:
 		_stopped()
+
 	elif status == Status.PLAYING:
 		_playing()
 
@@ -69,5 +71,3 @@ func _recording_audio():
 
 func clipboard_clear_files():
 	pass
-	
-	
