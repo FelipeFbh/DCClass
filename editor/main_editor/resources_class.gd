@@ -116,6 +116,11 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 	_bus_core.current_node_changed.emit(class_node)
 	_bus.seek_node.emit(class_node)
 
+
+# Add a group after the current node. In case of being the current node being a group, it will follow the next logic:
+# back -> indicates how the group is added. 
+# If true, the group is added at the begin
+# if false, the group is added at the end.
 func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
@@ -139,7 +144,7 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
 
-
+# Insert a class_node at the same level of the current node.
 func _insert_class_group(class_node: ClassNode) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
@@ -170,7 +175,7 @@ func _insert_class_group(class_node: ClassNode) -> void:
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
 	
-	var node_group_parent: ClassNode = _current_node._parent
+	var node_group_parent: ClassNode = _current_node
 
 	for node in nodes_paste:
 		if node is ClassLeaf:
@@ -203,7 +208,9 @@ func _paste_class_nodes() -> void:
 			_bus.seek_node.emit(node)
 			
 		elif node is ClassGroup:
-			if _current_node._parent == node_group_parent:
+			if _current_node == node_group_parent:
+				_add_class_group(node, true)
+			elif _current_node._parent == node_group_parent:
 				_insert_class_group(node)
 			else:
 				_current_node = _current_node._parent

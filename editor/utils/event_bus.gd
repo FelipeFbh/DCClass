@@ -30,7 +30,7 @@ signal disabled_toggle_pen_button(active: bool)
 # Add a group after the current node. In case of being the current node being a group, it will follow the next logic:
 # back -> indicates how the group is added. 
 # If true, the group is added at the begin
-# if false, the group is added after the current node.
+# if false, the group is added at the end.
 signal add_class_group(group: ClassGroup, back: bool)
 
 signal add_class_leaf(entity: Entity)
