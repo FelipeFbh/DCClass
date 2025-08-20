@@ -42,6 +42,13 @@ func init(_properties: Dictionary) -> void:
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	pass
 
+
+## Called when it's time to play the widget and the widget is the first after a seek.
+## This is useful to play the current leaf when to current node is a pause. So we omit that pause.
+## The animation should be played for the given [param duration].
+func play_seek(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
+	play(_duration, _total_real_time, _duration_leaf)
+
 ## Called when the player seeked to a point before the widget was played.
 ## The widget should be reset to its initial state.
 func reset() -> void:
@@ -65,5 +72,6 @@ func set_speed_scale(_speed: float) -> void:
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
 
+## Delete the widget and renew the visual slide.
 func clear():
 	pass

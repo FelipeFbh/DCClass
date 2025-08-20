@@ -4,6 +4,11 @@ extends NodeController
 var _duration_leaf: float = 0.0 # Duration of the leaf. That is the duration of the widget.
 var leaf_value: Widget # The widget value of the leaf. It is the instance of the widget that is being played.
 
+
+#duration: The duration of the current playing audio.
+#total_real_time: The total time between the previous audio and the next audio, without including the audios duration.
+
+
 # Setup the leaf controller with the instance of the ClassLeaf.
 func _setup(instance: ClassLeaf):
 	_class_node = instance
@@ -74,8 +79,48 @@ func play_tree(__duration: float, __total_real_time: float, last_child: NodeCont
 	if is_instance_valid(parent):
 		parent.play_tree(__duration, __total_real_time, self)
 
+
+# Play the leaf widget.
+# This is useful to play the current leaf when to current node is a pause. So we omit that pause.
+func play_seekwidget(__duration: float, __total_real_time: float):
+	# With is_instance_valid we check if the leaf_value is null or if it has been freed. And we also check if the parent is valid.
+	if !is_instance_valid(leaf_value) or !is_instance_valid(leaf_value.get_parent()):
+		if !is_instance_valid(leaf_value):
+			# In this case we have to rebuild the leaf_value(widget).
+			load_data(_class_node)
+		
+		# We have to reparent the leaf_value to the correct parent, because it could have been changed the visual_slide or audio_widgets.
+		if is_instance_valid(leaf_value.get_parent()):
+			if is_audio():
+				if leaf_value.get_parent() != audio_widgets:
+					leaf_value.reparent(audio_widgets)
+		
+			elif leaf_value.get_parent() != visual_slide:
+					leaf_value.reparent(visual_slide)
+
+		# We add to the correct parent (visual or audio).
+		else:
+			if is_audio():
+				audio_widgets.add_child(leaf_value)
+			else:
+				visual_slide.add_child(leaf_value)
+	
+	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
+	var state = SignalsCore.await_any_once(sigs)
+	
+	leaf_value.play_seek(__duration, __total_real_time, _duration_leaf)
+	
+	if !state._done:
+		await state.completed
+		if state._signal_source == _bus_core.stop_widget:
+			if is_instance_valid(leaf_value):
+				leaf_value.stop()
+			return 1
+
+	return state._signal_value
+
 # We play from the seeked point to keep the playing order.
-# This is useful to play the current leaf with the previous audio leaf seeked.
+# This is useful to play the current leaf when to current node is a pause. So we omit that pause.
 func play_seek(last_child: NodeController = null) -> void:
 	var __duration = 0.0
 	var __total_real_time = 0.0
@@ -112,7 +157,7 @@ func play_seek(last_child: NodeController = null) -> void:
 			var time_seek = next_leaf_paudio.compute_total_duration_between(prev_leaf)
 			last_audio._seek_and_play(time_seek * (__duration / __total_real_time))
 	
-	var state = await play_widget(__duration, __total_real_time)
+	var state = await play_seekwidget(__duration, __total_real_time)
 	if state == 1:
 		return
 	
@@ -242,6 +287,7 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 
 #region Playing Tree Utilities
 
+# Return the last clear leaf node previous to the current node
 func get_last_clear() -> LeafController:
 	if _class_node.entity is ClearEntity:
 		return self
@@ -285,7 +331,7 @@ func compute_total_duration_between(end_leaf: LeafController) -> float:
 		current = current.get_next_leaf(current)
 	return total
 
-
+# Return the duration and total_real_time by giving the current node.
 func compute_duration_play(current_node: NodeController, _duration: float, _total_real_time: float) -> Array[float]:
 	var _previous_audio
 	if current_node.has_method("is_audio") and current_node.is_audio():

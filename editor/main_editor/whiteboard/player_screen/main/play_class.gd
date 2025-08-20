@@ -1,21 +1,19 @@
 class_name ClassSceneEditor
 extends Node2D
 
+# This file contain the logic of the reproduction interface of the class.
+# It is used to play the class, to seek nodes, to stop the class, etc
+
 var WHITEBOARD_SIZE: Vector2i
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-var file: String
 @export var class_index: ClassIndex
-var entities: Dictionary
-var root_tree_structure: ClassNode
 
 
-var root_tree_structure_controller: NodeController
 var tree_manager: TreeManagerEditor
 var entry_point: NodeController
-var _current_node: ClassNode
 
 @onready var visual_widgets: Node2D = %VisualWidgets
 
@@ -42,37 +40,23 @@ func _load_whiteboard_size() -> Vector2i:
 
 
 func _instantiate() -> bool:
-	entities = class_index.entities
-	root_tree_structure = class_index.tree_structure
-	root_tree_structure_controller = PersistenceEditor.resources_class.root_tree_structure._node_controller
 	var visual_slide: Node2D = Node2D.new()
 	NodeController.visual_widgets = visual_widgets
 	visual_widgets.add_child(visual_slide)
 	NodeController.visual_slide = visual_slide
-	entry_point = root_tree_structure_controller
 	return true
 
-
-func compute_duration() -> void:
-	return
-
-
-func play():
-	if !is_instance_valid(entry_point):
-		push_error("Error playing content: entry_point is not valid")
-		return
-	
-	entry_point.play_tree()
-
+# To begin the reproduction from the entry point of the class.
 func _seek_play():
 	entry_point = PersistenceEditor.resources_class._current_node._node_controller
 	entry_point.play_seek()
 
+# To seek a specific node in the class in an instant.
 func _seek_node(node_seek: ClassNode) -> void:
 	get_tree().call_group(&"widget_finished", "clear")
 	var node_seek_controller: NodeController = node_seek._node_controller
 	var last_clear: LeafController = node_seek_controller.get_last_clear()
-	entry_point = root_tree_structure_controller
+	entry_point = PersistenceEditor.resources_class.root_tree_structure._node_controller
 	if last_clear != null:
 		entry_point = last_clear
 	entry_point.seek(node_seek_controller, entry_point)

@@ -53,7 +53,6 @@ folder_colors={
 "res://assets/": "teal",
 "res://core/": "green",
 "res://editor/": "purple",
-"res://mods/": "red",
 "res://script_templates/": "gray"
 }
 

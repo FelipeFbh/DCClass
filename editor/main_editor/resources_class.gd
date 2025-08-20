@@ -1,17 +1,27 @@
 class_name ResourcesClassEditor
 extends Node
 
+# This file is used to manage the resources class in the editor.
+# For example, to parse .dcc file to a ClassIndex, to add new entities, etc.
+
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-
-var entities: Dictionary
 @export var class_index: ClassIndex
 
+# Dictionary that contains the entities of the class.
+var entities: Dictionary
+
+# The root of the tree structure of the class. The node is a ClassNode, it means the resource.
+var root_tree_structure: ClassNode
+
+# The root node of the controllers
 @onready var root_node_controller: Node = %Controllers
+
+# The audio_widgets node, used to add to the scene the audio_widgets.
 @onready var audio_widgets: Node2D = %AudioWidgets
 
-var root_tree_structure: ClassNode
+# The current node of the class, used to know the current node in the reproduction.
 var _current_node: ClassNode
 
 
@@ -128,6 +138,7 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
+
 
 func _insert_class_group(class_node: ClassNode) -> void:
 	class_node._setup_controller(true)

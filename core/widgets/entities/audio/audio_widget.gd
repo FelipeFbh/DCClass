@@ -87,6 +87,7 @@ func seek_and_play(_seek_time: float) -> void:
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
 	_bus_core.current_node_changed.emit(class_node)
+	# Border case: if the seek time is zero or the audio is already at the end, we finish immediately to avoid unnecessary courutines problems.
 	if is_zero_approx(_seek_time - compute_duration()):
 		emit_signal("widget_finished")
 		return
