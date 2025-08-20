@@ -10,11 +10,20 @@ extends Node2D
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
 
+
+# Dir class is the temporary directory where the widget assets are stored. Ex: Audio, Images, etc.
 static var dir_class: String
 
+
+# Bus to manage core signals.
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 
+# The class node that this widget belongs to.
 var class_node: ClassNode
+
+# The signal to emit when the widget is finished.
+signal widget_finished
+
 
 ## Compute the duration of the widget animation.
 func compute_duration() -> float:
@@ -33,6 +42,10 @@ func init(_properties: Dictionary) -> void:
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	pass
 
+
+## Called when it's time to play the widget and the widget is the first after a seek.
+## This is useful to play the current leaf when to current node is a pause. So we omit that pause.
+## The animation should be played for the given [param duration].
 func play_seek(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
 	play(_duration, _total_real_time, _duration_leaf)
 
@@ -59,5 +72,6 @@ func set_speed_scale(_speed: float) -> void:
 func reset_speed_scale() -> void:
 	set_speed_scale(1.0)
 
+## Delete the widget and renew the visual slide.
 func clear():
 	pass

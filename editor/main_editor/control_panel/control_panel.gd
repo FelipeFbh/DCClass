@@ -5,7 +5,6 @@ extends MarginContainer
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 signal audio_record(active: bool)
-signal pen_toggled(active: bool)
 signal request_detach
 
 @onready var menu_btn_edit: MenuButton = %EditMenuButton

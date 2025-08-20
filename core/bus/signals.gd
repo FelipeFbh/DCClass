@@ -2,7 +2,7 @@ class_name SignalsCore
 extends Node
 
 # Return a AnySignalCore that will emit when any of the signals in the array are emitted and then disconnect.
-# But the data will be stored in the class. [_done, _signal_source, _signal_value]
+# The data will be stored in the class. [_done, _signal_source, _signal_value]
 static func await_any(signals: Array[Signal]) -> Variant:
 	var watcher := AnySignalCore.new()
 	for sig in signals:

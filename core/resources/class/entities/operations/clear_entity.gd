@@ -35,6 +35,7 @@ func get_class_name() -> String:
 func get_editor_name() -> String:
 	return "Clear"
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
 	return {
 		"entity_id": entity_id,
@@ -42,6 +43,7 @@ func serialize() -> Dictionary:
 		"duration": duration
 	}
 
+# Load data from a dictionary format(.json) to resource(ClearEntity).
 func load_data(data: Dictionary) -> void:
 	pass
 

@@ -1,17 +1,27 @@
 class_name ResourcesClassEditor
 extends Node
 
+# This file is used to manage the resources class in the editor.
+# For example, to parse .dcc file to a ClassIndex, to add new entities, etc.
+
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-
-var entities: Dictionary
 @export var class_index: ClassIndex
 
+# Dictionary that contains the entities of the class.
+var entities: Dictionary
+
+# The root of the tree structure of the class. The node is a ClassNode, it means the resource.
+var root_tree_structure: ClassNode
+
+# The root node of the controllers
 @onready var root_node_controller: Node = %Controllers
+
+# The audio_widgets node, used to add to the scene the audio_widgets.
 @onready var audio_widgets: Node2D = %AudioWidgets
 
-var root_tree_structure: ClassNode
+# The current node of the class, used to know the current node in the reproduction.
 var _current_node: ClassNode
 
 
@@ -106,6 +116,11 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 	_bus_core.current_node_changed.emit(class_node)
 	_bus.seek_node.emit(class_node)
 
+
+# Add a group after the current node. In case of being the current node being a group, it will follow the next logic:
+# back -> indicates how the group is added. 
+# If true, the group is added at the begin
+# if false, the group is added at the end.
 func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
@@ -129,6 +144,7 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
 
+# Insert a class_node at the same level of the current node.
 func _insert_class_group(class_node: ClassNode) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
@@ -140,12 +156,13 @@ func _insert_class_group(class_node: ClassNode) -> void:
 			_current_class_group_childrens.insert(index_current + 1, class_node)
 
 	if _current_node is ClassGroup:
+		var _current_class_group_childrens
 		if _current_node._parent == null: # We are at the root level.
 			class_node.set_parent(root_tree_structure)
+			_current_class_group_childrens = _current_node._childrens
 		else:
 			class_node.set_parent(_current_node._parent)
-		
-		var _current_class_group_childrens = _current_node._parent._childrens
+			_current_class_group_childrens = _current_node._parent._childrens
 
 		var index_current = _current_class_group_childrens.find(_current_node)
 		_current_class_group_childrens.insert(index_current + 1, class_node)
@@ -158,7 +175,7 @@ func _insert_class_group(class_node: ClassNode) -> void:
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
 	
-	var node_group_parent: ClassNode = _current_node._parent
+	var node_group_parent: ClassNode = _current_node
 
 	for node in nodes_paste:
 		if node is ClassLeaf:
@@ -191,7 +208,9 @@ func _paste_class_nodes() -> void:
 			_bus.seek_node.emit(node)
 			
 		elif node is ClassGroup:
-			if _current_node._parent == node_group_parent:
+			if _current_node == node_group_parent:
+				_add_class_group(node, true)
+			elif _current_node._parent == node_group_parent:
 				_insert_class_group(node)
 			else:
 				_current_node = _current_node._parent

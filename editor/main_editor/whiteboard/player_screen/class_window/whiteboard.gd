@@ -139,7 +139,6 @@ func _handle_drawing(event: InputEvent) -> void:
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null
-			#print(entity.serialize())
 
 
 func _new_line() -> Line2D:
