@@ -29,6 +29,8 @@ signal disabled_toggle_pen_button(active: bool)
 
 signal add_class_group(group: ClassGroup, back: bool)
 
+signal add_class_slide(slide: ClassSlide)
+
 signal add_class_leaf(entity: Entity)
 
 signal add_class_leaf_entity(entity: Entity, entity_properties)

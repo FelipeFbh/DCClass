@@ -140,6 +140,8 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_clear()
 	if id == 5:
 		_add_pause()
+	if id == 6:
+		_add_slide()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -189,6 +191,35 @@ func _make_group() -> void:
 	for node in nodes_to_group:
 		PersistenceEditor.clipboard.append(node)
 	_bus.make_group.emit()
+
+#region Slide
+# Add a new slide to the end of the current node
+func _add_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node)
+
+# Push a new slide to the end of the current node
+func _push_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node)
+	
+#endregion
 
 
 # Add a clear entity after the current node

@@ -20,6 +20,7 @@ func _ready():
 	_bus.add_class_leaf_entity.connect(_add_class_leaf_entity)
 	_bus.add_class_leaf.connect(_add_class_leaf)
 	_bus.add_class_group.connect(_add_class_group)
+	_bus.add_class_slide.connect(_add_class_slide)
 	_bus.paste_class_nodes.connect(_paste_class_nodes)
 	_bus.delete_class_nodes.connect(_delete_class_nodes)
 	_bus.make_group.connect(_make_group)
@@ -65,7 +66,7 @@ func _add_class_leaf_entity(entity: Entity, entity_properties) -> void:
 	class_node._setup_controller(true)
 	
 
-	if _current_node is ClassGroup:
+	if _current_node is ClassGroup or _current_node is ClassSlide:
 		class_node.set_parent(_current_node)
 		var _current_class_group_childrens = _current_node._childrens
 		var index_current = _current_class_group_childrens.find(_current_node)
@@ -74,7 +75,7 @@ func _add_class_leaf_entity(entity: Entity, entity_properties) -> void:
 
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
-		if parent_node is ClassGroup:
+		if parent_node is ClassGroup or parent_node is ClassSlide:
 			class_node.set_parent(parent_node)
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
@@ -87,7 +88,7 @@ func _add_class_leaf_entity(entity: Entity, entity_properties) -> void:
 
 func _add_class_leaf(class_node: ClassNode) -> void:
 	class_node._setup_controller(true)
-	if _current_node is ClassGroup:
+	if _current_node is ClassGroup or _current_node is ClassSlide:
 		class_node.set_parent(_current_node)
 		var _current_class_group_childrens = _current_node._childrens
 		var index_current = _current_class_group_childrens.find(_current_node)
@@ -96,7 +97,7 @@ func _add_class_leaf(class_node: ClassNode) -> void:
 		
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
-		if parent_node is ClassGroup:
+		if parent_node is ClassGroup or parent_node is ClassSlide:
 			class_node.set_parent(parent_node)
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
@@ -110,13 +111,13 @@ func _add_class_group(class_node: ClassNode, back: bool) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
-		if parent_node is ClassGroup:
+		if parent_node is ClassGroup or parent_node is ClassSlide:
 			class_node.set_parent(parent_node)
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
 			_current_class_group_childrens.insert(index_current + 1, class_node)
 
-	if _current_node is ClassGroup:
+	if _current_node is ClassGroup or _current_node is ClassSlide:
 		class_node.set_parent(_current_node)
 		var _current_class_group_childrens = _current_node._childrens
 		if back:
@@ -133,13 +134,13 @@ func _insert_class_group(class_node: ClassNode) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
-		if parent_node is ClassGroup:
+		if parent_node is ClassGroup or parent_node is ClassSlide:
 			class_node.set_parent(parent_node)
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
 			_current_class_group_childrens.insert(index_current + 1, class_node)
 
-	if _current_node is ClassGroup:
+	if _current_node is ClassGroup or _current_node is ClassSlide:
 		var _current_class_group_childrens
 		if _current_node._parent == null: # We are at the root level.
 			class_node.set_parent(root_tree_structure)
@@ -155,6 +156,32 @@ func _insert_class_group(class_node: ClassNode) -> void:
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
 
+#region Slide
+
+func _add_class_slide(class_node: ClassNode) -> void:
+	class_node._setup_controller(true)
+	if _current_node is ClassLeaf:
+		var parent_node = _current_node._parent
+		if parent_node is ClassGroup:
+			class_node.set_parent(parent_node)
+			var _current_class_group_childrens = parent_node._childrens
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+
+	if _current_node is ClassGroup or _current_node is ClassSlide:
+		class_node.set_parent(_current_node)
+		var _current_class_group_childrens = _current_node._childrens
+		# if back:
+		var index_current = _current_class_group_childrens.find(_current_node)
+		_current_class_group_childrens.insert(index_current + 1, class_node)
+		# else:
+		# var index_current = _current_class_group_childrens.size()
+		# _current_class_group_childrens.insert(index_current, class_node)
+	
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(class_node)
+
+#endregion
 
 func _paste_class_nodes() -> void:
 	var nodes_paste: Array[ClassNode] = PersistenceEditor.clipboard
