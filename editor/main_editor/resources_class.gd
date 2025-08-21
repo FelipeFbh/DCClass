@@ -199,7 +199,7 @@ func _paste_class_nodes() -> void:
 
 			node._node_controller._add_child_root()
 
-			if _current_node is ClassGroup:
+			if _current_node is ClassGroup or _current_node is ClassSlide:
 				node.set_parent(_current_node)
 				var _current_class_group_childrens = _current_node._childrens
 				var index_current = _current_class_group_childrens.find(_current_node)
@@ -208,7 +208,7 @@ func _paste_class_nodes() -> void:
 
 			if _current_node is ClassLeaf:
 				var parent_node = _current_node._parent
-				if parent_node is ClassGroup:
+				if parent_node is ClassGroup or parent_node is ClassSlide:
 					node.set_parent(parent_node)
 					var _current_class_group_childrens = parent_node._childrens
 					var index_current = _current_class_group_childrens.find(_current_node)
@@ -231,8 +231,13 @@ func _paste_class_nodes() -> void:
 # Delete nodes from the class structure/tree.
 func _delete_class_nodes(nodes_del: Array[ClassNode]):
 	var first: ClassNode = nodes_del[0]
-	var parent_group: ClassGroup = first._parent
-	
+	var parent_group: ClassNode
+	# : ClassGroup = first._parent
+	if first._parent is ClassGroup:
+		parent_group = first._parent as ClassGroup
+	elif first._parent is ClassSlide:
+		parent_group = first._parent as ClassSlide
+
 	# first_current is used to determine the previous node of the deleted nodes.
 	var first_current = parent_group._node_controller.get_previous([parent_group._node_controller, first._node_controller])
 	if first_current[0] == null: # We are at the root level.
