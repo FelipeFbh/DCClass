@@ -158,11 +158,11 @@ func _insert_class_group(class_node: ClassNode) -> void:
 
 #region Slide
 
-func _add_class_slide(class_node: ClassNode) -> void:
+func _add_class_slide(class_node: ClassNode, back: bool) -> void:
 	class_node._setup_controller(true)
 	if _current_node is ClassLeaf:
 		var parent_node = _current_node._parent
-		if parent_node is ClassGroup:
+		if parent_node is ClassGroup or parent_node is ClassSlide:
 			class_node.set_parent(parent_node)
 			var _current_class_group_childrens = parent_node._childrens
 			var index_current = _current_class_group_childrens.find(_current_node)
@@ -171,12 +171,12 @@ func _add_class_slide(class_node: ClassNode) -> void:
 	if _current_node is ClassGroup or _current_node is ClassSlide:
 		class_node.set_parent(_current_node)
 		var _current_class_group_childrens = _current_node._childrens
-		# if back:
-		var index_current = _current_class_group_childrens.find(_current_node)
-		_current_class_group_childrens.insert(index_current + 1, class_node)
-		# else:
-		# var index_current = _current_class_group_childrens.size()
-		# _current_class_group_childrens.insert(index_current, class_node)
+		if back:
+			var index_current = _current_class_group_childrens.find(_current_node)
+			_current_class_group_childrens.insert(index_current + 1, class_node)
+		else:
+			var index_current = _current_class_group_childrens.size()
+			_current_class_group_childrens.insert(index_current, class_node)
 	
 	_bus.update_treeindex.emit()
 	_bus_core.current_node_changed.emit(class_node)
@@ -218,7 +218,7 @@ func _paste_class_nodes() -> void:
 			_bus_core.current_node_changed.emit(node)
 			_bus.seek_node.emit(node)
 			
-		elif node is ClassGroup:
+		elif node is ClassGroup or node is ClassSlide:
 			if _current_node._parent == node_group_parent:
 				_insert_class_group(node)
 			else:

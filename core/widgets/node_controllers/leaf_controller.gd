@@ -204,6 +204,9 @@ func _get_widget(entity: Entity) -> Widget:
 
 #region Tree Navigation
 
+func clear_visual():
+	leaf_value.line.hide()
+
 # Return the next node
 func get_next(__current_node: Array) -> Array:
 	var current_node = __current_node[0]

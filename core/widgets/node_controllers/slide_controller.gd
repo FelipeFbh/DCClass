@@ -25,6 +25,10 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
 		var parent = _class_node.get_parent_controller() # We keep the playing to the parent controller
 
+		for child in _childrens:
+			if child._node_controller is LeafController:
+				child._node_controller.clear_visual()
+
 		if parent != null:
 			parent.play_tree(__duration, __total_real_time, self)
 			return
@@ -52,6 +56,11 @@ func play_seek(last_child: NodeController = null) -> void:
 	var index = _index_of(last_child)
 
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
+
+		for child in _childrens:
+			if child._node_controller is LeafController:
+				child._node_controller.clear_visual()
+
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
 			parent.play_seek(self)
@@ -65,6 +74,14 @@ func play_seek(last_child: NodeController = null) -> void:
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	var current: NodeController = last_child
 	var current_node = [self, last_child]
+	var root = root_node_controller
+	var slides = root._childrens
+	for slide in slides:
+			if slide is SlideController:
+				print('slide')
+				# for child in slide._childrens:
+				# 	if child._node_controller is LeafController:
+				# 			child._node_controller.clear_visual()
 	while current != null:
 		current.skip_to_end()
 		if current == node_seek:
