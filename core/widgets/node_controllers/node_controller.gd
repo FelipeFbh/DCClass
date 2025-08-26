@@ -22,3 +22,7 @@ func self_delete() -> void:
 # Skip to the end of the widget.
 func skip_to_end() -> void:
 	pass
+
+# Clear visual content of the widget
+func clear_visual() -> void:
+	pass

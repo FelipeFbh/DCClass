@@ -25,9 +25,7 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
 		var parent = _class_node.get_parent_controller() # We keep the playing to the parent controller
 
-		for child in _childrens:
-			if child._node_controller is LeafController:
-				child._node_controller.clear_visual()
+		clear_visual()
 
 		if parent != null:
 			parent.play_tree(__duration, __total_real_time, self)
@@ -57,9 +55,7 @@ func play_seek(last_child: NodeController = null) -> void:
 
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
 
-		for child in _childrens:
-			if child._node_controller is LeafController:
-				child._node_controller.clear_visual()
+		clear_visual()
 
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
@@ -74,14 +70,6 @@ func play_seek(last_child: NodeController = null) -> void:
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	var current: NodeController = last_child
 	var current_node = [self, last_child]
-	var root = root_node_controller
-	var slides = root._childrens
-	for slide in slides:
-			if slide is SlideController:
-				print('slide')
-				# for child in slide._childrens:
-				# 	if child._node_controller is LeafController:
-				# 			child._node_controller.clear_visual()
 	while current != null:
 		current.skip_to_end()
 		if current == node_seek:
@@ -92,6 +80,11 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 
 #region Tree Navigation
 
+func clear_visual() -> void:
+	for child in _childrens:
+		var controller: NodeController = child._node_controller
+		controller.clear_visual()
+
 # Return the next NodeController after __current_node
 func get_next(__current_node: Array) -> Array:
 	var current_node = __current_node[0]
@@ -101,6 +94,8 @@ func get_next(__current_node: Array) -> Array:
 	if current_node._childrens.size() == 0 or index + 1 == current_node._childrens.size():
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
+			if current_node is SlideController:
+				parent.clear_visual()
 			return [parent, current_node]
 		return [null, null]
 	

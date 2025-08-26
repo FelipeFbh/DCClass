@@ -76,6 +76,11 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 
 #region Tree Navigation
 
+func clear_visual() -> void:
+	for child in _childrens:
+		var controller: NodeController = child._node_controller
+		controller.clear_visual()
+
 # Return the next NodeController after __current_node
 func get_next(__current_node: Array) -> Array:
 	var current_node = __current_node[0]
