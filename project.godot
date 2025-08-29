@@ -36,9 +36,15 @@ gdscript/warnings/integer_division=0
 
 [display]
 
-window/size/viewport_width=1080
+window/size/viewport_width=1280
 window/size/viewport_height=720
 window/subwindows/embed_subwindows=false
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
+display_server/driver.windows="windows"
+display_server/driver.android="android"
+display_server/driver.ios="iOS"
+display_server/driver.macos="macos"
 window/handheld/orientation=4
 window/stretch/scale.android=2.0
 whiteboard/size=Vector2i(2400, 1274)
@@ -54,6 +60,7 @@ folder_colors={
 "res://assets/": "teal",
 "res://core/": "green",
 "res://editor/": "purple",
+"res://mobile/": "pink",
 "res://script_templates/": "gray"
 }
 
@@ -109,10 +116,13 @@ toggle_resume_pause={
 
 [input_devices]
 
+pointing/android/enable_long_press_as_right_click=true
+pointing/android/enable_pan_and_scale_gestures=true
 pen_tablet/driver.windows="wintab"
 pointing/emulate_mouse_from_touch=false
 
 [rendering]
 
+renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_2d=1

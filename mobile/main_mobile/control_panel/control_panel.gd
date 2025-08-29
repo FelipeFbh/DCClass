@@ -274,6 +274,7 @@ func _disabled_toggle_select_item_index(active: bool) -> void:
 
 # Update the current node
 func _current_node_changed(current_node):
+	
 	if current_item_tree != null:
 		current_item_tree.set_custom_color(0, Color.GRAY)
 	current_item_tree = tree_manager.find_item_by_node(current_node)

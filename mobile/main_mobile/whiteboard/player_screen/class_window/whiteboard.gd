@@ -20,7 +20,6 @@ var _last_point: Vector2 = Vector2.INF
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
 
-
 func _gui_input(event):
 	if _pen_enabled:
 		_handle_drawing(event)
