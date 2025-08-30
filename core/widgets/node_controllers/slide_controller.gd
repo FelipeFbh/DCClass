@@ -25,9 +25,10 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
 		var parent = _class_node.get_parent_controller() # We keep the playing to the parent controller
 
-		clear_visual()
 
 		if parent != null:
+			# Pop current layer on leaving a slide
+			NodeController.pop_slide_layer()
 			parent.play_tree(__duration, __total_real_time, self)
 			return
 		
@@ -45,6 +46,9 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	
 	# Play the next child after the last_child
 	var next_child_to_play = _childrens[index + 1]._node_controller
+	if next_child_to_play is SlideController:
+		NodeController.push_slide_layer()
+
 	next_child_to_play.play_tree(__duration, __total_real_time, self)
 
 
@@ -54,9 +58,6 @@ func play_seek(last_child: NodeController = null) -> void:
 	var index = _index_of(last_child)
 
 	if _childrens.size() == 0 or index + 1 == _childrens.size():
-
-		clear_visual()
-
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
 			parent.play_seek(self)
@@ -66,27 +67,29 @@ func play_seek(last_child: NodeController = null) -> void:
 	next_child_to_play.play_seek(self)
 
 
-# Seek to the given node. Skiping to end all the nodes between node_seek and last_child.
-func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	var current: NodeController = last_child
-	var current_node = [self, last_child]
-	while current != null:
-		current.skip_to_end()
-		if current == node_seek:
-			return
-		current_node = current.get_next(current_node)
-		current = current_node[0]
-	return
 
 #region Tree Navigation
 
-func clear_visual() -> void:
+func clear_visual_recursive() -> void:
 	for child in _childrens:
 		var controller: NodeController = child._node_controller
 		controller.clear_visual()
 
+func clear_visual() -> void:
+	var stack: Array[ClassNode] = []
+	for child in _childrens:
+		stack.append(child)
+
+	while stack.size() > 0:
+		var controller = stack.pop_back()._node_controller
+		if controller is LeafController:
+			controller.clear_visual()
+		elif controller is GroupController:
+			for subchild in controller._childrens:
+				stack.append(subchild)
+
 # Return the next NodeController after __current_node
-func get_next(__current_node: Array) -> Array:
+func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
 	var last_child = __current_node[1]
 	var index = current_node._index_of(last_child)
@@ -94,12 +97,20 @@ func get_next(__current_node: Array) -> Array:
 	if current_node._childrens.size() == 0 or index + 1 == current_node._childrens.size():
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
-			if current_node is SlideController:
-				parent.clear_visual()
+			# Pop current layer if is computing (called only on seek)
+			if current_node is SlideController and compute_layer:
+				NodeController.pop_slide_layer()
+				current_node.created_layer = false
 			return [parent, current_node]
 		return [null, null]
 	
 	var next_child = current_node._childrens[index + 1]._node_controller
+
+	# Push current layer if is computing (called only on seek)
+	if next_child is SlideController and compute_layer:
+		NodeController.push_slide_layer()
+		next_child.created_layer = true
+
 	return [next_child, null]
 
 
@@ -115,10 +126,20 @@ func get_previous(__current_node: Array) -> Array:
 	if current_node._childrens.size() == 0 or index - 1 <= -1:
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
+
+			# Pop the slide layer if we are leaving a slide
+			# if current_node is SlideController:
+			# 	NodeController.pop_slide_layer()
+
 			return [parent, current_node]
 		return [null, null]
 
 	var prev_child = current_node._childrens[index - 1]._node_controller
+
+	# Push the slide layer if we are entering a slide
+	# if prev_child is SlideController:
+	# 	NodeController.push_slide_layer()
+
 	return [prev_child, null]
 
 
@@ -147,6 +168,21 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 
 
 #region Playing Tree Utilities
+
+# Return if the current node has a clear operation
+func has_clear_operation() -> bool:
+	for child in _childrens:
+		var controller: NodeController = child._node_controller
+		# Slide checks only himself
+		if controller is SlideController:
+			continue
+		elif controller is GroupController:
+			return controller.has_clear_operation()
+		elif controller is LeafController:
+			return controller._class_node.entity is ClearEntity
+		else:
+			return false
+	return false
 
 # Return the last ClearEntity before the current node
 func get_last_clear() -> LeafController:

@@ -39,15 +39,15 @@ func play_widget(__duration: float, __total_real_time: float):
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_slide:
-					leaf_value.reparent(visual_slide)
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
 
 		# We add to the correct parent (visual or audio).
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_slide.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -95,15 +95,15 @@ func play_seekwidget(__duration: float, __total_real_time: float):
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_slide:
-					leaf_value.reparent(visual_slide)
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
 
 		# We add to the correct parent (visual or audio).
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_slide.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -136,14 +136,14 @@ func play_seek(last_child: NodeController = null) -> void:
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_widgets:
-					leaf_value.reparent(visual_widgets)
-		
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
+
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_widgets.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	leaf_value.reset()
 	
@@ -188,14 +188,14 @@ func skip_to_end() -> void:
 			if leaf_value.get_parent() != audio_widgets:
 				leaf_value.reparent(audio_widgets)
 	
-		elif leaf_value.get_parent() != visual_widgets:
-			leaf_value.reparent(visual_widgets)
+		elif leaf_value.get_parent() != NodeController.get_current_layer():
+			leaf_value.reparent(NodeController.get_current_layer())
 	
 	else:
 		if is_audio():
 			audio_widgets.add_child(leaf_value)
 		else:
-			visual_widgets.add_child(leaf_value)
+			NodeController.get_current_layer().add_child(leaf_value)
 	
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished]
@@ -254,7 +254,7 @@ func clear_visual():
 		leaf_value.clear()
 
 # Return the next node
-func get_next(__current_node: Array) -> Array:
+func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
 
 	var parent = current_node._class_node.get_parent_controller()
