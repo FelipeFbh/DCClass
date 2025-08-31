@@ -75,3 +75,7 @@ func reset_speed_scale() -> void:
 ## Delete the widget and renew the visual slide.
 func clear():
 	pass
+
+## Unclear the widget (useful for visual state restoration)
+func unclear():
+	pass

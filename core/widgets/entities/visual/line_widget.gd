@@ -89,7 +89,13 @@ func _add_points(i: int) -> void:
 # This means resetting the line and removing it from the groups.
 func clear():
 	reset()
+	add_to_group(&"widget_cleared")
 
+# Unclear the line widget.
+# This means resetting to the visual state.
+func unclear():
+	skip_to_end()
+	remove_from_group(&"widget_cleared")
 
 # Returns the duration of the line in seconds.
 func compute_duration() -> float:

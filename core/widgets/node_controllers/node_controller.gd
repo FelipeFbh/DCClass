@@ -56,6 +56,16 @@ static func pop_slide_layer() -> void:
 		else:
 			visual_slide = null
 
+# Hide all slide layers (useful for clear widget on a slide)
+static func hide_layers() -> void:
+	for layer in slide_layers:
+		layer.hide()
+
+# Unhide all slide layers (useful for exiting a slide)
+static func unhide_layers() -> void:
+	for layer in slide_layers:
+		layer.show()
+
 static func get_current_layer() -> Node2D:
 	if current_layer_index >= 0 and current_layer_index < slide_layers.size():
 		return slide_layers[current_layer_index]

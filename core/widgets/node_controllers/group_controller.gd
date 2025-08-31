@@ -97,6 +97,8 @@ func get_next(__current_node: Array, compute_layer:= false) -> Array:
 			# Pop current layer if is computing (called only on seek)
 			if current_node is SlideController and compute_layer:
 				NodeController.pop_slide_layer()
+				get_tree().call_group(&"widget_cleared", "unclear")
+				NodeController.unhide_layers()
 			return [parent, current_node]
 		return [null, null]
 	
@@ -104,7 +106,6 @@ func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	# Push current layer if is computing (called only on seek)
 	if next_child is SlideController and compute_layer:
 		NodeController.push_slide_layer()
-		next_child.created_layer = true
 
 	return [next_child, null]
 
@@ -121,20 +122,10 @@ func get_previous(__current_node: Array) -> Array:
 	if current_node._childrens.size() == 0 or index - 1 <= -1:
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
-
-			# Pop the slide layer if we are leaving a slide
-			# if current_node is SlideController:
-			# 	NodeController.pop_slide_layer()
-
 			return [parent, current_node]
 		return [null, null]
 
 	var prev_child = current_node._childrens[index - 1]._node_controller
-
-	# Push the slide layer if we are entering a slide
-	# if prev_child is SlideController:
-	# 	NodeController.push_slide_layer()
-
 	return [prev_child, null]
 
 
