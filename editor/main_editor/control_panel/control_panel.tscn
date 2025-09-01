@@ -70,6 +70,7 @@ size_flags_horizontal = 3
 
 [node name="HBoxContainerControl" type="HBoxContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="AudioButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
@@ -80,6 +81,32 @@ text = "Audio"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Pen"
+
+[node name="ZoomButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Zoom"
+
+[node name="HBoxContainerThickness" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="PenThicknessLabel" type="Label" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/HBoxContainerThickness"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Thickness"
+
+[node name="PenThicknessSlider" type="HSlider" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/HBoxContainerThickness"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+value = 0.5
 
 [node name="ColorPickerButton" type="ColorPickerButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true

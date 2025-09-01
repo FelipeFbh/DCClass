@@ -23,6 +23,15 @@ signal disabled_toggle_audio_button(active: bool)
 # Toggle Pen Button
 signal disabled_toggle_pen_button(active: bool)
 
+# Toggle Zoom Button
+signal disabled_toggle_zoom_button(active: bool)
+
+# Pen Thickness Changed
+signal pen_thickness_changed(value: float)
+
+# Pen Color Changed
+signal pen_color_changed(color: Color)
+
 #endregion
 
 #region Resources
@@ -50,6 +59,9 @@ signal make_group()
 
 # Toggle pen
 signal pen_toggled(active: bool)
+
+# Toogle zoom
+signal zoom_toggled(active: bool)
 
 # Seek the visual for a node
 signal seek_node(node: ClassNode)

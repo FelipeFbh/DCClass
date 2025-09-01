@@ -13,9 +13,15 @@ signal request_detach
 @onready var btn_audio: CheckButton = %AudioButton
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
-
+@onready var btn_zoom: CheckButton = %ZoomButton
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
+
+@onready var pen_color_picker: ColorPickerButton = %ColorPickerButton
+
+@onready var pen_thickness_slider: HSlider = %PenThicknessSlider
+@onready var pen_thickness_label: Label = %PenThicknessLabel
+@onready var pen_thickness_container: HBoxContainer = %HBoxContainerThickness
 
 var resources_class: ResourcesClassEditor
 
@@ -36,13 +42,21 @@ func _ready() -> void:
 
 	btn_audio.toggled.connect(_on_toggle_audio_pressed)
 	_bus.disabled_toggle_audio_button.connect(_disabled_toggle_audio_button)
+	
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
+	
+	btn_zoom.toggled.connect(_on_zoom_toggled)
+	_bus.disabled_toggle_zoom_button.connect(_disabled_toggle_zoom_button)
+	
 	btn_detach.pressed.connect(_on_button_detach_pressed)
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
 
+	pen_thickness_slider.value_changed.connect(_pen_thickness_changed)
+	pen_color_picker.color_changed.connect(_pen_color_changed)
+	
 
 # Setup the control panel with the current resources class
 func _setup():
@@ -217,7 +231,27 @@ func _add_pause() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
+	
+func _set_pen_controls_enabled(enabled: bool):
+	if pen_thickness_slider:
+		pen_thickness_container.visible = true
+		pen_thickness_slider.editable = enabled
+	if pen_color_picker:
+		pen_color_picker.visible = true
+		pen_color_picker.disabled = not enabled
+
+func _set_pen_controls_disabled(enabled: bool):
+	if pen_thickness_slider:
+		pen_thickness_container.visible = false
+		pen_thickness_slider.editable = not enabled
+	if pen_color_picker:
+		pen_color_picker.visible = false
+		pen_color_picker.disabled = enabled
+		
+
 #endregion
+
+# func _add_zoom():
 
 
 #region Whiteboard Interactions
@@ -238,16 +272,31 @@ func _on_button_pen_toggled(active: bool) -> void:
 	_bus.pen_toggled.emit(active)
 	if active:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_PEN)
+		
+		_set_pen_controls_enabled(active)
 	else:
 		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+	
+		_set_pen_controls_disabled(active)
 
 func _disabled_toggle_pen_button(active: bool) -> void:
 	btn_pen.disabled = active
 
+# Toggle zoom mode
+func _on_zoom_toggled(active: bool) -> void:
+	_bus.zoom_toggled.emit(active)
+	if active:
+		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_ZOOM)
+	else:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _disabled_toggle_zoom_button(active: bool) -> void:
+	btn_zoom.disabled = active
+		
 # Request to detach the whiteboard
 func _on_button_detach_pressed() -> void:
 	request_detach.emit()
-
+	
 #endregion
 
 
@@ -282,5 +331,22 @@ func _current_node_changed(current_node):
 	tree_manager.scroll_to_item(current_item_tree, true)
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
+
+func _pen_thickness_changed(value: float):
+	_bus.pen_thickness_changed.emit(value)
+	
+	var thickness_entity := PenThicknessEntity.new()
+	thickness_entity.thickness = value
+
+	_bus.add_class_leaf_entity.emit(thickness_entity, [])
+	
+	
+func _pen_color_changed(color: Color) -> void:
+	_bus.pen_color_changed.emit(color)
+	
+	var color_entity := PenColorEntity.new()
+	color_entity.color = color
+	
+	_bus.add_class_leaf_entity.emit(color_entity, [])
 
 #endregion

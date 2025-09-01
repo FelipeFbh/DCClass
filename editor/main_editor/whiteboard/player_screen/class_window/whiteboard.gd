@@ -17,13 +17,30 @@ var _pressed: bool = false
 var _line: Line2D
 var _last_point: Vector2 = Vector2.INF
 
+var _zoom_enabled: bool = false
+
+var _pen_thickness: float = 2.0
+var _pen_color: Color = Color.WHITE
+
+var _pen_thickness_history: Array = []
+var _current_pen_thickness_index: int = -1
+
+var _pen_color_history: Array = []
+var _current_pen_color_index: int = -1
+
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
-
+	_bus.pen_thickness_changed.connect(_on_pen_thickness_changed)
+	_bus.pen_color_changed.connect(_on_pen_color_changed)
+		
 
 func _gui_input(event):
 	if _pen_enabled:
 		_handle_drawing(event)
+		return
+	
+	if _zoom_enabled:
+		_handle_zoom(event)
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -68,6 +85,21 @@ func _on_pen_toggled(active: bool) -> void:
 	_pen_enabled = active
 	_last_time = Time.get_ticks_msec() / 1000.0
 
+func _on_zoom_toggled(active: bool) -> void:
+	_zoom_enabled = active
+	_last_time = Time.get_ticks_msec() / 1000.0
+
+func _on_pen_thickness_changed(thickness: float) -> void:
+	_pen_thickness = thickness
+	
+	if is_instance_valid(_line):
+		_line.width = _pen_thickness
+
+func _on_pen_color_changed(color: Color) -> void:
+	_pen_color = color
+	
+	if is_instance_valid(_line):
+		_line.default_color = _pen_color
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -140,6 +172,30 @@ func _handle_drawing(event: InputEvent) -> void:
 			_line.queue_free()
 			_line = null
 
+func handle_pen_thickness(entity: PenThicknessEntity):
+	entity.apply_config(self)
+	_save_pen_thickness_to_history("thickness", entity.thickness)
+
+func handle_pen_color(entity: PenColorEntity):
+	entity.apply_config(self)
+	_save_pen_color_to_history("color", entity.color)
+	
+func _save_pen_thickness_to_history(type: String, value: float):
+	_pen_thickness_history.append({
+		"type": type,
+		"value": value,
+		"time": Time.get_ticks_msec()
+	})
+	_current_pen_thickness_index = _pen_thickness_history.size() - 1
+	
+func _save_pen_color_to_history(type: String, color: Color):
+	_pen_thickness_history.append({
+		"type": type,
+		"color": color,
+		"time": Time.get_ticks_msec()
+	})
+	_current_pen_color_index = _pen_color_history.size() - 1
+
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()
@@ -148,3 +204,4 @@ func _new_line() -> Line2D:
 	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	l.joint_mode = Line2D.LINE_JOINT_ROUND
 	return l
+	

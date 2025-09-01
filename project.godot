@@ -41,6 +41,7 @@ window/size/viewport_height=720
 window/subwindows/embed_subwindows=false
 window/stretch/mode="viewport"
 window/stretch/aspect="expand"
+window/per_pixel_transparency/allowed=true
 display_server/driver.windows="windows"
 display_server/driver.android="android"
 display_server/driver.ios="iOS"
