@@ -10,10 +10,13 @@ extends VSplitContainer
 # the elements that will hide from the user
 @onready var bottom_panel: PanelContainer = %BottomPanel
 @onready var play_button: Button = %StopButton
+@onready var volume_button: TextureButton = %VolumeButton
+@onready var volume_slider: HSlider = %VolumeSlider
+@onready var recenter: Button = %RecenterCameraButton
 @onready var whiteboard: Control = %Whiteboard
 
 var is_control_visible: bool = true
-var dragging: bool = false
+var is_mouse_over: bool = false
 
 # counts the seconds to hide the bottom panel
 var hide_timer: Timer
@@ -36,10 +39,35 @@ func _ready():
 	
 	whiteboard.gui_input.connect(_on_viewport_input)
 	
+	_setup_hover_detection()
+
+func _setup_hover_detection():
+	var hover_elements = [bottom_panel, play_button, volume_button, volume_slider, recenter]
+	
+	for element in hover_elements:
+		element.mouse_entered.connect(_on_element_mouse_entered)
+		element.mouse_exited.connect(_on_element_mouse_exited)
+
+func _on_element_mouse_entered():
+	is_mouse_over = true
+	reset_hide_timer()
+
+func _on_element_mouse_exited():
+	is_mouse_over = false
+	
+	if is_control_visible: 
+		start_hide_timer()
+
 # resumes or restarts the timer
 func start_hide_timer():
-	if hide_timer and is_visible:
+	if hide_timer and is_control_visible and not is_mouse_over:
 		hide_timer.start()
+
+func reset_hide_timer():
+	if hide_timer:
+		hide_timer.stop()
+		if is_control_visible:
+			hide_timer.start()
 	
 # Fade out animation
 func fade_out_elements():
@@ -55,6 +83,7 @@ func fade_out_elements():
 	# Fade out
 	tween.tween_property(bottom_panel, "modulate:a", 0.0, fade_duration)
 	tween.tween_property(play_button, "modulate:a", 0.0, fade_duration)
+	tween.tween_property(recenter, "modulate:a", 0.0, fade_duration)
 	
 	tween.finished.connect(_make_elements_invisible, CONNECT_ONE_SHOT)
 	
@@ -69,6 +98,7 @@ func fade_in_elements():
 		
 	bottom_panel.visible = true
 	play_button.visible = true
+	recenter.visible = true
 	
 	# tween creation
 	tween = create_tween()
@@ -77,6 +107,7 @@ func fade_in_elements():
 	# Fade in
 	tween.tween_property(bottom_panel, "modulate:a", 1.0, fade_duration)
 	tween.tween_property(play_button, "modulate:a", 1.0, fade_duration)
+	tween.tween_property(recenter, "modulate:a", 1.0, fade_duration)
 	
 	tween.finished.connect(_make_elements_visible, CONNECT_ONE_SHOT)
 	
@@ -85,18 +116,22 @@ func fade_in_elements():
 func _make_elements_invisible():
 	bottom_panel.visible = false
 	play_button.visible = false
+	recenter.visible = false
 	
 	bottom_panel.modulate.a = 0.0
 	play_button.modulate.a = 0.0
+	recenter.modulate.a = 0.0
 	
 	is_control_visible = false
 
 func _make_elements_visible():
 	bottom_panel.visible = true
 	play_button.visible = true
+	recenter.visible = true
 	
 	bottom_panel.modulate.a = 1.0
 	play_button.modulate.a = 1.0
+	recenter.modulate.a = 1.0
 	
 	is_control_visible = true
 	
@@ -105,16 +140,12 @@ func _on_timer_timeout():
 	fade_out_elements()
 
 func _on_viewport_input(event: InputEvent):
-	
-	
 	if event is InputEventScreenTouch and event.pressed:
 		_handle_touch_input()
 	if event is InputEventScreenDrag and event.pressed:
 		_make_elements_invisible()
 	if event is InputEventMouseButton and event.pressed:
 		_handle_touch_input()
-	
-		
 		
 # when there's a touch on the screen (mobile)
 func _handle_touch_input():
@@ -123,4 +154,4 @@ func _handle_touch_input():
 		fade_in_elements()
 	else:
 		# if they're already visible
-		fade_out_elements()
+		reset_hide_timer()

@@ -19,11 +19,11 @@ signal request_detach
 
 @onready var pen_color_picker: ColorPickerButton = %ColorPickerButton
 @onready var pen_color_label: Label = %ColorPickerLabel
-@onready var pen_color_container: HBoxContainer = %HBoxContainerPenColor
+@onready var pen_color_container: HBoxContainer = %PenColorContainer
 
-@onready var pen_thickness_slider: HSlider = %PenThicknessHSlider
+@onready var pen_thickness_slider: HSlider = %PenThicknessSlider
 @onready var pen_thickness_label: Label = %PenThicknessLabel
-@onready var pen_thickness_container: HBoxContainer = %HBoxContainerPenThickness
+@onready var pen_thickness_container: HBoxContainer = %PenThicknessContainer
 
 var resources_class: ResourcesClassEditor
 
@@ -259,8 +259,6 @@ func _set_pen_controls_disabled(enabled: bool):
 		pen_color_picker.disabled = enabled
 		
 #endregion
-
-
 
 
 #region Whiteboard Interactions

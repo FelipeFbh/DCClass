@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://oy02dobgre3u"]
+[gd_scene load_steps=11 format=3 uid="uid://oy02dobgre3u"]
 
 [ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_b142x"]
 [ext_resource type="Script" uid="uid://do7ygokb3wgkc" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/whiteboard.gd" id="2_5eppn"]
@@ -11,9 +11,17 @@
 atlas = ExtResource("3_hb30m")
 region = Rect2(350, 350, 50, 50)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_te1kq"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(360, 410, 30, 30)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
 atlas = ExtResource("3_hb30m")
 region = Rect2(50, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4hnd6"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(0, 300, 50, 50)
 
 [node name="ClassWindow" type="Control"]
 layout_mode = 3
@@ -42,6 +50,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="LeftSplit/RightSplit"]
+visible = false
 layout_mode = 2
 
 [node name="TabContainer" type="TabContainer" parent="LeftSplit/RightSplit/PanelContainer"]
@@ -84,7 +93,7 @@ stretch = true
 unique_name_in_owner = true
 disable_3d = true
 handle_input_locally = false
-size = Vector2i(945, 628)
+size = Vector2i(1280, 628)
 render_target_update_mode = 4
 
 [node name="PlaybackControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
@@ -108,6 +117,21 @@ layout_mode = 2
 theme_type_variation = &"PlayerIconButton"
 icon = SubResource("AtlasTexture_mcb8p")
 
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+layout_mode = 0
+offset_left = 1210.0
+offset_top = 30.0
+offset_right = 1250.0
+offset_bottom = 70.0
+
+[node name="RecenterCameraButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+icon = SubResource("AtlasTexture_te1kq")
+
 [node name="BottomPanel" type="PanelContainer" parent="LeftSplit/RightSplit/BottomSplit"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 80)
@@ -127,6 +151,11 @@ size_flags_horizontal = 3
 [node name="ControlRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
+
+[node name="Spacer5" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.07
 
 [node name="CameraZoom" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
 layout_mode = 2
@@ -151,8 +180,27 @@ value = 1.0
 [node name="Spacer3" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
 
-[node name="Spacer2" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+[node name="VolumeControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
+
+[node name="VolumeButton" type="TextureButton" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/VolumeControls"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_4hnd6")
+
+[node name="VolumeSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/VolumeControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.001
+
+[node name="Spacer4" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.14

@@ -4,8 +4,6 @@ extends Control
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: MobileEventBus = Engine.get_singleton(&"MobileSignals")
 
-
-
 #region Whiteboard
 
 @onready var viewport: SubViewport = %SubViewport
@@ -14,6 +12,7 @@ extends Control
 # In this case, it is "visual_widgets" node.
 func set_class_node(node: Node) -> void:
 	node.reparent(viewport)
+
 #endregion
 
 #region Camera Zoom
@@ -79,6 +78,76 @@ func _status_playback_stop(active : bool = is_stopped ) -> void:
 func _disabled_toggle_stop_button(active: bool) -> void:
 	stop_button.disabled = active
 
+#endregion
+
+#region Volume Controls
+
+@export var bus_name: String = "Master"
+var volume_icons_texture: Texture2D = preload("res://assets/sprites/ui/sheet_white1x.png")
+var bus_index: int
+
+@onready var volume_slider: HSlider = %VolumeSlider
+@onready var volume_button: TextureButton = %VolumeButton
+@onready var no_vol_icon: Texture2D
+@onready var vol_icon: Texture2D
+
+var no_vol_region: Rect2 = Rect2(0,350,50,50)
+var vol_region: Rect2 = Rect2(0,300,50,50)
+var prev_vol: float = 0.5
+
+# volume slider changes
+func _volume_controls() -> void:
+	bus_index = AudioServer.get_bus_index(bus_name)
+	
+	var act_vol = AudioServer.get_bus_volume_db(bus_index)
+	var act_vol_linear = db_to_linear(act_vol)
+	
+	volume_slider.value_changed.connect(_on_volume_changed)
+	volume_button.pressed.connect(_toggle_mute)
+
+# volume change signal
+func _on_volume_changed(value: float) -> void:
+	AudioServer.set_bus_volume_db(bus_index, linear_to_db(value))
+	
+	_update_volume_icon(value)
+
+# changing icon according to volume
+func _update_volume_icon(volume: float):
+	var region: Rect2
+	
+	if volume == 0:
+		region = no_vol_region
+	else:
+		region = vol_region
+		
+	var texture = AtlasTexture.new()
+	texture.atlas = volume_icons_texture
+	texture.region = region
+	
+	volume_button.texture_normal = texture
+
+# mutes the audio
+func _toggle_mute():
+	var act_vol = volume_slider.value
+	
+	if act_vol > 0:
+		# save volume
+		volume_slider.set_meta("prev_vol", act_vol)
+		# mute
+		volume_slider.value = 0
+	else:
+		# restore the volume
+		var vol = volume_slider.get_meta("prev_vol", 0.5)
+		volume_slider.value = vol
+		
+#endregion
+
+#region Recenter
+
+@onready var center_camera_button: Button = %RecenterCameraButton
+
+func _toggle_camera_button(user_controlled_camera: bool) -> void:
+	center_camera_button.visible = user_controlled_camera
 
 #endregion
 
@@ -98,9 +167,12 @@ func _ready():
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
 	_bus.status_playback_stop.connect(_status_playback_stop)
 	
-
+	center_camera_button.pressed.connect(func (): ClassUIMobile.context.camera.user_controlled = false)
+	
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
+	
+	_volume_controls()
 	
 
 func _process(_delta: float):

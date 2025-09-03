@@ -24,7 +24,7 @@ func _gui_input(event):
 	if _pen_enabled:
 		_handle_drawing(event)
 		return
-
+	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		get_viewport().set_input_as_handled()
 		_dragging = event.is_pressed()
