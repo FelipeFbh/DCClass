@@ -14,6 +14,7 @@ signal request_detach
 @onready var btn_audio: CheckButton = %AudioButton
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
+@onready var btn_drag: CheckButton = %DragButton
 
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
@@ -40,6 +41,9 @@ func _ready() -> void:
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
 	btn_detach.pressed.connect(_on_button_detach_pressed)
+
+	btn_drag.toggled.connect(_on_button_drag_toggled)
+	_bus.disabled_toggle_drag_button.connect(_disabled_toggle_drag_button)
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
@@ -248,6 +252,17 @@ func _disabled_toggle_pen_button(active: bool) -> void:
 # Request to detach the whiteboard
 func _on_button_detach_pressed() -> void:
 	request_detach.emit()
+
+# Toggle drag mode
+func _on_button_drag_toggled(active: bool) -> void:
+	_bus.drag_toggled.emit(active)
+	if active:
+		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_DRAG)
+	else:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _disabled_toggle_drag_button(active: bool) -> void:
+	btn_drag.disabled = active
 
 #endregion
 

@@ -22,6 +22,9 @@ signal disabled_toggle_audio_button(active: bool)
 # Toggle Pen Button
 signal disabled_toggle_pen_button(active: bool)
 
+# Toggle Drag Button
+signal disabled_toggle_drag_button(active: bool)
+
 #endregion
 
 #region Resources
@@ -45,6 +48,9 @@ signal make_group()
 
 # Toggle pen
 signal pen_toggled(active: bool)
+
+# Drag toggled
+signal drag_toggled(active: bool)
 
 # Seek the visual for a node
 signal seek_node(node: ClassNode)

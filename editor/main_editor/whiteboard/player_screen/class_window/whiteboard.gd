@@ -4,6 +4,7 @@ const WARP_OFFSET := -10
 const SQUARED_THRESHOLD := 25.0
 
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
+@onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _viewport_container: SubViewportContainer = %SubViewportContainer
 @onready var _viewport: SubViewport = %SubViewport
 
@@ -17,13 +18,25 @@ var _pressed: bool = false
 var _line: Line2D
 var _last_point: Vector2 = Vector2.INF
 
+var _node_drag_enabled: bool = false
+var _current_node: ClassNode
+var _node_dragging: bool = false
+var _drag_start_pos: Vector2
+var _node_start_pos: Vector2
+
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
+	_bus.drag_toggled.connect(_on_node_drag_enabled)
+	_bus_core.current_node_changed.connect(_current_node_changed)
 
 
 func _gui_input(event):
 	if _pen_enabled:
 		_handle_drawing(event)
+		return
+
+	if _node_drag_enabled:
+		_handle_node_dragging(event)
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -68,6 +81,8 @@ func _on_pen_toggled(active: bool) -> void:
 	_pen_enabled = active
 	_last_time = Time.get_ticks_msec() / 1000.0
 
+func _on_node_drag_enabled(enabled: bool) -> void:
+	_node_drag_enabled = enabled
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -142,6 +157,36 @@ func _handle_drawing(event: InputEvent) -> void:
 			#print(entity.serialize())
 
 
+func _handle_node_dragging(event: InputEvent) -> void:
+	if not _current_node:
+		return
+	if event is InputEventMouseButton:
+		_dragging = event.is_pressed()
+		var controller = _current_node._node_controller
+		# Take note of the initial positions
+		if controller is LeafController:
+			var widget: LineWidget = controller.leaf_value
+			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
+			_node_start_pos = widget.position
+	elif event is InputEventMouseMotion and _dragging:
+		if not is_instance_valid(_viewport) or not _current_node:
+			return
+		var controller = _current_node._node_controller
+		# Check if current node is a Visual Widget
+		if controller is not LeafController:
+			print("No Hoja")
+			return
+		if controller.leaf_value.get_parent() != NodeController.visual_widgets:
+			print("No es un Widget")
+			return
+
+		var widget: LineWidget = controller.leaf_value
+		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
+		var offset: Vector2 = pos - _drag_start_pos
+
+		widget.position = _node_start_pos + offset
+
+
 func _new_line() -> Line2D:
 	var l := Line2D.new()
 	l.width = 2.0
@@ -149,3 +194,6 @@ func _new_line() -> Line2D:
 	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	l.joint_mode = Line2D.LINE_JOINT_ROUND
 	return l
+
+func _current_node_changed(node: ClassNode) -> void:
+	_current_node = node
