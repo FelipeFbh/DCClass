@@ -65,6 +65,11 @@ folder_colors={
 "res://script_templates/": "gray"
 }
 
+[filesystem]
+
+import/fbx2gltf/enabled.android=true
+import/fbx2gltf/enabled.web=true
+
 [gui]
 
 theme/custom="uid://m3cwg0uvxfau"

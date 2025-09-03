@@ -63,6 +63,7 @@ dragger_visibility = 1
 script = ExtResource("4_te1kq")
 
 [node name="Whiteboard" type="Control" parent="LeftSplit/RightSplit/BottomSplit"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_vertical = 3

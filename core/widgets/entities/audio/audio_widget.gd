@@ -158,7 +158,6 @@ func seek_and_play(_seek_time: float) -> void:
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			var time_remaining = prev_audio.duration - prev_audio.audio.get_playback_position()
 			crossfade(prev_audio, _seek_time)
 		else:
 		# the audio is the same
