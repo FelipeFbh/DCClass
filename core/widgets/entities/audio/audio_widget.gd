@@ -58,7 +58,7 @@ func crossfade(from: AudioStreamPlayer, _seek_time: float = -1):
 	if audio and is_instance_valid(audio):
 		audio.volume_db = -80.0
 		
-		if _seek_time == -1:
+		if _seek_time != -1:
 			audio.play(_seek_time)
 		else:
 			audio.play()
@@ -82,7 +82,7 @@ func crossfade_in(_seek_time: float = -1):
 	if audio and is_instance_valid(audio):
 		audio.volume_db = -80.0
 		
-		if _seek_time == -1:
+		if _seek_time != -1:
 			audio.play(_seek_time)
 		else:
 			audio.play()
@@ -92,9 +92,7 @@ func crossfade_in(_seek_time: float = -1):
 # stops the audio after a fade
 func stop_after_fade(act_audio: AudioStreamPlayer):
 	if act_audio.playing:
-		act_audio.stop()
-		remove_from_group(&"audio_playing")
-		remove_from_group(&"widget_playing")
+		stop()
 
 func _ready():
 	add_to_group(&"speed_scale_handler")
@@ -142,8 +140,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	if !state._done:
 		await state.completed
 		
-	reset()
-	emit_signal("widget_finished")
+	stop()
 
 # Play the audio file from a specific time.
 func seek_and_play(_seek_time: float) -> void:
@@ -181,8 +178,7 @@ func seek_and_play(_seek_time: float) -> void:
 	if !state._done:
 		await state.completed
 		
-	reset()
-	emit_signal("widget_finished")
+	stop()
 
 # Stop the audio.
 func stop():
