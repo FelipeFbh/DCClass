@@ -18,10 +18,12 @@ signal request_detach
 @onready var tree_manager: TreeManagerEditor = %IndexTree
 
 @onready var pen_color_picker: ColorPickerButton = %ColorPickerButton
+@onready var pen_color_label: Label = %ColorPickerLabel
+@onready var pen_color_container: HBoxContainer = %HBoxContainerPenColor
 
-@onready var pen_thickness_slider: HSlider = %PenThicknessSlider
+@onready var pen_thickness_slider: HSlider = %PenThicknessHSlider
 @onready var pen_thickness_label: Label = %PenThicknessLabel
-@onready var pen_thickness_container: HBoxContainer = %HBoxContainerThickness
+@onready var pen_thickness_container: HBoxContainer = %HBoxContainerPenThickness
 
 var resources_class: ResourcesClassEditor
 
@@ -231,13 +233,21 @@ func _add_pause() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
+
+# func _add_zoom():
+	# var entity_zoom = ZoomEntity.new()
+	# var data_new = {
+	# 	"type": "Zoom",
+	# 	"entity_id": entity_zoom.entity_id,
+	# 	"entiy_properties": [] 
+	# }
 	
 func _set_pen_controls_enabled(enabled: bool):
 	if pen_thickness_slider:
 		pen_thickness_container.visible = true
 		pen_thickness_slider.editable = enabled
 	if pen_color_picker:
-		pen_color_picker.visible = true
+		pen_color_container.visible = true
 		pen_color_picker.disabled = not enabled
 
 func _set_pen_controls_disabled(enabled: bool):
@@ -245,13 +255,12 @@ func _set_pen_controls_disabled(enabled: bool):
 		pen_thickness_container.visible = false
 		pen_thickness_slider.editable = not enabled
 	if pen_color_picker:
-		pen_color_picker.visible = false
+		pen_color_container.visible = false
 		pen_color_picker.disabled = enabled
 		
-
 #endregion
 
-# func _add_zoom():
+
 
 
 #region Whiteboard Interactions
