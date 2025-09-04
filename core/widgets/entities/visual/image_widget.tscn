@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bfyhdkl1lp68k"]
+
+[node name="Image" type="TextureRect"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+expand_mode = 1
+stretch_mode = 5

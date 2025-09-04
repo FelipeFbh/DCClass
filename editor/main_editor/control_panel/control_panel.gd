@@ -145,6 +145,8 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_clear()
 	if id == 5:
 		_add_pause()
+	if id == 8:
+		_add_image()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -222,6 +224,17 @@ func _add_pause() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
+
+func _add_image() -> void:
+	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG):
+		DisplayServer.file_dialog_show("Open File", "", "", false, DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, ["*.png,*.jpg,*.svg,*.bmp"], _on_image_selected)
+
+func _on_image_selected(status: bool, selected_paths: PackedStringArray, _selected_filter_index: int) -> void:
+	if status == false:
+		return
+	var path := selected_paths[0]
+	print(path)
+
 #endregion
 
 
