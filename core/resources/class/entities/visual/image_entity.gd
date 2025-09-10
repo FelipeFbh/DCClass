@@ -43,6 +43,21 @@ func load_data(data: Dictionary) -> void:
 	image_path = data["image_path"]
 	duration = 1.0
 
+func save_resource(path: String) -> String:
+	var filename = path.split("/")[-1]
+	var extension = filename.split(".")[-1]
+	var raw_name = filename.replace("." + extension, "")
+	var salted_name = raw_name + str(Time.get_unix_time_from_system()) + "." + extension
+	
+	var path_tmp: String = "user://tmp/class_editor/"
+	var path_images: String = "resources/images/"
+
+	var full_path = path_tmp + path_images
+	if !DirAccess.dir_exists_absolute(full_path):
+		DirAccess.make_dir_recursive_absolute(full_path)
+	DirAccess.copy_absolute(path, full_path + salted_name)
+	return path_images + salted_name
+
 # 13. private methods: define all private methods here, use _ as preffix
 
 # 14. subclasses: define all subclasses here

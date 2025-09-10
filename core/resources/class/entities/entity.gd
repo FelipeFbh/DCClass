@@ -53,3 +53,6 @@ func cp_tmp():
 
 func tmp_to_persistent() -> void:
 	pass
+
+func save_resource(path: String) -> String:
+	return ""

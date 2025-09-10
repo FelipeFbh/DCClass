@@ -164,23 +164,22 @@ func _handle_node_dragging(event: InputEvent) -> void:
 		_dragging = event.is_pressed()
 		var controller = _current_node._node_controller
 		# Take note of the initial positions
-		if controller is LeafController:
-			var widget: LineWidget = controller.leaf_value
+		if controller is LeafController and not controller.is_audio():
+			var widget = controller.leaf_value
 			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
 			_node_start_pos = widget.position
+		else:
+			return
 	elif event is InputEventMouseMotion and _dragging:
 		if not is_instance_valid(_viewport) or not _current_node:
 			return
 		var controller = _current_node._node_controller
 		# Check if current node is a Visual Widget
-		if controller is not LeafController:
-			print("No Hoja")
-			return
-		if controller.leaf_value.get_parent() != NodeController.visual_widgets:
-			print("No es un Widget")
+		if controller is not LeafController or controller.is_audio():
+			print("No Hoja o No visual")
 			return
 
-		var widget: LineWidget = controller.leaf_value
+		var widget = controller.leaf_value
 		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
 		var offset: Vector2 = pos - _drag_start_pos
 

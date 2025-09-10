@@ -47,6 +47,11 @@ func _ready() -> void:
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
+	
+	tree_manager.item_collapsed.connect(_on_item_collapse)
+	_bus.show_collapsed_group.connect(_show_collapsed_group)
+	
+
 
 
 # Setup the control panel with the current resources class
@@ -233,7 +238,14 @@ func _on_image_selected(status: bool, selected_paths: PackedStringArray, _select
 	if status == false:
 		return
 	var path := selected_paths[0]
-	print(path)
+
+	var entity_image = ImageEntity.new()
+	var tmp_path = entity_image.save_resource(path)
+	var image_data = {
+		"image_path": tmp_path 
+	}
+	entity_image.load_data(image_data)
+	_bus.emit_signal("add_class_leaf_entity", entity_image, [])
 
 #endregion
 
@@ -305,11 +317,24 @@ func _disabled_toggle_select_item_index(active: bool) -> void:
 
 # Update the current node
 func _current_node_changed(current_node):
+	get_tree().call_group(&"skipped_on_collapsed", "clear_collapsed")
 	if current_item_tree != null:
 		current_item_tree.set_custom_color(0, Color.GRAY)
 	current_item_tree = tree_manager.find_item_by_node(current_node)
 	tree_manager.scroll_to_item(current_item_tree, true)
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
+
+func _on_item_collapse(item: TreeItem) -> void:
+	if item == current_item_tree:
+		_show_collapsed_group()
+
+func _show_collapsed_group():
+	if select_item_index_disabled:
+		return
+	if _current_node._node_controller is GroupController and current_item_tree.collapsed:
+		_current_node._node_controller.skip_all_children()
+	else:
+		get_tree().call_group(&"skipped_on_collapsed", "clear_collapsed")
 
 #endregion

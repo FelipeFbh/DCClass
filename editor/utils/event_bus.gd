@@ -25,6 +25,9 @@ signal disabled_toggle_pen_button(active: bool)
 # Toggle Drag Button
 signal disabled_toggle_drag_button(active: bool)
 
+# Show collapsed group in the tree
+signal show_collapsed_group()
+
 #endregion
 
 #region Resources

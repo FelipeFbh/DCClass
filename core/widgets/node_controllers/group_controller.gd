@@ -57,6 +57,7 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	while current != null:
 		current.skip_to_end()
 		if current == node_seek:
+			_bus.emit_signal("show_collapsed_group")
 			return
 		current_node = current.get_next(current_node)
 		current = current_node[0]
@@ -126,6 +127,12 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 			return prev_child[0]
 		prev_child = prev_child[0].get_previous([prev_child[0], prev_child[1]])
 	return null
+
+func skip_all_children():
+	for i in range(_childrens.size()):
+		var child = _childrens[i]._node_controller
+		child.add_to_group(&"skipped_on_collapsed")
+		child.skip_to_end()
 
 #endregion
 

@@ -2,18 +2,36 @@ class_name ImageWidget
 extends Widget
 
 const scene = preload("res://core/widgets/entities/visual/image_widget.tscn")
+signal termino
 
 @export var entity: ImageEntity
 var image: TextureRect
 var tween: Tween
 
 func init(properties: Dictionary) -> void:
-	if !Widget.zip_file.file_exists(entity.image_path):
-		push_error("Image file not found: " + entity.image_path)
-		return
-	var data := Widget.zip_file.read_file(entity.image_path)
+	var data
+	print(entity.image_path)
+	if zip_file != null:
+		if !zip_file.file_exists(entity.image_path):
+			push_error("Image file not found: " + entity.image_path)
+			return
+		data = zip_file.read_file(entity.image_path)
+	
+	else:
+		var relative_path: String = entity.image_path
+		var image_disk_path: String = dir_class.path_join(relative_path)
+		if not FileAccess.file_exists(image_disk_path):
+			push_error("Image file not found: " + image_disk_path)
+			return
+		var f := FileAccess.open(image_disk_path, FileAccess.READ)
+		if f == null:
+			push_error("No se pudo abrir: " + image_disk_path)
+			return
+		data = f.get_buffer(f.get_length())
+		f.close()
+
 	var texture := _create_texture(data)
-	var image = scene.instantiate()
+	image = scene.instantiate()
 	add_child(image)
 	if properties.has("position"):
 		position = properties["position"]
@@ -30,6 +48,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	#tween = create_tween()
 	#tween.tween_property(image, "modulate", Color(1, 1, 1, 1), entity.duration)
 	add_to_group(&"widget_finished")
+	_bus_core.current_node_changed.emit(class_node)
 	emit_signal("termino")
 
 func reset():
@@ -44,7 +63,7 @@ func skip_to_end() -> void:
 		tween.kill()
 	image.show()
 	# image.modulate = Color(1, 1, 1, 1)
-	remove_from_group(&"widget_finished")
+	add_to_group(&"widget_finished")
 	emit_signal("termino")
 
 func clear():

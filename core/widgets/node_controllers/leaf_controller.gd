@@ -193,6 +193,10 @@ func skip_to_end() -> void:
 	if !state._done:
 		await state.completed
 
+func clear_collapsed() -> void:
+	remove_from_group(&"skipped_on_collapsed")
+	if leaf_value != null and is_instance_valid(leaf_value):
+		leaf_value.clear()
 
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	var current: NodeController = last_child

@@ -2,7 +2,7 @@
 
 [node name="Image" type="TextureRect"]
 visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 300.0
+offset_bottom = 300.0
 expand_mode = 1
 stretch_mode = 5
