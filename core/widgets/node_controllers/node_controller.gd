@@ -24,14 +24,6 @@ func self_delete() -> void:
 func skip_to_end() -> void:
 	pass
 
-# Clear visual content of the widget
-func clear_visual() -> void:
-	pass
-
-# Unclear visual content previous to the current node
-func unclear_visual() -> void:
-	pass
-
 # Add a new slide layer to the stack
 static func push_slide_layer(layer_name:= 'SlideLayer') -> Node2D:
 	var new_layer = Node2D.new()

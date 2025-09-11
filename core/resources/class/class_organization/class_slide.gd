@@ -1,6 +1,6 @@
 # 1. class name: fill the class name
 class_name ClassSlide
-extends ClassNode
+extends ClassGroup
 
 # 2. docs: use docstring (##) to generate docs for this file
 
@@ -14,8 +14,6 @@ extends ClassNode
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var _name: String
-@export var _childrens: Array[ClassNode] = []
 @export var _depth: int = 1
 @export var _order: int = 0
 

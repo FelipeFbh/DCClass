@@ -80,11 +80,6 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 
 #region Tree Navigation
 
-func clear_visual() -> void:
-	for child in _childrens:
-		var controller: NodeController = child._node_controller
-		controller.clear_visual()
-
 # Return the next NodeController after __current_node
 func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
@@ -154,21 +149,6 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 
 
 #region Playing Tree Utilities
-
-# Return if the current node has a clear operation
-func has_clear_operation() -> bool:
-	for child in _childrens:
-		var controller: NodeController = child._node_controller
-		# Slide checks only himself
-		if controller is SlideController:
-			continue
-		elif controller is GroupController:
-			return controller.has_clear_operation()
-		elif controller is LeafController:
-			return controller._class_node.entity is ClearEntity
-		else:
-			return false
-	return false
 
 # Return the last ClearEntity before the current node
 func get_last_clear() -> LeafController:

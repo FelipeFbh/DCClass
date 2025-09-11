@@ -249,10 +249,6 @@ func _get_widget(entity: Entity) -> Widget:
 
 #region Tree Navigation
 
-func clear_visual():
-	if is_instance_valid(leaf_value):
-		leaf_value.clear()
-
 # Return the next node
 func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
