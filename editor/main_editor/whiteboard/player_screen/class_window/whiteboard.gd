@@ -1,7 +1,7 @@
 extends Control
 
 const WARP_OFFSET := -10
-const SQUARED_THRESHOLD := 25.0
+const SQUARED_THRESHOLD := 4.0
 
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
@@ -20,9 +20,10 @@ var _last_point: Vector2 = Vector2.INF
 
 var _node_drag_enabled: bool = false
 var _current_node: ClassNode
+var _nodes_to_drag: Array[ClassNode]
 var _node_dragging: bool = false
 var _drag_start_pos: Vector2
-var _node_start_pos: Vector2
+var _nodes_start_pos: Array[Vector2]
 
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
@@ -160,38 +161,60 @@ func _handle_drawing(event: InputEvent) -> void:
 func _handle_node_dragging(event: InputEvent) -> void:
 	if not _current_node:
 		return
+	
+	# Start Drag case
 	if event is InputEventMouseButton:
-		_dragging = event.is_pressed()
+		_nodes_start_pos.clear()
+		_nodes_to_drag.clear()
 		var controller = _current_node._node_controller
-		# Take note of the initial positions
+		
+		# Case when current node is a Leaf and is not an audio
 		if controller is LeafController and not controller.is_audio():
+			_nodes_to_drag.append(_current_node)
 			var widget = controller.leaf_value
-			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
-			_node_start_pos = widget.position
+			_nodes_start_pos.append(widget.position)
+		# Case when current node is a Group and his TreeItem is collapsed
+		elif controller is GroupController:
+			# Get all nodes added to the skipped visual group
+			for node_controller in get_tree().get_nodes_in_group(&"skipped_on_collapsed"):
+				if node_controller is LeafController:
+					_nodes_to_drag.append(node_controller._class_node)
+					var widget = node_controller.leaf_value
+					_nodes_start_pos.append(widget.position)
 		else:
 			return
+		# Take note of the initial positions
+		_dragging = event.is_pressed()
+		_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
+	
+	# Dragging case
 	elif event is InputEventMouseMotion and _dragging:
 		if not is_instance_valid(_viewport) or not _current_node:
 			return
 		var controller = _current_node._node_controller
+		
 		# Check if current node is a Visual Widget
-		if controller is not LeafController or controller.is_audio():
-			print("No Hoja o No visual")
+		if controller is LeafController and controller.is_audio():
+			print("No visual")
 			return
 
-		var widget = controller.leaf_value
+		# Get an drag offset to apply to all nodes by its own origin previous to the drag
 		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
 		var offset: Vector2 = pos - _drag_start_pos
 
-		widget.position = _node_start_pos + offset
+		for i in range(len(_nodes_to_drag)):
+			var ctrl = _nodes_to_drag[i]._node_controller
+			var widget = ctrl.leaf_value
+			widget.position = _nodes_start_pos[i] + offset
 
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()
-	l.width = 2.0
+	l.width = 4.0
 	l.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	l.joint_mode = Line2D.LINE_JOINT_ROUND
+	l.antialiased = true
 	return l
 
 func _current_node_changed(node: ClassNode) -> void:

@@ -1,7 +1,11 @@
-[gd_scene format=3 uid="uid://dyh75vkj58pw3"]
+[gd_scene load_steps=2 format=3 uid="uid://dyh75vkj58pw3"]
+
+[ext_resource type="Texture2D" uid="uid://dciqdluyqxc3b" path="res://assets/sprites/widgets/antialliased_line.png" id="1_6eqjo"]
 
 [node name="Line" type="Line2D"]
-width = 2.0
+width = 5.0
+texture = ExtResource("1_6eqjo")
+texture_mode = 1
 joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2
