@@ -13,7 +13,7 @@ enum Status {
 	PLAYING = 1,
 	RECORDING_PEN = 10,
 	RECORDING_AUDIO = 11,
-	RECORDING_ZOOM = 12
+	RECORDING_ZOOM = 12,
 	RECORDING_DRAG = 100
 }
 
@@ -92,10 +92,6 @@ func _recording_zoom():
 	editor_signals.disabled_toggle_stop_button.emit(true)
 	editor_signals.disabled_toggle_zoom_button.emit(true)
 	editor_signals.disabled_toggle_drag_button.emit(true)
-
-func _recording_zoom():
-	editor_signals.disabled_toggle_stop_button.emit(true)
-	editor_signals.disabled_toggle_zoom_button.emit(true)
 
 func clipboard_clear_files():
 	pass
