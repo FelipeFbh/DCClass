@@ -13,6 +13,7 @@ enum Status {
 	PLAYING = 1,
 	RECORDING_PEN = 10,
 	RECORDING_AUDIO = 11,
+	RECORDING_ZOOM = 12
 	RECORDING_DRAG = 100
 }
 
@@ -43,6 +44,9 @@ func _epilog(status: Status = _status):
 
 	elif status == Status.RECORDING_AUDIO:
 		_recording_audio()
+	
+	elif status == Status.RECORDING_ZOOM:
+		_recording_zoom()
 
 	elif status == Status.RECORDING_DRAG:
 		_recording_drag()
@@ -50,6 +54,7 @@ func _epilog(status: Status = _status):
 func _stopped():
 	editor_signals.disabled_toggle_audio_button.emit(false)
 	editor_signals.disabled_toggle_pen_button.emit(false)
+	editor_signals.disabled_toggle_audio_button.emit(false)
 	editor_signals.disabled_toggle_edit_button.emit(false)
 	editor_signals.disabled_toggle_insert_button.emit(false)
 	editor_signals.disabled_toggle_select_item_index.emit(false)
@@ -60,6 +65,7 @@ func _stopped():
 func _playing():
 	editor_signals.disabled_toggle_audio_button.emit(true)
 	editor_signals.disabled_toggle_pen_button.emit(true)
+	editor_signals.disabled_toggle_zoom_button.emit(true)
 	editor_signals.disabled_toggle_edit_button.emit(true)
 	editor_signals.disabled_toggle_insert_button.emit(true)
 	editor_signals.disabled_toggle_select_item_index.emit(true)
@@ -81,6 +87,15 @@ func _recording_drag():
 	editor_signals.disabled_toggle_stop_button.emit(true)
 	editor_signals.disabled_toggle_audio_button.emit(true)
 	editor_signals.disabled_toggle_pen_button.emit(true)
+
+func _recording_zoom():
+	editor_signals.disabled_toggle_stop_button.emit(true)
+	editor_signals.disabled_toggle_zoom_button.emit(true)
+	editor_signals.disabled_toggle_drag_button.emit(true)
+
+func _recording_zoom():
+	editor_signals.disabled_toggle_stop_button.emit(true)
+	editor_signals.disabled_toggle_zoom_button.emit(true)
 
 func clipboard_clear_files():
 	pass

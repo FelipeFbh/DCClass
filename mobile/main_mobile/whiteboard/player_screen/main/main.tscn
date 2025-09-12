@@ -1,0 +1,34 @@
+[gd_scene load_steps=7 format=3 uid="uid://bokavfmxvgisa"]
+
+[ext_resource type="Script" uid="uid://c7vnd4oefnqy" path="res://mobile/main_mobile/whiteboard/player_screen/main/main.gd" id="1_w0och"]
+[ext_resource type="PackedScene" uid="uid://oy02dobgre3u" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.tscn" id="2_fn6wx"]
+[ext_resource type="Script" uid="uid://chos8uuvhnfyi" path="res://mobile/main_mobile/whiteboard/player_screen/main/play_class.gd" id="3_jjvul"]
+[ext_resource type="PackedScene" uid="uid://c1x5ab47bhf12" path="res://mobile/main_mobile/whiteboard/player_screen/background/background.tscn" id="4_qu7lh"]
+[ext_resource type="Script" uid="uid://bxqdono5daxr" path="res://mobile/main_mobile/whiteboard/player_screen/background/background.gd" id="5_eq3m1"]
+[ext_resource type="Script" uid="uid://ck6o6hty4nqdk" path="res://mobile/main_mobile/whiteboard/player_screen/camera/class_camera.gd" id="6_d1sqb"]
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_w0och")
+
+[node name="ClassWindow" parent="." instance=ExtResource("2_fn6wx")]
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="PlayClass" type="Node2D" parent="."]
+unique_name_in_owner = true
+process_mode = 1
+script = ExtResource("3_jjvul")
+
+[node name="ParallaxBackground" parent="PlayClass" instance=ExtResource("4_qu7lh")]
+
+[node name="Background" parent="PlayClass/ParallaxBackground/ParallaxLayer" index="0"]
+script = ExtResource("5_eq3m1")
+
+[node name="Camera2D" type="Camera2D" parent="PlayClass"]
+process_mode = 3
+script = ExtResource("6_d1sqb")
+
+[node name="VisualWidgets" type="Node2D" parent="PlayClass"]
+unique_name_in_owner = true
+
+[editable path="PlayClass/ParallaxBackground"]

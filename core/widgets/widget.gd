@@ -9,7 +9,7 @@ extends Node2D
 ## Use [method ZIPReader.file_exists] to check if a file exists in the ZIP file.
 ## Use [method ZIPReader.read_file] to get a file from the ZIP file.
 static var zip_file: ZIPReader
-
+static var color: Color
 
 # Dir class is the temporary directory where the widget assets are stored. Ex: Audio, Images, etc.
 static var dir_class: String

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmrckyx6gawkm"]
+
+[ext_resource type="Script" uid="uid://dduc7iufq4b6n" path="res://mobile/main_mobile/main_mobile.gd" id="1_us62k"]
+[ext_resource type="PackedScene" uid="uid://bokavfmxvgisa" path="res://mobile/main_mobile/whiteboard/player_screen/main/main.tscn" id="3_wlvey"]
+[ext_resource type="Script" uid="uid://dcbwhibtpr8bf" path="res://mobile/main_mobile/resources_class.gd" id="7_7p2pq"]
+
+[node name="MobileScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_us62k")
+
+[node name="Class" type="Node" parent="."]
+
+[node name="Resources" type="Node" parent="Class"]
+unique_name_in_owner = true
+script = ExtResource("7_7p2pq")
+
+[node name="Controllers" type="Node" parent="Class"]
+unique_name_in_owner = true
+
+[node name="AudioWidgets" type="Node2D" parent="Class"]
+unique_name_in_owner = true
+
+[node name="UI" parent="." instance=ExtResource("3_wlvey")]
+unique_name_in_owner = true

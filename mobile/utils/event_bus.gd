@@ -1,4 +1,4 @@
-class_name EditorEventBus
+class_name MobileEventBus
 extends Node
 
 # This bus is used to communicate the editor events in the application.
@@ -23,21 +23,6 @@ signal disabled_toggle_audio_button(active: bool)
 # Toggle Pen Button
 signal disabled_toggle_pen_button(active: bool)
 
-# Toggle Zoom Button
-signal disabled_toggle_zoom_button(active: bool)
-
-# Pen Thickness Changed
-signal pen_thickness_changed(value: float)
-
-# Pen Color Changed
-signal pen_color_changed(color: Color)
-
-# Toggle Drag Button
-signal disabled_toggle_drag_button(active: bool)
-
-# Show collapsed group in the tree
-signal show_collapsed_group()
-
 #endregion
 
 #region Resources
@@ -47,8 +32,6 @@ signal show_collapsed_group()
 # If true, the group is added at the begin
 # if false, the group is added at the end.
 signal add_class_group(group: ClassGroup, back: bool)
-
-signal add_class_slide(slide: ClassSlide, back: bool)
 
 signal add_class_leaf(entity: Entity)
 
@@ -67,12 +50,6 @@ signal make_group()
 
 # Toggle pen
 signal pen_toggled(active: bool)
-
-# Toogle zoom
-signal zoom_toggled(active: bool)
-
-# Drag toggled
-signal drag_toggled(active: bool)
 
 # Seek the visual for a node
 signal seek_node(node: ClassNode)

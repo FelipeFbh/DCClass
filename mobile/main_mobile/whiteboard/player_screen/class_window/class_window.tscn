@@ -1,0 +1,206 @@
+[gd_scene load_steps=11 format=3 uid="uid://oy02dobgre3u"]
+
+[ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_b142x"]
+[ext_resource type="Script" uid="uid://do7ygokb3wgkc" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/whiteboard.gd" id="2_5eppn"]
+[ext_resource type="PackedScene" uid="uid://23jm880wmmev" path="res://mobile/main_mobile/control_panel/control_panel.tscn" id="2_i4i8q"]
+[ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="3_hb30m"]
+[ext_resource type="Script" uid="uid://d2g7r4l51rgv2" path="res://mobile/main_mobile/control_panel/control_panel.gd" id="3_te1kq"]
+[ext_resource type="Script" uid="uid://8vx2rmxyjcgb" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/bottom_split.gd" id="4_te1kq"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mcb8p"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(350, 350, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_te1kq"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(360, 410, 30, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(50, 150, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4hnd6"]
+atlas = ExtResource("3_hb30m")
+region = Rect2(0, 300, 50, 50)
+
+[node name="ClassWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_b142x")
+
+[node name="LeftSplit" type="HSplitContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+split_offset = 200
+
+[node name="RightSplit" type="HSplitContainer" parent="LeftSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="LeftSplit/RightSplit"]
+visible = false
+layout_mode = 2
+
+[node name="TabContainer" type="TabContainer" parent="LeftSplit/RightSplit/PanelContainer"]
+layout_mode = 2
+current_tab = 0
+
+[node name="Control Panel" parent="LeftSplit/RightSplit/PanelContainer/TabContainer" instance=ExtResource("2_i4i8q")]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("3_te1kq")
+metadata/_tab_index = 0
+
+[node name="BottomSplit" type="VSplitContainer" parent="LeftSplit/RightSplit"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+dragger_visibility = 1
+script = ExtResource("4_te1kq")
+
+[node name="Whiteboard" type="Control" parent="LeftSplit/RightSplit/BottomSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_5eppn")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/SubViewportContainer"]
+unique_name_in_owner = true
+disable_3d = true
+handle_input_locally = false
+size = Vector2i(1280, 628)
+render_target_update_mode = 4
+
+[node name="PlaybackControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -29.0
+offset_top = -29.0
+offset_right = 29.0
+offset_bottom = 29.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="StopButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"PlayerIconButton"
+icon = SubResource("AtlasTexture_mcb8p")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+layout_mode = 0
+offset_left = 1210.0
+offset_top = 30.0
+offset_right = 1250.0
+offset_bottom = 70.0
+
+[node name="RecenterCameraButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.0
+icon = SubResource("AtlasTexture_te1kq")
+
+[node name="BottomPanel" type="PanelContainer" parent="LeftSplit/RightSplit/BottomSplit"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ControlRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Spacer5" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.07
+
+[node name="CameraZoom" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ZoomButton" type="TextureButton" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/CameraZoom"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_uioh1")
+
+[node name="ZoomSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/CameraZoom"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 3.0
+step = 0.1
+value = 1.0
+
+[node name="Spacer3" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="VolumeControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VolumeButton" type="TextureButton" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/VolumeControls"]
+unique_name_in_owner = true
+layout_mode = 2
+texture_normal = SubResource("AtlasTexture_4hnd6")
+
+[node name="VolumeSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow/VolumeControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.001
+
+[node name="Spacer4" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.14
