@@ -11,13 +11,28 @@ func build(root_group: ClassGroup, entities: Dictionary) -> Tree:
 	return tree_manager_index
 
 # Populate the tree with nodes from the class structure.
-func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary) -> void:
+func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary, depth:=0, slide_order:=0) -> void:
 	var item = tree_manager_index.create_item(parent_item)
 	item.set_text(0, node.get_editor_name())
 	item.set_metadata(0, node) # Store the node reference in the item metadata
-	if node is ClassGroup:
+	
+	if node is ClassSlide:
+		node = node as ClassSlide
+		node._order = slide_order
+		node._depth = depth
+		# Increment depth and decrease order for children
+		depth += 1
+		slide_order = 0
+
+	var child_slide_order = 0
+	if node is ClassGroup or node is ClassSlide:
 		for child in node._childrens:
-			_populate_node(item, child, entities)
+			if child is ClassSlide: 
+				_populate_node(item, child, entities, depth, child_slide_order)
+				child_slide_order += 1
+			else:
+				_populate_node(item, child, entities, depth, slide_order)
+
 
 # Reset the colors of all items in the tree to a default color.
 func reset_colors():

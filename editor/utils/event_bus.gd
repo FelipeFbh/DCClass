@@ -1,6 +1,7 @@
 class_name EditorEventBus
 extends Node
 
+# This bus is used to communicate the editor events in the application.
 
 #region Control Panel
 
@@ -32,7 +33,13 @@ signal show_collapsed_group()
 
 #region Resources
 
+# Add a group after the current node. In case of being the current node being a group, it will follow the next logic:
+# back -> indicates how the group is added. 
+# If true, the group is added at the begin
+# if false, the group is added at the end.
 signal add_class_group(group: ClassGroup, back: bool)
+
+signal add_class_slide(slide: ClassSlide, back: bool)
 
 signal add_class_leaf(entity: Entity)
 
@@ -64,6 +71,7 @@ signal seek_play()
 # Toggle the Stop button
 signal disabled_toggle_stop_button(active: bool)
 
+# Toggle the Play(Stop) button
 signal status_playback_stop(active : bool)
 
 #endregion

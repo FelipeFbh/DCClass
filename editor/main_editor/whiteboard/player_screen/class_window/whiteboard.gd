@@ -155,7 +155,6 @@ func _handle_drawing(event: InputEvent) -> void:
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null
-			#print(entity.serialize())
 
 
 func _handle_node_dragging(event: InputEvent) -> void:

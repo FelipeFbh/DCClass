@@ -13,6 +13,8 @@ extends Entity
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
+
+# The path in the resources folder(Zip or tmp) to the audio file.
 @export_file() var audio_path: String
 
 # 7. public variables: define all public variables here
@@ -33,6 +35,7 @@ func get_class_name() -> String:
 func get_editor_name() -> String:
 	return "Audio: " + audio_path
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
 	return {
 		"entity_id": entity_id,
@@ -41,10 +44,12 @@ func serialize() -> Dictionary:
 		"duration": duration
 	}
 
+# Load data from a dictionary format(.json) to resource(AudioEntity).
 func load_data(data: Dictionary) -> void:
 	audio_path = data["audio_path"]
 	duration = data["duration"]
 
+# Delete this AudioEntity and its associated audio file.
 func self_delete() -> void:
 	var path_tmp: String = "user://tmp/class_editor/"
 
@@ -52,6 +57,7 @@ func self_delete() -> void:
 		DirAccess.remove_absolute(path_tmp + audio_path)
 	audio_path = ""
 
+# Copy this AudioEntity to a temporary AudioEntity.
 func copy_tmp() -> Entity:
 	var new_entity: Entity = CustomClassDB.instantiate(get_class_name())
 	new_entity.load_data(serialize())
@@ -70,11 +76,12 @@ func copy_tmp() -> Entity:
 	return new_entity
 
 
-
+# Convert the temporary AudioEntity to a persistent AudioEntity.
+# In this process the temporary audio file is moved to the persistent audio folder.
 func tmp_to_persistent() -> void:
-	var path_tmp : String = "user://tmp/class_editor/"
-	var _path_tmp : String = "tmp/"
-	var path_audio : String = "resources/audio/"
+	var path_tmp: String = "user://tmp/class_editor/"
+	var _path_tmp: String = "tmp/"
+	var path_audio: String = "resources/audio/"
 	var path_persistent: String = path_audio + str(entity_id) + ".ogg"
 	if audio_path != "":
 		if FileAccess.file_exists(path_tmp + _path_tmp + audio_path):
@@ -82,8 +89,6 @@ func tmp_to_persistent() -> void:
 			audio_path = path_persistent
 		else:
 			push_error("Audio file does not exist: " + path_tmp + audio_path)
-
-		
 	audio_path = path_persistent
 
 # 13. private methods: define all private methods here, use _ as preffix

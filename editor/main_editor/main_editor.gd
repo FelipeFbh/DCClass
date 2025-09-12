@@ -38,6 +38,9 @@ func _on_request_detach() -> void:
 	_window_whiteboard = window_whiteboard.instantiate() as WindowWhiteboard
 	get_tree().root.add_child(_window_whiteboard)
 	_window_whiteboard.close_requested.connect(_on_window_close_requested)
+	await get_tree().process_frame
+	PersistenceEditor._epilog()
+	editor_signals.seek_node.emit(PersistenceEditor.resources_class._current_node)
 	
 
 func _on_window_close_requested() -> void:
@@ -45,7 +48,8 @@ func _on_window_close_requested() -> void:
 		_window_whiteboard.queue_free()
 		_window_whiteboard = null
 		core_signals.stop_widget.emit()
-	PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+	if PersistenceEditor.Status.PLAYING == PersistenceEditor._status:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
 
 func _on_request_audio_record(active: bool) -> void:
 	audio_record.record()

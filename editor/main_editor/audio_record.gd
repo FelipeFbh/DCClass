@@ -44,7 +44,15 @@ func save_recording(_record_data: AudioStreamWAV) -> void:
 	var absolute_path_ogg = ProjectSettings.globalize_path(path_ogg)
 	
 	var args = ["-y", "-i", absolute_path_wav, "-c:a", "libvorbis", absolute_path_ogg]
+	
+	# If you want to use a binary version of FFmpeg, you can specify the path here.
+	#var ffmpeg_path = "res://editor/utils/ffmpeg/ffmpeg.exe"
+	#ffmpeg_path = ProjectSettings.globalize_path(ffmpeg_path)
+	#var exit_code = OS.execute(ffmpeg_path, args, [], false, false)
+	# And comment the line below
+	# Otherwise, it will use the system's FFmpeg.
 	var exit_code = OS.execute("ffmpeg", args, [], false, false)
+
 	if exit_code != 0:
 		push_error("FFmpeg Error: %d" % exit_code)
 

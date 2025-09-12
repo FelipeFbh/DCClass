@@ -5,7 +5,6 @@ extends MarginContainer
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
 signal audio_record(active: bool)
-signal pen_toggled(active: bool)
 signal request_detach
 
 @onready var menu_btn_edit: MenuButton = %EditMenuButton
@@ -108,6 +107,15 @@ func _copy_to_clipboard() -> void:
 			var new_node = ClassGroup.deserialize(data_new)
 			PersistenceEditor.clipboard.append(new_node)
 
+		elif node is ClassSlide:
+			var data_new = {
+				"name": "Slide",
+				"type": "ClassSlide",
+				"childrens": []
+			}
+			var new_node = ClassSlide.deserialize(data_new)
+			PersistenceEditor.clipboard.append(new_node)
+
 func _cut_to_clipboard() -> void:
 	_copy_to_clipboard()
 	_delete()
@@ -150,6 +158,10 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_clear()
 	if id == 5:
 		_add_pause()
+	if id == 6:
+		_add_slide()
+	if id == 7:
+		_push_slide()
 	if id == 8:
 		_add_image()
 
@@ -201,6 +213,35 @@ func _make_group() -> void:
 	for node in nodes_to_group:
 		PersistenceEditor.clipboard.append(node)
 	_bus.make_group.emit()
+
+#region Slide
+# Add a new slide to the end of the current node
+func _add_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node, true)
+
+# Push a new slide to the end of the current node
+func _push_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node, false)
+	
+#endregion
 
 
 # Add a clear entity after the current node

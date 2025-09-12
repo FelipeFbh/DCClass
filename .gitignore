@@ -21,3 +21,10 @@ android/build/*
 
 #Ignore temporary files
 *.tmp
+
+# The executable compiled from the Godot project
+DCClass.exe
+
+# Ignore if you are using a custom ffmpeg build directly in the project.
+editor/utils/ffmpeg/ffmpeg.exe
+editor/utils/ffmpeg/LICENSE
