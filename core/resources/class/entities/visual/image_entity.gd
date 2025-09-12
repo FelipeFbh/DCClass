@@ -41,7 +41,7 @@ func serialize() -> Dictionary:
 
 func load_data(data: Dictionary) -> void:
 	image_path = data["image_path"]
-	duration = 1.0
+	duration = 0.0
 
 func save_resource(path: String) -> String:
 	var filename = path.split("/")[-1]
@@ -57,6 +57,9 @@ func save_resource(path: String) -> String:
 		DirAccess.make_dir_recursive_absolute(full_path)
 	DirAccess.copy_absolute(path, full_path + salted_name)
 	return path_images + salted_name
+
+func compute_duration() -> float:
+	return 0.0 
 
 # 13. private methods: define all private methods here, use _ as preffix
 

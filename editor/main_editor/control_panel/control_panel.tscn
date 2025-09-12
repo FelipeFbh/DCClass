@@ -67,8 +67,8 @@ popup/item_5/text = "Add Slide"
 popup/item_5/id = 6
 popup/item_6/text = "Push Slide"
 popup/item_6/id = 7
-popup/item_5/text = "Add Image"
-popup/item_5/id = 8
+popup/item_7/text = "Add Image"
+popup/item_7/id = 8
 
 [node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2

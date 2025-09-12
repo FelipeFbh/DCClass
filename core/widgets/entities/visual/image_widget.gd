@@ -2,7 +2,6 @@ class_name ImageWidget
 extends Widget
 
 const scene = preload("res://core/widgets/entities/visual/image_widget.tscn")
-signal termino
 
 @export var entity: ImageEntity
 var image: TextureRect
@@ -47,16 +46,23 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	image.show()
 	#tween = create_tween()
 	#tween.tween_property(image, "modulate", Color(1, 1, 1, 1), entity.duration)
-	add_to_group(&"widget_finished")
 	_bus_core.current_node_changed.emit(class_node)
-	emit_signal("termino")
+
+	add_to_group(&"playing_widget")
+	remove_from_group(&"widget_playing")
+	add_to_group(&"widget_finished")
+	emit_signal("widget_finished")
 
 func reset():
 	if tween:
 		tween.kill()
 	image.hide()
+	remove_from_group(&"widget_playing")
 	remove_from_group(&"widget_finished")
-	emit_signal("termino")
+	emit_signal("widget_finished")
+
+func stop() -> void:
+	skip_to_end()
 
 func skip_to_end() -> void:
 	if tween:
@@ -64,10 +70,17 @@ func skip_to_end() -> void:
 	image.show()
 	# image.modulate = Color(1, 1, 1, 1)
 	add_to_group(&"widget_finished")
-	emit_signal("termino")
+	emit_signal("widget_finished")
+
 
 func clear():
 	reset()
+	add_to_group(&"widget_cleared")
+
+func unclear():
+	skip_to_end()
+	remove_from_group(&"widget_cleared")
+
 
 func _create_texture(data: PackedByteArray) -> Texture2D:
 	var _image := Image.new()
