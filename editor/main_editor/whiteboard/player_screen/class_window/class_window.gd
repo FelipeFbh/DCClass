@@ -4,8 +4,6 @@ extends Control
 var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-
-
 #region Whiteboard
 
 @onready var viewport: SubViewport = %SubViewport

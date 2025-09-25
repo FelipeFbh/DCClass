@@ -13,7 +13,7 @@ extends Entity
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var thickness: float = 2.0
+@export var thickness: float
 
 # 7. public variables: define all public variables here
 
@@ -42,7 +42,7 @@ func serialize() -> Dictionary:
 		"entity_type": get_class_name(),
 		"thickness": thickness,
 	}
-	
+
 # Load data from a dictionary format(.json) to resource(ClearEntity).
 func load_data(data: Dictionary) -> void:
 	thickness = data.get("thickness", 2.0)
