@@ -47,8 +47,9 @@ func _ready():
 
 func _setup_hover_detection(hover_on: Array):
 	for element in hover_on:
-		element.mouse_entered.connect(_on_element_mouse_entered)
-		element.mouse_exited.connect(_on_element_mouse_exited)
+		if (element):
+			element.mouse_entered.connect(_on_element_mouse_entered)
+			element.mouse_exited.connect(_on_element_mouse_exited)
 
 # mouse on an element
 func _on_element_mouse_entered():
