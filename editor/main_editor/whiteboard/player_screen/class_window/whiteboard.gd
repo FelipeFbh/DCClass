@@ -31,7 +31,7 @@ var _current_pen_color_index: int = -1
 
 var _node_drag_enabled: bool = false
 var _current_node: ClassNode
-var _nodes_to_drag: Array[ClassNode]
+var _nodes_to_drag: Array[ClassLeaf]
 var _node_dragging: bool = false
 var _drag_start_pos: Vector2
 var _nodes_start_pos: Array[Vector2]
@@ -49,9 +49,9 @@ func _gui_input(event):
 		_handle_drawing(event)
 		return
 	
-	if _zoom_enabled:
-		_handle_zoom(event)
-		return
+	#if _zoom_enabled:
+		#_handle_zoom(event)
+		#return
 
 	if _node_drag_enabled:
 		_handle_node_dragging(event)
@@ -224,29 +224,42 @@ func _handle_node_dragging(event: InputEvent) -> void:
 	
 	# Start Drag case
 	if event is InputEventMouseButton:
-		_nodes_start_pos.clear()
-		_nodes_to_drag.clear()
-		var controller = _current_node._node_controller
-		
-		# Case when current node is a Leaf and is not an audio
-		if controller is LeafController and not controller.is_audio():
-			_nodes_to_drag.append(_current_node)
-			var widget = controller.leaf_value
-			_nodes_start_pos.append(widget.position)
-		# Case when current node is a Group and his TreeItem is collapsed
-		elif controller is GroupController:
-			# Get all nodes added to the skipped visual group
-			for node_controller in get_tree().get_nodes_in_group(&"skipped_on_collapsed"):
-				if node_controller is LeafController:
-					_nodes_to_drag.append(node_controller._class_node)
-					var widget = node_controller.leaf_value
-					_nodes_start_pos.append(widget.position)
+		if event.pressed:
+			_nodes_start_pos.clear()
+			_nodes_to_drag.clear()
+			var controller = _current_node._node_controller
+			
+			# Case when current node is a Leaf and is not an audio
+			if controller is LeafController and not controller.is_audio():
+				_nodes_to_drag.append(_current_node)
+				var widget = controller.leaf_value
+				_nodes_start_pos.append(widget.position)
+			# Case when current node is a Group and his TreeItem is collapsed
+			elif controller is GroupController:
+				# Get all nodes added to the skipped visual group
+				for node_controller in get_tree().get_nodes_in_group(&"skipped_on_collapsed"):
+					if node_controller is LeafController:
+						_nodes_to_drag.append(node_controller._class_node)
+						var widget = node_controller.leaf_value
+						_nodes_start_pos.append(widget.position)
+			else:
+				return
+			# Take note of the initial positions
+			_dragging = true
+			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
 		else:
+			# Execute after release button and save pos prop of nodes
+			if _dragging:
+				_dragging = false
+				var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
+				var offset: Vector2 = pos - _drag_start_pos
+				for i in range(len(_nodes_to_drag)):
+					var node = _nodes_to_drag[i]
+					var node_pos = _nodes_start_pos[i]
+					node.set_property_by_type("PositionEntityProperty", {
+						"position": node_pos + offset
+					})
 			return
-		# Take note of the initial positions
-		_dragging = event.is_pressed()
-		_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
-	
 	# Dragging case
 	elif event is InputEventMouseMotion and _dragging:
 		if not is_instance_valid(_viewport) or not _current_node:
