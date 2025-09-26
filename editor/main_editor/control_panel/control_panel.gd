@@ -67,7 +67,7 @@ func _ready() -> void:
 
 
 	pen_thickness_slider.value_changed.connect(_pen_thickness_changed)
-	pen_color_picker.color_changed.connect(_pen_color_changed)
+	#pen_color_picker.color_changed.connect(_pen_color_changed)
 	
 
 # Setup the control panel with the current resources class

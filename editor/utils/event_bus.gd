@@ -38,6 +38,9 @@ signal disabled_toggle_drag_button(active: bool)
 # Show collapsed group in the tree
 signal show_collapsed_group()
 
+# Signal called after rendering on seek
+signal execute_after_rendering()
+
 #endregion
 
 #region Resources

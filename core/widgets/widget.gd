@@ -79,3 +79,7 @@ func clear():
 ## Unclear the widget (useful for visual state restoration)
 func unclear():
 	pass
+
+## Get bounds as a Rect2 if is a visual widget, return empty Rect otherwise
+func get_rect_bound() -> Rect2:
+	return Rect2()

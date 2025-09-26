@@ -74,6 +74,7 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 		current.skip_to_end()
 		if current == node_seek:
 			_bus.emit_signal("show_collapsed_group")
+			_bus.emit_signal("execute_after_rendering")
 			return
 		current_node = current.get_next(current_node, true)
 		current = current_node[0]

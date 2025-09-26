@@ -6,6 +6,7 @@ const scene = preload("res://core/widgets/entities/visual/line_widget.tscn")
 @export var entity: LineEntity
 var line: Line2D
 var tween: Tween
+var bound = null
 
 # Initialize the widget with properties.
 func init(properties: Dictionary) -> void:
@@ -20,7 +21,7 @@ func serialize() -> Dictionary:
 
 # Play the line widget.
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
-	line.color = Widget.color
+	#line.color = Widget.color
 	line.show()
 	
 	if tween:
@@ -77,7 +78,7 @@ func skip_to_end() -> void:
 	if tween:
 		tween.kill()
 	line.points = entity.points
-	line.color = Widget.color
+	#line.color = Widget.color
 	line.show()
 	add_to_group(&"widget_finished")
 	emit_signal("widget_finished")
@@ -108,3 +109,34 @@ func compute_duration() -> float:
 		for i in range(delays.size()):
 			duration += delays[i]
 	return duration
+
+# Get bounds as Array of Vector2
+func get_rect_bound() -> Rect2:
+	if not bound:
+		bound = _compute_bounds()
+	return bound
+
+# Return the boundaries vector that contains the line
+func _compute_bounds() -> Rect2:
+	var points = entity.points
+	if points.is_empty():
+		return Rect2()
+	
+	# init with first point
+	var min_x = points[0].x
+	var max_x = points[0].y
+	var min_y = points[0].x
+	var max_y = points[0].y
+	
+	# find min max
+	for point in points:
+		min_x = min(min_x, point.x)
+		min_y = min(min_y, point.y)
+		max_x = max(max_x, point.x)
+		max_y = max(max_y, point.y)
+	
+	# set the vectors
+	var tl = Vector2(min_x, min_y)
+	var br = Vector2(max_x, max_y)
+
+	return Rect2(tl, br - tl)
