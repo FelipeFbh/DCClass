@@ -31,6 +31,7 @@ func _ready() -> void:
 
 func _gui_input(event):
 	if _pen_enabled:
+		_bus.pen_started_drawing.emit()
 		_handle_drawing(event)
 		return
 
@@ -97,13 +98,15 @@ func _handle_drawing(event: InputEvent) -> void:
 
 			if not _pressed:
 				_pressed = true
+				
 				_line = _new_line()
 				_viewport.add_child(_line)
 				_line.add_point(pos)
 				_last_point = pos
+				
 				_bus.pen_thickness_changed.emit(_pen_thickness)
 				_bus.pen_thickness_changed.emit(_pen_color)
-
+				
 				_delays.clear()
 				var delta_time = now - _last_time
 				if delta_time > 10:
@@ -150,12 +153,13 @@ func _handle_drawing(event: InputEvent) -> void:
 								]
 
 			_bus.emit_signal("add_class_leaf_entity", entity, new_entity_properties)
-
+			
 			var parent = _line.get_parent()
-
+			
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null
+
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()

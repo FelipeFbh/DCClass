@@ -36,6 +36,11 @@ var _class_index: ClassIndex
 var current_item_tree: TreeItem
 var select_item_index_disabled: bool = false
 
+# solo será true 1 vez
+var _first_stroke: bool = true
+var _pen_color_changed_first: bool = false
+var _pen_thickness_changed_first: bool = false
+
 func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.update_treeindex.connect(_setup_index_class)
@@ -51,6 +56,8 @@ func _ready() -> void:
 	
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
+	
+	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
 	
 	btn_zoom.toggled.connect(_on_zoom_toggled)
 	_bus.disabled_toggle_zoom_button.connect(_disabled_toggle_zoom_button)
@@ -379,6 +386,7 @@ func _on_pen_color_changed(color: Color) -> void:
 func _on_color_picker_changed(color: Color) -> void:
 	_pending_pen_color = color
 	_pen_color_changed = true
+	_pen_color_changed_first = true
 	
 func _on_color_picker_closed() -> void:
 	if _pen_color_changed:
@@ -388,5 +396,29 @@ func _on_color_picker_closed() -> void:
 func _on_thickness_slider_changed(value: float) -> void:
 	_pending_pen_thickness = value
 	_pen_thickness_timer.start()
+	_pen_thickness_changed_first = true
 
+func _on_pen_started_drawing() -> void:
+	if _first_stroke:
+		if _pen_color_changed_first and !_pen_thickness_changed_first:
+			var thickness_entity := PenThicknessEntity.new()
+			thickness_entity.thickness = _pending_pen_thickness
+			_bus.add_class_leaf_entity.emit(thickness_entity, [])
+		
+		if _pen_thickness_changed_first and !_pen_color_changed_first:
+			var color_entity := PenColorEntity.new()
+			color_entity.color = pen_color_picker.color
+			_bus.add_class_leaf_entity.emit(color_entity, [])
+		
+		if !_pen_thickness_changed_first and !_pen_color_changed_first:
+			var color_entity := PenColorEntity.new()
+			color_entity.color = pen_color_picker.color
+			_bus.add_class_leaf_entity.emit(color_entity, [])
+			
+			var thickness_entity := PenThicknessEntity.new()
+			thickness_entity.thickness = _pending_pen_thickness
+			_bus.add_class_leaf_entity.emit(thickness_entity, [])
+		
+		_first_stroke = false
+		
 #endregion

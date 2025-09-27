@@ -1,7 +1,6 @@
 class_name ClassAudioRecord
 extends Node
 
-
 var resources_class: ResourcesClassEditor
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
@@ -12,7 +11,6 @@ var record_data: AudioStreamWAV
 
 func _setup():
 	resources_class = PersistenceEditor.resources_class
-
 
 func record() -> void:
 	if record_effect.is_recording_active():
@@ -28,8 +26,7 @@ func play_recording() -> void:
 	var new_audiostream = AudioStreamPlayer.new()
 	new_audiostream.stream = record_data
 	add_child(new_audiostream)
-	new_audiostream.play()
-	
+	new_audiostream.play()	
 
 func save_recording(_record_data: AudioStreamWAV) -> void:
 	var path_tmp: String = "user://tmp/class_editor/"

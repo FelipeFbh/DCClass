@@ -60,6 +60,9 @@ signal make_group()
 # Toggle pen
 signal pen_toggled(active: bool)
 
+# Pen draw detection
+signal pen_started_drawing
+
 # Toogle zoom
 signal zoom_toggled(active: bool)
 
