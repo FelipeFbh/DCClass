@@ -62,7 +62,8 @@ func _ready() -> void:
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
 	
 	tree_manager.item_collapsed.connect(_on_item_collapse)
-	_bus.show_collapsed_group.connect(_show_collapsed_group)
+	tree_manager.multi_selected.connect(_on_multi_selected)
+	_bus.execute_after_rendering.connect(_execute_after_rendering)
 	
 
 
@@ -416,7 +417,7 @@ func _disabled_toggle_select_item_index(active: bool) -> void:
 
 # Update the current node
 func _current_node_changed(current_node):
-	get_tree().call_group(&"skipped_on_collapsed", "clear_collapsed")
+	get_tree().call_group(&"skipped_before_play", "clear_collapsed")
 	if current_item_tree != null:
 		current_item_tree.set_custom_color(0, Color.GRAY)
 	current_item_tree = tree_manager.find_item_by_node(current_node)
@@ -424,17 +425,26 @@ func _current_node_changed(current_node):
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
 
+# Show or hide items from a group if it is collapsed
 func _on_item_collapse(item: TreeItem) -> void:
 	if item == current_item_tree:
-		_show_collapsed_group()
+		_execute_after_rendering()
 
-func _show_collapsed_group():
+# Emit class selected nodes from panel items
+func _on_multi_selected(item: TreeItem, column: int, selected: bool):
+	if select_item_index_disabled:
+		return
+	var node = item.get_metadata(0)
+	_bus.class_node_selected.emit(node, selected)
+
+# Show or hide all the children of a group if it is collapsed
+func _execute_after_rendering():
 	if select_item_index_disabled:
 		return
 	if _current_node._node_controller is GroupController and current_item_tree.collapsed:
 		_current_node._node_controller.skip_all_children()
 	else:
-		get_tree().call_group(&"skipped_on_collapsed", "clear_collapsed")
+		get_tree().call_group(&"skipped_before_play", "clear_collapsed")
 
 func _pen_thickness_changed(value: float):
 	_bus.pen_thickness_changed.emit(value)

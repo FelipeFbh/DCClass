@@ -16,43 +16,56 @@ func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.execute_after_rendering.connect(add_widget_outline)
 	_bus.status_playback_stop.connect(_disabled_toggle_select_item_index)
+	_bus.class_node_selected.connect(_on_class_node_selected)
 	pass
 
 
 # Clean all and assign new outiline to the node
-func _current_node_changed(node):
+func _current_node_changed(node) -> void:
 	current_node = node
 	clear_all_outlines()
 
 
 # Clear all outlines on playing class
-func _disabled_toggle_select_item_index(active: bool):
+func _disabled_toggle_select_item_index(active: bool) -> void:
 	is_editing_mode = active
 	clear_all_outlines()
 
+# Add or remove outline to selected or unselected nodes
+func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
+	if node == current_node:
+		return
+	if node is ClassLeaf:
+		if selected:
+			node._node_controller.skip_to_end()
+			node._node_controller.add_to_group(&"skipped_before_play")
+			add_widget_outline(node)
+		else:
+			remove_widget_outline(node)
+
 
 # Add an outline to a Class Node
-func add_widget_outline() -> void:
+func add_widget_outline(node:=current_node) -> void:
 	if not is_editing_mode:
 		return
 	
-	if not current_node:
+	if not node:
 		return
-	if current_node._node_controller is not LeafController:
+	if node._node_controller is not LeafController:
 		return
 
-	var widget = current_node._node_controller.leaf_value
+	var widget = node._node_controller.leaf_value
 	if not widget:
 		return
 	
-	if current_node in outline_nodes:
+	if node in outline_nodes:
 		return
 
 	var outline = _create_outline(widget)
 	if not outline:
 		return
 	widget.add_child(outline)
-	outline_nodes[current_node] = outline
+	outline_nodes[node] = outline
 
 
 # Create outline using the widget rect bound

@@ -35,11 +35,15 @@ signal pen_color_changed(color: Color)
 # Toggle Drag Button
 signal disabled_toggle_drag_button(active: bool)
 
-# Show collapsed group in the tree
-signal show_collapsed_group()
+#endregion
+
+#region TreeItem - Whiteboard Rendering
 
 # Signal called after rendering on seek
 signal execute_after_rendering()
+
+# Emit class node from tree items that are selected or unselected
+signal class_node_selected(node: ClassNode, selected: bool)
 
 #endregion
 

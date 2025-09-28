@@ -77,4 +77,4 @@ static func clear_layers() -> void:
 	push_slide_layer('BaseLayer')
 
 func clear_collapsed() -> void:
-	remove_from_group(&"skipped_on_collapsed")
+	remove_from_group(&"skipped_before_play")

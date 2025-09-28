@@ -237,7 +237,7 @@ func _handle_node_dragging(event: InputEvent) -> void:
 			# Case when current node is a Group and his TreeItem is collapsed
 			elif controller is GroupController:
 				# Get all nodes added to the skipped visual group
-				for node_controller in get_tree().get_nodes_in_group(&"skipped_on_collapsed"):
+				for node_controller in get_tree().get_nodes_in_group(&"skipped_before_play"):
 					if node_controller is LeafController:
 						_nodes_to_drag.append(node_controller._class_node)
 						var widget = node_controller.leaf_value
