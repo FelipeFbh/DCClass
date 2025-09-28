@@ -46,7 +46,7 @@ func _instantiate() -> bool:
 
 # To begin the reproduction from the entry point of the class.
 func _seek_play():
-	get_tree().call_group(&"skipped_before_play", "clear_collapsed")
+	get_tree().call_group(&"skipped_before_play", "clear_before_play")
 	entry_point = PersistenceEditor.resources_class._current_node._node_controller
 	entry_point.play_seek()
 

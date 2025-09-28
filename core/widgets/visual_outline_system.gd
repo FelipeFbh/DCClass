@@ -11,12 +11,10 @@ const OUTLINE_DASHED := true
 var outline_nodes: Dictionary[ClassNode, Node2D]
 var is_editing_mode: bool = true
 var current_node: ClassNode
+var sigs_actives:=false
 
 func _ready() -> void:
-	_bus_core.current_node_changed.connect(_current_node_changed)
-	_bus.execute_after_rendering.connect(add_widget_outline)
-	_bus.status_playback_stop.connect(_disabled_toggle_select_item_index)
-	_bus.class_node_selected.connect(_on_class_node_selected)
+	_bus.status_playback_stop.connect(_status_playback_stop)
 	pass
 
 
@@ -26,22 +24,40 @@ func _current_node_changed(node) -> void:
 	clear_all_outlines()
 
 
-# Clear all outlines on playing class
-func _disabled_toggle_select_item_index(active: bool) -> void:
+# Clear all outlines on playing class and reset signal connections
+func _status_playback_stop(active: bool) -> void:
 	is_editing_mode = active
-	clear_all_outlines()
+	if active and not sigs_actives: # Connect editor signals
+		_bus_core.current_node_changed.connect(_current_node_changed)
+		_bus.execute_after_rendering.connect(add_widget_outline)
+		_bus.class_node_selected.connect(_on_class_node_selected)
+		sigs_actives = true
+	elif not active:
+		clear_all_outlines()
+		_bus_core.current_node_changed.disconnect(_current_node_changed)
+		_bus.execute_after_rendering.disconnect(add_widget_outline)
+		_bus.class_node_selected.disconnect(_on_class_node_selected)
+		sigs_actives = false
+
 
 # Add or remove outline to selected or unselected nodes
 func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
 	if node == current_node:
 		return
-	if node is ClassLeaf:
+	var controller = node._node_controller
+	if node is ClassLeaf: # Case ClassLeaf
 		if selected:
-			node._node_controller.skip_to_end()
-			node._node_controller.add_to_group(&"skipped_before_play")
+			# If is already outlined
+			if node in outline_nodes.keys(): 
+				return
+			if not controller.leaf_value or &"widget_finished" not in controller.leaf_value.get_groups():
+				controller.skip_to_end()
+				controller.add_to_group(&"skipped_before_play")
 			add_widget_outline(node)
 		else:
 			remove_widget_outline(node)
+			if &"skipped_before_play" in controller.get_groups():
+				controller.clear_before_play()
 
 
 # Add an outline to a Class Node

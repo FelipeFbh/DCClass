@@ -417,7 +417,7 @@ func _disabled_toggle_select_item_index(active: bool) -> void:
 
 # Update the current node
 func _current_node_changed(current_node):
-	get_tree().call_group(&"skipped_before_play", "clear_collapsed")
+	get_tree().call_group(&"skipped_before_play", "clear_before_play")
 	if current_item_tree != null:
 		current_item_tree.set_custom_color(0, Color.GRAY)
 	current_item_tree = tree_manager.find_item_by_node(current_node)
@@ -444,7 +444,7 @@ func _execute_after_rendering():
 	if _current_node._node_controller is GroupController and current_item_tree.collapsed:
 		_current_node._node_controller.skip_all_children()
 	else:
-		get_tree().call_group(&"skipped_before_play", "clear_collapsed")
+		get_tree().call_group(&"skipped_before_play", "clear_before_play")
 
 func _pen_thickness_changed(value: float):
 	_bus.pen_thickness_changed.emit(value)

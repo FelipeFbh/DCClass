@@ -205,7 +205,7 @@ func skip_to_end() -> void:
 	if !state._done:
 		await state.completed
 
-func clear_collapsed() -> void:
+func clear_before_play() -> void:
 	remove_from_group(&"skipped_before_play")
 	if leaf_value != null and is_instance_valid(leaf_value):
 		leaf_value.clear()

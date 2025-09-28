@@ -76,5 +76,5 @@ static func clear_layers() -> void:
 	current_layer_index = -1
 	push_slide_layer('BaseLayer')
 
-func clear_collapsed() -> void:
+func clear_before_play() -> void:
 	remove_from_group(&"skipped_before_play")
