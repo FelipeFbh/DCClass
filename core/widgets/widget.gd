@@ -14,6 +14,8 @@ static var color: Color
 # Dir class is the temporary directory where the widget assets are stored. Ex: Audio, Images, etc.
 static var dir_class: String
 
+# Selection area for visual nodes that can be selected on whiteborard
+var selection_area # TODO: terminar implementacion
 
 # Bus to manage core signals.
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
