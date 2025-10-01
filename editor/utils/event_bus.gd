@@ -51,6 +51,9 @@ signal clear_outlines()
 # Signal called for show outlines from current node
 signal show_outlines()
 
+# Signal to deselect after dragging
+signal clear_selection()
+
 #endregion
 
 #region Resources

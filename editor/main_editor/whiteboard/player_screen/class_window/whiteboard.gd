@@ -32,6 +32,7 @@ var _current_pen_color_index: int = -1
 var _node_drag_enabled: bool = false
 var _current_node: ClassNode
 var _nodes_to_drag: Array[ClassLeaf]
+var _selected_nodes: Array[ClassLeaf]
 var _node_dragging: bool = false
 var _drag_start_pos: Vector2
 var _nodes_start_pos: Array[Vector2]
@@ -42,6 +43,8 @@ func _ready() -> void:
 	_bus.pen_color_changed.connect(_on_pen_color_changed)
 	_bus.drag_toggled.connect(_on_node_drag_enabled)
 	_bus_core.current_node_changed.connect(_current_node_changed)
+	_bus.class_node_selected.connect(_on_class_node_selected)
+	_bus.clear_selection.connect(_clear_selection)
 
 
 func _gui_input(event):
@@ -121,6 +124,20 @@ func _on_pen_color_changed(color: Color) -> void:
 
 func _on_node_drag_enabled(enabled: bool) -> void:
 	_node_drag_enabled = enabled
+
+func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
+	if node == _current_node:
+		return
+	var controller = node._node_controller
+	if node is ClassLeaf: # Case ClassLeaf
+		if selected:
+			_selected_nodes.append(node)
+		else:
+			_selected_nodes.erase(node)
+
+# Callback to deselect all selected nodes
+func _clear_selection():
+	_selected_nodes.clear()
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -225,9 +242,9 @@ func _handle_node_dragging(event: InputEvent) -> void:
 	# Start Drag case
 	if event is InputEventMouseButton:
 		if event.pressed:
+			var controller = _current_node._node_controller
 			_nodes_start_pos.clear()
 			_nodes_to_drag.clear()
-			var controller = _current_node._node_controller
 			
 			# Case when current node is a Leaf and is not an audio
 			if controller is LeafController and not controller.is_audio():
@@ -244,12 +261,20 @@ func _handle_node_dragging(event: InputEvent) -> void:
 						_nodes_start_pos.append(widget.position)
 			else:
 				return
+			
+			# Add selected nodes to the drag
+			for node in _selected_nodes:
+				_nodes_to_drag.append(node)
+				var widget = node._node_controller.leaf_value
+				_nodes_start_pos.append(widget.position)
+			
 			# Take note of the initial positions
 			_dragging = true
 			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
 		else:
 			# Execute after release button and save pos prop of nodes
 			if _dragging:
+				_bus.clear_selection.emit()
 				_dragging = false
 				var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
 				var offset: Vector2 = pos - _drag_start_pos

@@ -64,6 +64,7 @@ func _ready() -> void:
 	tree_manager.item_collapsed.connect(_on_item_collapse)
 	tree_manager.multi_selected.connect(_on_multi_selected)
 	_bus.execute_after_rendering.connect(_execute_after_rendering)
+	_bus.clear_selection.connect(_clear_selection)
 	
 
 
@@ -447,6 +448,9 @@ func _execute_after_rendering():
 	else:
 		get_tree().call_group(&"skipped_before_play", "clear_before_play")
 		_bus.clear_outlines.emit()
+
+func _clear_selection():
+	tree_manager.deselect_all()
 
 func _pen_thickness_changed(value: float):
 	_bus.pen_thickness_changed.emit(value)

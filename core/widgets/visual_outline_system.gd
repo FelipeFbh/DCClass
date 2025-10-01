@@ -33,6 +33,7 @@ func _status_playback_stop(active: bool) -> void:
 		_bus.class_node_selected.connect(_on_class_node_selected)
 		_bus.clear_outlines.connect(clear_all_outlines)
 		_bus.show_outlines.connect(add_widget_outline)
+		_bus.clear_selection.connect(_clear_selection)
 		sigs_actives = true
 	elif not active:
 		clear_all_outlines()
@@ -41,6 +42,7 @@ func _status_playback_stop(active: bool) -> void:
 		_bus.class_node_selected.disconnect(_on_class_node_selected)
 		_bus.clear_outlines.disconnect(clear_all_outlines)
 		_bus.show_outlines.disconnect(add_widget_outline)
+		_bus.clear_selection.disconnect(_clear_selection)
 		sigs_actives = false
 
 
@@ -131,3 +133,8 @@ func clear_all_outlines() -> void:
 		if is_instance_valid(outline):
 			outline.queue_free()
 	outline_nodes.clear()
+
+# Clear all selected nodes (not considering current)
+func _clear_selection():
+	clear_all_outlines()
+	add_widget_outline()
