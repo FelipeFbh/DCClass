@@ -443,8 +443,10 @@ func _execute_after_rendering():
 		return
 	if _current_node._node_controller is GroupController and current_item_tree.collapsed:
 		_current_node._node_controller.skip_all_children()
+		_bus.show_outlines.emit()
 	else:
 		get_tree().call_group(&"skipped_before_play", "clear_before_play")
+		_bus.clear_outlines.emit()
 
 func _pen_thickness_changed(value: float):
 	_bus.pen_thickness_changed.emit(value)

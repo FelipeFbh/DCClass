@@ -45,6 +45,12 @@ signal execute_after_rendering()
 # Emit class node from tree items that are selected or unselected
 signal class_node_selected(node: ClassNode, selected: bool)
 
+# Signal called for clear outlines
+signal clear_outlines()
+
+# Signal called for show outlines from current node
+signal show_outlines()
+
 #endregion
 
 #region Resources

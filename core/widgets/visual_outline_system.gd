@@ -31,12 +31,16 @@ func _status_playback_stop(active: bool) -> void:
 		_bus_core.current_node_changed.connect(_current_node_changed)
 		_bus.execute_after_rendering.connect(add_widget_outline)
 		_bus.class_node_selected.connect(_on_class_node_selected)
+		_bus.clear_outlines.connect(clear_all_outlines)
+		_bus.show_outlines.connect(add_widget_outline)
 		sigs_actives = true
 	elif not active:
 		clear_all_outlines()
 		_bus_core.current_node_changed.disconnect(_current_node_changed)
 		_bus.execute_after_rendering.disconnect(add_widget_outline)
 		_bus.class_node_selected.disconnect(_on_class_node_selected)
+		_bus.clear_outlines.disconnect(clear_all_outlines)
+		_bus.show_outlines.disconnect(add_widget_outline)
 		sigs_actives = false
 
 
@@ -50,10 +54,12 @@ func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
 			# If is already outlined
 			if node in outline_nodes.keys(): 
 				return
+			
+			# Render selected nodes that appears after current node on tree
 			if not controller.leaf_value or &"widget_finished" not in controller.leaf_value.get_groups():
 				controller.skip_to_end()
 				controller.add_to_group(&"skipped_before_play")
-			add_widget_outline(node)
+			add_widget_outline(node, false)
 		else:
 			remove_widget_outline(node)
 			if &"skipped_before_play" in controller.get_groups():
@@ -61,11 +67,17 @@ func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
 
 
 # Add an outline to a Class Node
-func add_widget_outline(node:=current_node) -> void:
+func add_widget_outline(node:=current_node, recursive:=true) -> void:
 	if not is_editing_mode:
 		return
 	
 	if not node:
+		return
+	
+	# Groups case (add to children)
+	if node._node_controller is GroupController and recursive:
+		for child in node._node_controller._childrens:
+			add_widget_outline(child, false)
 		return
 	if node._node_controller is not LeafController:
 		return
@@ -116,5 +128,6 @@ func remove_widget_outline(class_node: ClassNode) -> void:
 # Clear all active outlines
 func clear_all_outlines() -> void:
 	for outline in outline_nodes.values():
-		outline.queue_free()
+		if is_instance_valid(outline):
+			outline.queue_free()
 	outline_nodes.clear()
