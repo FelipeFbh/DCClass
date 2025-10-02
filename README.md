@@ -29,9 +29,9 @@ Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `expo
 ```
 # Options
 Binary Format:
-    Embed PCK : true
+	Embed PCK : true
 
 #Resources
 Filters to export non-resources files/folders:
-    *.dcc
+	*.dcc
 ```

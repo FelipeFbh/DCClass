@@ -137,10 +137,13 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	
 	_bus_core.current_node_changed.emit(class_node)
 	
+	add_to_group(&"audio_playing")
+	add_to_group(&"widget_playing")
+	emit_signal("widget_finished")
+	
 	if !state._done:
 		await state.completed
-		
-	stop()
+		reset()
 
 # Play the audio file from a specific time.
 func seek_and_play(_seek_time: float) -> void:
@@ -168,6 +171,7 @@ func seek_and_play(_seek_time: float) -> void:
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
+	emit_signal("widget_finished")
 	
 	_bus_core.current_node_changed.emit(class_node)
 	
@@ -176,8 +180,7 @@ func seek_and_play(_seek_time: float) -> void:
 	
 	if !state._done:
 		await state.completed
-		
-	stop()
+		reset()
 
 # Stop the audio.
 func stop():
