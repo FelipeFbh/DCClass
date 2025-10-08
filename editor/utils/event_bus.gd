@@ -54,6 +54,9 @@ signal show_outlines()
 # Signal to deselect after dragging
 signal clear_selection()
 
+# Signal for node selection on whiteboard
+signal whiteboard_nodes_selected(nodes: Array[ClassLeaf])
+
 #endregion
 
 #region Resources

@@ -22,6 +22,7 @@ func _ready() -> void:
 func _current_node_changed(node) -> void:
 	current_node = node
 	clear_all_outlines()
+	add_widget_outline()
 
 
 # Clear all outlines on playing class and reset signal connections

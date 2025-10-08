@@ -15,7 +15,7 @@ static var color: Color
 static var dir_class: String
 
 # Selection area for visual nodes that can be selected on whiteborard
-var selection_area # TODO: terminar implementacion
+var selection_area: SelectionArea
 
 # Bus to manage core signals.
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
@@ -85,3 +85,17 @@ func unclear():
 ## Get bounds as a Rect2 if is a visual widget, return empty Rect otherwise
 func get_rect_bound() -> Rect2:
 	return Rect2()
+	
+## Setup selection area for widget inside widget bounds
+func _setup_selection_area():
+	var rect = get_rect_bound()
+	if rect.size != Vector2.ZERO:
+		selection_area = SelectionArea.new()
+		add_child(selection_area)
+		selection_area.setup_for_widget(self, class_node)
+		selection_area.widget_selected.connect(_on_widget_selected)
+
+func _on_widget_selected(node: ClassNode, selected: bool):
+	# Emitir la señal al sistema de control
+	if _bus_core:
+		_bus_core.current_node_changed.emit(node)

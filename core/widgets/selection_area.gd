@@ -17,8 +17,8 @@ func _ready():
 	monitoring = true
 	monitorable = true
 	collision_layer = 1  # selection layer
-	collision_mask = 0  
-
+	collision_mask = 0
+	
 	# Mouse signals
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
@@ -50,14 +50,16 @@ func update_collision_shape(widget: Widget):
 	collision_shape.position = rect.position + rect.size * 0.5
 
 func _on_mouse_entered():
+	print("Aaaaa")
 	if not is_selected:
-		modulate = Color(1.2, 1.2, 1.2, 0.3)  # Highlight
+		modulate = Color(255, 255, 255, 0.3)  # Highlight
 
 func _on_mouse_exited():
 	if not is_selected:
 		modulate = Color.WHITE
 
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int):
+	print("Click")
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			# Multi Select

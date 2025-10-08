@@ -75,6 +75,13 @@ static func clear_layers() -> void:
 	slide_layers.clear()
 	current_layer_index = -1
 	push_slide_layer('BaseLayer')
+	
+static func get_visible_nodes() -> Array[ClassLeaf]:
+	var nodes: Array[ClassLeaf] = []
+	for sl: Node2D in slide_layers:
+		for widget: Widget in sl.get_children():
+			nodes.append(widget.class_node)
+	return nodes
 
 func clear_before_play() -> void:
 	remove_from_group(&"skipped_before_play")

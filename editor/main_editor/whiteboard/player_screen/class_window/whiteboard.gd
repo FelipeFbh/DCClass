@@ -63,6 +63,9 @@ func _gui_input(event):
 	if _node_drag_enabled:
 		_handle_node_dragging(event)
 		return
+	
+	if not (_pen_enabled or _node_drag_enabled):
+		_handle_widget_selection(event)
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		get_viewport().set_input_as_handled()
@@ -305,6 +308,22 @@ func _handle_node_dragging(event: InputEvent) -> void:
 			var widget = ctrl.leaf_value
 			widget.position = _nodes_start_pos[i] + offset
 
+# Handler for node selection on visual widgets
+func _handle_widget_selection(event):
+	if event is InputEventMouseButton and event.pressed:
+		var nodes:= NodeController.get_visible_nodes()
+		var selected: Array[ClassLeaf] = []
+		for node in nodes:
+			var widget: Widget = node._node_controller.leaf_value
+			if not is_instance_valid(widget):
+				continue
+			var mouse_pos = _viewport.get_camera_2d().get_global_mouse_position()
+			var local_point = widget.to_local(mouse_pos)
+			var widget_rect := widget.get_rect_bound()
+			var local_rect = Rect2(widget_rect.position, widget_rect.size)
+			if local_rect.has_point(local_point):
+				selected.append(node)
+		_bus.whiteboard_nodes_selected.emit(selected)
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()

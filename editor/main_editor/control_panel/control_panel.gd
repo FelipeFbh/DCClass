@@ -61,11 +61,12 @@ func _ready() -> void:
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
 	
+	# Node selection
 	tree_manager.item_collapsed.connect(_on_item_collapse)
 	tree_manager.multi_selected.connect(_on_multi_selected)
 	_bus.execute_after_rendering.connect(_execute_after_rendering)
 	_bus.clear_selection.connect(_clear_selection)
-	
+	_bus.whiteboard_nodes_selected.connect(_whiteboard_nodes_selection)
 
 
 	pen_thickness_slider.value_changed.connect(_pen_thickness_changed)
@@ -389,6 +390,25 @@ func _on_button_drag_toggled(active: bool) -> void:
 func _disabled_toggle_drag_button(active: bool) -> void:
 	btn_drag.disabled = active
 
+func _whiteboard_nodes_selection(nodes: Array[ClassLeaf]):
+	if select_item_index_disabled or nodes.size() == 0:
+		return
+	
+	var t_items: Array[TreeItem] = []
+	for node in nodes:
+		var t_item = tree_manager.find_item_by_node(node)
+		if t_item:
+			t_items.append(t_item)
+	
+	if t_items.size() > 0:
+		tree_manager.deselect_all()
+		# Set first on rendering order as current node an others as selected
+		var last = t_items.pop_back()
+		var node = last.get_metadata(0)
+		_bus_core.current_node_changed.emit(node)		
+		for t_item: TreeItem in t_items:
+			t_item.select(0)
+			tree_manager.multi_selected.emit(t_item, 0, true)
 	
 #endregion
 
