@@ -175,12 +175,6 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_clear()
 	if id == 5:
 		_add_pause()
-	if id == 6:
-		_add_color_change()
-	if id == 7:
-		_add_thickness_change()
-	if id == 8:
-		_add_zoom()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -258,52 +252,6 @@ func _add_pause() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
-
-func _add_color_change() -> void:
-	var entity_color_change = PenColorEntity.new()
-	var data_new = {
-		"type": "ClassLeaf",
-		"entity_id": entity_color_change.entity_id,
-		"entity_properties": []
-	}
-	var class_node = ClassLeaf.deserialize(data_new)
-	var first = tree_manager.get_next_selected(null)
-	if first != null:
-		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
-	_bus.add_class_leaf.emit(class_node)
-
-func _add_thickness_change() -> void:
-	var entity_thickness_change = PenThicknessEntity.new()
-	var data_new = {
-		"type": "ClassLeaf",
-		"entity_id": entity_thickness_change.entity_id,
-		"entity_properties": []
-	}
-	
-	var class_node = ClassLeaf.deserialize(data_new)
-	var first = tree_manager.get_next_selected(null)
-	if first != null:
-		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
-	_bus.add_class_leaf.emit(class_node)
-
-func _add_zoom():
-	var entity_zoom = ZoomEntity.new()
-	var data_new = {
-		"type": "ClassLeaf",
-		"entity_id": entity_zoom.entity_id,
-		"entiy_properties": [{
-			"position:x": position.x,
-			"position:y": position.y,
-			"zoom_level": zoom_level,
-			"zoom_duration": zoom_duration.value
-		}] 
-	}
-	var class_node = ClassLeaf.deserialize(data_new)
-	var first = tree_manager.get_next_selected(null)
-	
-	if first != null:
-		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
-		_bus.add_class_leaf.emit(class_node)
 	
 #endregion
 
