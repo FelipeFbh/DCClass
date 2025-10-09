@@ -120,15 +120,33 @@ layout_mode = 2
 text = "Color Selected"
 color = Color(1, 1, 1, 1)
 
-[node name="ZoomButton" type="CheckButton" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Zoom"
-
 [node name="DetachButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Detach Whiteboard"
+
+[node name="ZoomContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/HBoxContainerControl"]
+layout_mode = 2
+
+[node name="ZoomButton" type="Button" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/ZoomContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Zoom"
+
+[node name="DurationContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/ZoomContainer"]
+layout_mode = 2
+
+[node name="DurationLabel" type="Label" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/ZoomContainer/DurationContainer"]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Duration"
+horizontal_alignment = 1
+
+[node name="ZoomDuration" type="HSlider" parent="VBoxContainer/HBoxContainer/HBoxContainerControl/ZoomContainer/DurationContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_vertical = 4
 
 [node name="IndexClass" type="PanelContainer" parent="VBoxContainer"]
 unique_name_in_owner = true

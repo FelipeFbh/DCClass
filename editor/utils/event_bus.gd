@@ -23,9 +23,6 @@ signal disabled_toggle_audio_button(active: bool)
 # Toggle Pen Button
 signal disabled_toggle_pen_button(active: bool)
 
-# Toggle Zoom Button
-signal disabled_toggle_zoom_button(active: bool)
-
 # Pen Thickness Changed
 signal pen_thickness_changed(value: float)
 
@@ -63,8 +60,17 @@ signal pen_toggled(active: bool)
 # Pen draw detection
 signal pen_started_drawing
 
-# Toogle zoom
-signal zoom_toggled(active: bool)
+# Audio record
+signal audio_record(active: bool)
+
+# Pressed zoom
+signal request_zoom
+
+# Add zoom to queue
+signal response_add_zoom(camera_position: Vector2, zoom: float)
+
+# Pressed detach
+signal request_detach
 
 # Seek the visual for a node
 signal seek_node(node: ClassNode)

@@ -4,16 +4,13 @@ extends MarginContainer
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-signal audio_record(active: bool)
-signal request_detach
-
 @onready var menu_btn_edit: MenuButton = %EditMenuButton
 @onready var menu_btn_insert: MenuButton = %InsertMenuButton
 
 @onready var btn_audio: CheckButton = %AudioButton
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
-@onready var btn_zoom: CheckButton = %ZoomButton
+@onready var btn_zoom: Button = %ZoomButton
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
 
@@ -36,10 +33,15 @@ var _class_index: ClassIndex
 var current_item_tree: TreeItem
 var select_item_index_disabled: bool = false
 
-# solo será true 1 vez
+# solo será true 1 vez con el primer trazo
 var _first_stroke: bool = true
 var _pen_color_changed_first: bool = false
 var _pen_thickness_changed_first: bool = false
+
+# zoom variables
+var cam_pos: Vector2 = Vector2.ZERO
+var zoom_level: float = 0
+@onready var zoom_duration: HSlider = %ZoomDuration
 
 func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
@@ -58,11 +60,11 @@ func _ready() -> void:
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
 	
 	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
-	
-	btn_zoom.toggled.connect(_on_zoom_toggled)
-	_bus.disabled_toggle_zoom_button.connect(_disabled_toggle_zoom_button)
-	
+		
 	btn_detach.pressed.connect(_on_button_detach_pressed)
+	
+	btn_zoom.pressed.connect(_on_button_zoom_pressed)
+	_bus.response_add_zoom.connect(_on_response_add_zoom)
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
@@ -177,6 +179,8 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_color_change()
 	if id == 7:
 		_add_thickness_change()
+	if id == 8:
+		_add_zoom()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -282,14 +286,25 @@ func _add_thickness_change() -> void:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
 
-# func _add_zoom():
-	# var entity_zoom = ZoomEntity.new()
-	# var data_new = {
-	# 	"type": "Zoom",
-	# 	"entity_id": entity_zoom.entity_id,
-	# 	"entiy_properties": [] 
-	# }
-		
+func _add_zoom():
+	var entity_zoom = ZoomEntity.new()
+	var data_new = {
+		"type": "ClassLeaf",
+		"entity_id": entity_zoom.entity_id,
+		"entiy_properties": [{
+			"position:x": position.x,
+			"position:y": position.y,
+			"zoom_level": zoom_level,
+			"zoom_duration": zoom_duration.value
+		}] 
+	}
+	var class_node = ClassLeaf.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+		_bus.add_class_leaf.emit(class_node)
+	
 #endregion
 
 
@@ -297,7 +312,7 @@ func _add_thickness_change() -> void:
 
 # Toggle audio recording
 func _on_toggle_audio_pressed(active: bool) -> void:
-	audio_record.emit(active)
+	_bus.audio_record.emit(active)
 	if active:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_AUDIO)
 	else:
@@ -317,21 +332,18 @@ func _on_button_pen_toggled(active: bool) -> void:
 func _disabled_toggle_pen_button(active: bool) -> void:
 	btn_pen.disabled = active
 
-# Toggle zoom mode
-func _on_zoom_toggled(active: bool) -> void:
-	_bus.zoom_toggled.emit(active)
-	if active:
-		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_ZOOM)
-	else:
-		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
-
-func _disabled_toggle_zoom_button(active: bool) -> void:
-	btn_zoom.disabled = active
-		
 # Request to detach the whiteboard
 func _on_button_detach_pressed() -> void:
-	request_detach.emit()
+	_bus.request_detach.emit()
 	
+# Request to take screenshot of the whiteboard
+func _on_button_zoom_pressed() -> void:
+	_bus.request_zoom.emit()
+
+func _on_response_add_zoom(position: Vector2, zoom: float) -> void:
+	cam_pos = position
+	zoom_level = zoom
+	 
 #endregion
 
 

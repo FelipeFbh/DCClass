@@ -6,6 +6,7 @@ const SQUARED_THRESHOLD := 25.0
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 @onready var _viewport_container: SubViewportContainer = %SubViewportContainer
 @onready var _viewport: SubViewport = %SubViewport
+@onready var zoom_slider: HSlider = %ZoomSlider
 
 var camera: ClassCameraEditor
 
@@ -18,9 +19,6 @@ var _pressed: bool = false
 var _line: Line2D
 var _last_point: Vector2 = Vector2.INF
 
-# zoom
-var _zoom_enabled: bool = false
-
 var _pen_thickness: float = 2.0
 var _pen_color: Color = Color.WHITE
 
@@ -28,6 +26,7 @@ func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
 	_bus.pen_thickness_changed.connect(_on_pen_thickness_changed)
 	_bus.pen_color_changed.connect(_on_pen_color_changed)
+	_bus.request_zoom.connect(_on_button_zoom_pressed)
 
 func _gui_input(event):
 	if _pen_enabled:
@@ -77,15 +76,15 @@ func _on_pen_toggled(active: bool) -> void:
 	_pen_enabled = active
 	_last_time = Time.get_ticks_msec() / 1000.0
 
-func _on_zoom_toggled(active: bool) -> void:
-	_zoom_enabled = active
-	_last_time = Time.get_ticks_msec() / 1000.0
-
 func _on_pen_thickness_changed(thickness: float) -> void:
 	_pen_thickness = thickness
 	
 func _on_pen_color_changed(color: Color) -> void:
 	_pen_color = color
+
+func _on_button_zoom_pressed() -> void:
+	if (camera and zoom_slider):
+		_bus.response_add_zoom.emit(camera.position, zoom_slider.value)
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

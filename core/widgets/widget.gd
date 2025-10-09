@@ -11,6 +11,7 @@ extends Node2D
 static var zip_file: ZIPReader
 static var pen_color: Color = Color.WHITE
 static var pen_thickness: float = 2.0
+static var cam_pos: Vector2 = Vector2.ZERO
 
 # Dir class is the temporary directory where the widget assets are stored. Ex: Audio, Images, etc.
 static var dir_class: String

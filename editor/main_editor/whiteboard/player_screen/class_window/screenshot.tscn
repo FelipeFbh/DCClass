@@ -1,0 +1,57 @@
+[gd_scene load_steps=5 format=3 uid="uid://dpbds0rbgi4p7"]
+
+[ext_resource type="Script" uid="uid://3m0dgpu7ia6k" path="res://editor/main_editor/whiteboard/player_screen/class_window/screenshot.gd" id="1_i5knd"]
+
+[sub_resource type="Animation" id="Animation_wdh4c"]
+resource_name = "screenshot"
+length = 0.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlashRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.13333334, 0.16666669),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_fudqf"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("FlashRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fudqf"]
+_data = {
+&"RESET": SubResource("Animation_fudqf"),
+&"screenshot": SubResource("Animation_wdh4c")
+}
+
+[node name="Screenshot" type="CanvasLayer"]
+script = ExtResource("1_i5knd")
+
+[node name="FlashRect" type="ColorRect" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FlashAnimation" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_fudqf")
+}

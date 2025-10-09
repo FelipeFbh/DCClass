@@ -13,7 +13,9 @@ extends Entity
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var points: PackedVector2Array
+@export var cam_pos: Vector2
+@export var zoom_level: float
+@export var zoom_duration: float
 
 # TODO: add property variables
 # 7. public variables: define all public variables here
@@ -32,15 +34,19 @@ func get_class_name() -> String:
 	return "ZoomEntity"
 
 func get_editor_name() -> String:
-	return "Zoom: " + str(len(points)) + " points"
+	return "Zoom"
 
 # Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
-	var points_array: Array = Array(points)
 	return {
 		"entity_id": entity_id,
 		"entity_type": get_class_name(),
-		"points": points_array.map(func(v): return {"x": v.x, "y": v.y}),
+		"position": {
+			"x": cam_pos.x,
+			"y": cam_pos.y
+		},
+		"zoom_level": zoom_level,
+		"zoom_duration": zoom_duration
 	}
 
 # Load data from a dictionary format(.json) to resource(LineEntity).
