@@ -10,7 +10,6 @@ extends MarginContainer
 @onready var btn_audio: CheckButton = %AudioButton
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
-@onready var btn_zoom: Button = %ZoomButton
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
 
@@ -38,11 +37,6 @@ var _first_stroke: bool = true
 var _pen_color_changed_first: bool = false
 var _pen_thickness_changed_first: bool = false
 
-# zoom variables
-var cam_pos: Vector2 = Vector2.ZERO
-var zoom_level: float = 0
-@onready var zoom_duration: HSlider = %ZoomDuration
-
 func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.update_treeindex.connect(_setup_index_class)
@@ -62,9 +56,7 @@ func _ready() -> void:
 	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
 		
 	btn_detach.pressed.connect(_on_button_detach_pressed)
-	
-	btn_zoom.pressed.connect(_on_button_zoom_pressed)
-	_bus.response_add_zoom.connect(_on_response_add_zoom)
+
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
@@ -283,15 +275,7 @@ func _disabled_toggle_pen_button(active: bool) -> void:
 # Request to detach the whiteboard
 func _on_button_detach_pressed() -> void:
 	_bus.request_detach.emit()
-	
-# Request to take screenshot of the whiteboard
-func _on_button_zoom_pressed() -> void:
-	_bus.request_zoom.emit()
 
-func _on_response_add_zoom(position: Vector2, zoom: float) -> void:
-	cam_pos = position
-	zoom_level = zoom
-	 
 #endregion
 
 

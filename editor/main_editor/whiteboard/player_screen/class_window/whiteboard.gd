@@ -6,7 +6,6 @@ const SQUARED_THRESHOLD := 25.0
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 @onready var _viewport_container: SubViewportContainer = %SubViewportContainer
 @onready var _viewport: SubViewport = %SubViewport
-@onready var zoom_slider: HSlider = %ZoomSlider
 
 var camera: ClassCameraEditor
 
@@ -26,7 +25,6 @@ func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
 	_bus.pen_thickness_changed.connect(_on_pen_thickness_changed)
 	_bus.pen_color_changed.connect(_on_pen_color_changed)
-	_bus.request_zoom.connect(_on_button_zoom_pressed)
 
 func _gui_input(event):
 	if _pen_enabled:
@@ -82,9 +80,6 @@ func _on_pen_thickness_changed(thickness: float) -> void:
 func _on_pen_color_changed(color: Color) -> void:
 	_pen_color = color
 
-func _on_button_zoom_pressed() -> void:
-	if (camera and zoom_slider):
-		_bus.response_add_zoom.emit(camera.position, zoom_slider.value)
 
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:

@@ -63,12 +63,6 @@ signal pen_started_drawing
 # Audio record
 signal audio_record(active: bool)
 
-# Pressed zoom
-signal request_zoom
-
-# Add zoom to queue
-signal response_add_zoom(camera_position: Vector2, zoom: float)
-
 # Pressed detach
 signal request_detach
 
