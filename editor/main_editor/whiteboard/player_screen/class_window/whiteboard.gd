@@ -29,13 +29,26 @@ var _current_pen_thickness_index: int = -1
 var _pen_color_history: Array = []
 var _current_pen_color_index: int = -1
 
+# Node selection
 var _node_drag_enabled: bool = false
 var _current_node: ClassNode
 var _nodes_to_drag: Array[ClassLeaf]
 var _selected_nodes: Array[ClassLeaf]
+var _last_click_time: float = 0.0
+const _DOUBLE_CLICK_TIME: float = 0.2
+# Node dragging
 var _node_dragging: bool = false
 var _drag_start_pos: Vector2
 var _nodes_start_pos: Array[Vector2]
+# Drag selection
+var _drag_selection_enabled: bool = false
+var _drag_selection_start: Vector2
+var _drag_selection_rect: Rect2
+var _selection_box: Control
+# Selection state
+var _selection_mouse_pressed: bool = false
+var _selection_start_pos: Vector2
+const _SELECTION_THRESHOLD = 0.5
 
 func _ready() -> void:
 	_bus.pen_toggled.connect(_on_pen_toggled)
@@ -45,6 +58,8 @@ func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.class_node_selected.connect(_on_class_node_selected)
 	_bus.clear_selection.connect(_clear_selection)
+
+	_create_selection_box()
 
 
 func _gui_input(event):
@@ -237,6 +252,7 @@ func _save_pen_color_to_history(type: String, color: Color):
 	})
 	_current_pen_color_index = _pen_color_history.size() - 1
 
+#region Widget Selection
 
 func _handle_node_dragging(event: InputEvent) -> void:
 	if not _current_node:
@@ -309,21 +325,155 @@ func _handle_node_dragging(event: InputEvent) -> void:
 			widget.position = _nodes_start_pos[i] + offset
 
 # Handler for node selection on visual widgets
-func _handle_widget_selection(event):
-	if event is InputEventMouseButton and event.pressed:
-		var nodes:= NodeController.get_visible_nodes()
-		var selected: Array[ClassLeaf] = []
-		for node in nodes:
-			var widget: Widget = node._node_controller.leaf_value
-			if not is_instance_valid(widget):
-				continue
+func _handle_widget_selection(event: InputEvent):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed:
+			# Init selection and clear previous selection
+			_selection_mouse_pressed = true
+			_selection_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
+			_clear_selection()
+				
+			# Click time handling
+			var current_time = Time.get_ticks_msec() / 1000.0
+			var is_double_click = (current_time - _last_click_time) < _DOUBLE_CLICK_TIME
+			_last_click_time = current_time
+
+			# get selection on area
 			var mouse_pos = _viewport.get_camera_2d().get_global_mouse_position()
-			var local_point = widget.to_local(mouse_pos)
-			var widget_rect := widget.get_rect_bound()
-			var local_rect = Rect2(widget_rect.position, widget_rect.size)
-			if local_rect.has_point(local_point):
-				selected.append(node)
-		_bus.whiteboard_nodes_selected.emit(selected)
+			var selected = _get_selected_nodes_on_click(Rect2(mouse_pos - Vector2(1, 1), Vector2(2, 2)))
+			
+			if is_double_click and selected.size() > 0: # Single node selection
+				var closest_node: ClassLeaf = _find_closest_node_to_center(selected, mouse_pos)
+				if closest_node:
+					_bus_core.current_node_changed.emit(closest_node)
+				_selection_mouse_pressed = false
+				return
+		else:
+			if _selection_mouse_pressed:
+				_selection_mouse_pressed = false
+
+				if _drag_selection_enabled:
+					_finish_drag_selection()
+				else: # Single area selection
+					var mouse_pos = _viewport.get_camera_2d().get_global_mouse_position()
+					var selected = _get_selected_nodes_on_click(Rect2(mouse_pos - Vector2(1, 1), Vector2(2, 2)))
+					_bus.whiteboard_nodes_selected.emit(selected)
+	elif event is InputEventMouseMotion and _selection_mouse_pressed:
+		var current_pos = _viewport.get_camera_2d().get_global_mouse_position()
+		var dist = _selection_start_pos.distance_to(current_pos)
+
+		if dist > _SELECTION_THRESHOLD and not _drag_selection_enabled:
+			_start_drag_selection(_selection_start_pos)
+		
+		if _drag_selection_enabled:
+			_update_drag_selection(event)
+
+
+# Selection helper to get all nodes under a given area
+func _get_selected_nodes_on_click(area: Rect2) -> Array[ClassLeaf]:
+	var nodes:= NodeController.get_visible_nodes()
+	var selected: Array[ClassLeaf] = []
+	
+	for node in nodes:
+		var widget: Widget = node._node_controller.leaf_value
+		if not is_instance_valid(widget):
+			continue
+		var widget_rect := widget.get_rect_bound()
+		var global_widget_rect = Rect2(
+			widget.to_global(widget_rect.position),
+			widget_rect.size
+		)
+		if area.intersects(global_widget_rect):
+			selected.append(node)
+	return selected
+
+# Helper to find the closest node to the center of the widget
+func _find_closest_node_to_center(nodes: Array[ClassLeaf], click_pos: Vector2) -> ClassLeaf:
+	var closest_node: ClassLeaf = null
+	var min_distance: float = INF
+
+	for node in nodes:
+		var widget: Widget = node._node_controller.leaf_value
+		if not is_instance_valid(widget):
+			continue
+		
+		var widget_rect := widget.get_rect_bound()
+		
+		# Get click-center distance
+		var center_pos = widget.to_global(widget_rect.get_center())
+		var distance = click_pos.distance_to(center_pos)
+
+		if distance < min_distance:
+			min_distance = distance
+			closest_node = node
+	return closest_node
+
+#endregion
+
+#region Drag Selection
+
+# Create a selection box control to visualize the drag selection
+func _create_selection_box():
+	_selection_box = SelectionBox.new()
+	_selection_box.name = "SelectionBox"
+	_selection_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_selection_box.visible = false
+	_viewport.add_child(_selection_box)
+
+# Drag selection handler: start
+func _start_drag_selection(start_pos: Vector2):
+	_drag_selection_enabled = true
+	_drag_selection_start = start_pos
+	_drag_selection_rect = Rect2(start_pos, Vector2.ZERO)
+	_selection_box.visible = true
+	_selection_box.position = start_pos
+	_selection_box.size = Vector2.ZERO
+
+# Drag selection handler: update
+func _update_drag_selection(event: InputEventMouseMotion):
+	if not _drag_selection_enabled:
+		return
+	
+	# Get rect bounds from start to current mouse pos
+	var current_pos = _viewport.get_camera_2d().get_global_mouse_position()
+	var top_left = Vector2(
+		min(_drag_selection_start.x, current_pos.x),
+		min(_drag_selection_start.y, current_pos.y)
+	)
+	var bottom_right = Vector2(
+		max(_drag_selection_start.x, current_pos.x),
+		max(_drag_selection_start.y, current_pos.y)
+	)
+
+	_drag_selection_rect = Rect2(top_left, bottom_right - top_left)
+
+	# Update selection box visual
+	_selection_box.position = _drag_selection_rect.position
+	_selection_box.size = _drag_selection_rect.size
+	_selection_box.queue_redraw()
+	
+# Drag selection handler: finish
+func _finish_drag_selection():
+	_drag_selection_enabled = false
+	_selection_box.visible = false
+
+	# Get selected nodes in the selection rectangle and emit selection
+	var selected = _get_selected_nodes_on_click(_drag_selection_rect)	
+	_bus.whiteboard_nodes_selected.emit(selected)
+
+# Helper class to simulate desktop selection box
+class SelectionBox extends Control:
+	func _draw():
+		var rect = Rect2(Vector2.ZERO, size)
+		var fill_color = Color(0.2, 0.5, 1.0, 0.3)
+		var border_color = Color(0.2, 0.5, 1.0, 0.8)
+		var border_width = 2.0
+		
+		# Draw and fill
+		draw_rect(rect, fill_color)
+		draw_rect(rect, border_color, false, border_width)
+
+#endregion
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()
