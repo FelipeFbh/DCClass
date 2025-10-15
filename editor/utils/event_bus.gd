@@ -23,9 +23,6 @@ signal disabled_toggle_audio_button(active: bool)
 # Toggle Pen Button
 signal disabled_toggle_pen_button(active: bool)
 
-# Toggle Zoom Button
-signal disabled_toggle_zoom_button(active: bool)
-
 # Pen Thickness Changed
 signal pen_thickness_changed(value: float)
 
@@ -87,8 +84,14 @@ signal make_group()
 # Toggle pen
 signal pen_toggled(active: bool)
 
-# Toogle zoom
-signal zoom_toggled(active: bool)
+# Pen draw detection
+signal pen_started_drawing
+
+# Audio record
+signal audio_record(active: bool)
+
+# Pressed detach
+signal request_detach
 
 # Drag toggled
 signal drag_toggled(active: bool)

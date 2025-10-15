@@ -4,9 +4,6 @@ extends MarginContainer
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-signal audio_record(active: bool)
-signal request_detach
-
 @onready var menu_btn_edit: MenuButton = %EditMenuButton
 @onready var menu_btn_insert: MenuButton = %InsertMenuButton
 
@@ -15,17 +12,21 @@ signal request_detach
 @onready var btn_detach: Button = %DetachButton
 @onready var btn_drag: CheckButton = %DragButton
 
-@onready var btn_zoom: CheckButton = %ZoomButton
+#@onready var btn_zoom: CheckButton = %ZoomButton
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
 
 @onready var pen_color_picker: ColorPickerButton = %ColorPickerButton
 @onready var pen_color_label: Label = %ColorPickerLabel
 @onready var pen_color_container: HBoxContainer = %PenColorContainer
+var _pen_color_changed: bool = false
+var _pending_pen_color: Color = Color.WHITE
 
 @onready var pen_thickness_slider: HSlider = %PenThicknessSlider
 @onready var pen_thickness_label: Label = %PenThicknessLabel
 @onready var pen_thickness_container: HBoxContainer = %PenThicknessContainer
+var _pen_thickness_timer: Timer
+var _pending_pen_thickness: float = 2.0
 
 var resources_class: ResourcesClassEditor
 
@@ -33,6 +34,11 @@ var _current_node: ClassNode
 var _class_index: ClassIndex
 var current_item_tree: TreeItem
 var select_item_index_disabled: bool = false
+
+# solo será true 1 vez con el primer trazo
+var _first_stroke: bool = true
+var _pen_color_changed_first: bool = false
+var _pen_thickness_changed_first: bool = false
 
 func _ready() -> void:
 	_bus_core.current_node_changed.connect(_current_node_changed)
@@ -50,9 +56,8 @@ func _ready() -> void:
 	btn_pen.toggled.connect(_on_button_pen_toggled)
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
 	
-	btn_zoom.toggled.connect(_on_zoom_toggled)
-	_bus.disabled_toggle_zoom_button.connect(_disabled_toggle_zoom_button)
-	
+	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
+		
 	btn_detach.pressed.connect(_on_button_detach_pressed)
 
 	btn_drag.toggled.connect(_on_button_drag_toggled)
@@ -69,16 +74,22 @@ func _ready() -> void:
 	_bus.whiteboard_nodes_selected.connect(_whiteboard_nodes_selection)
 
 
-	pen_thickness_slider.value_changed.connect(_pen_thickness_changed)
-	#pen_color_picker.color_changed.connect(_pen_color_changed)
+	pen_thickness_slider.value_changed.connect(_on_thickness_slider_changed)
 	
-
+	_pen_thickness_timer = Timer.new()
+	_pen_thickness_timer.wait_time = 0.3
+	_pen_thickness_timer.one_shot = true
+	_pen_thickness_timer.timeout.connect(_on_pen_thickness_changed)
+	add_child(_pen_thickness_timer)
+	
+	pen_color_picker.color_changed.connect(_on_color_picker_changed)
+	pen_color_picker.get_popup().connect("popup_hide", _on_color_picker_closed)
+	
 # Setup the control panel with the current resources class
 func _setup():
 	resources_class = PersistenceEditor.resources_class
 	_setup_index_class()
 	_current_node_changed(resources_class._current_node)
-
 
 #region Menu Edit
 
@@ -340,7 +351,7 @@ func _set_pen_controls_disabled(enabled: bool):
 
 # Toggle audio recording
 func _on_toggle_audio_pressed(active: bool) -> void:
-	audio_record.emit(active)
+	_bus.audio_record.emit(active)
 	if active:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_AUDIO)
 	else:
@@ -354,30 +365,15 @@ func _on_button_pen_toggled(active: bool) -> void:
 	_bus.pen_toggled.emit(active)
 	if active:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_PEN)
-		
-		_set_pen_controls_enabled(active)
 	else:
 		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
 	
-		_set_pen_controls_disabled(active)
-
 func _disabled_toggle_pen_button(active: bool) -> void:
 	btn_pen.disabled = active
 
-# Toggle zoom mode
-func _on_zoom_toggled(active: bool) -> void:
-	_bus.zoom_toggled.emit(active)
-	if active:
-		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_ZOOM)
-	else:
-		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
-
-func _disabled_toggle_zoom_button(active: bool) -> void:
-	btn_zoom.disabled = active
-		
 # Request to detach the whiteboard
 func _on_button_detach_pressed() -> void:
-	request_detach.emit()
+	_bus.request_detach.emit()
 
 # Toggle drag mode
 func _on_button_drag_toggled(active: bool) -> void:
@@ -472,21 +468,58 @@ func _execute_after_rendering():
 func _clear_selection():
 	tree_manager.deselect_all()
 
-func _pen_thickness_changed(value: float):
-	_bus.pen_thickness_changed.emit(value)
+func _on_pen_thickness_changed():
+	_bus.pen_thickness_changed.emit(_pending_pen_thickness)
 	
 	var thickness_entity := PenThicknessEntity.new()
-	thickness_entity.thickness = value
-
+	thickness_entity.thickness = _pending_pen_thickness
+	
 	_bus.add_class_leaf_entity.emit(thickness_entity, [])
-	
-	
-func _pen_color_changed(color: Color) -> void:
+
+func _on_pen_color_changed(color: Color) -> void:
 	_bus.pen_color_changed.emit(color)
-	
+		
 	var color_entity := PenColorEntity.new()
 	color_entity.color = color
 	
 	_bus.add_class_leaf_entity.emit(color_entity, [])
 
+func _on_color_picker_changed(color: Color) -> void:
+	_pending_pen_color = color
+	_pen_color_changed = true
+	_pen_color_changed_first = true
+	
+func _on_color_picker_closed() -> void:
+	if _pen_color_changed:
+		_on_pen_color_changed(_pending_pen_color)
+		_pen_color_changed = false
+	
+func _on_thickness_slider_changed(value: float) -> void:
+	_pending_pen_thickness = value
+	_pen_thickness_timer.start()
+	_pen_thickness_changed_first = true
+
+func _on_pen_started_drawing() -> void:
+	if _first_stroke:
+		if _pen_color_changed_first and !_pen_thickness_changed_first:
+			var thickness_entity := PenThicknessEntity.new()
+			thickness_entity.thickness = _pending_pen_thickness
+			_bus.add_class_leaf_entity.emit(thickness_entity, [])
+		
+		if _pen_thickness_changed_first and !_pen_color_changed_first:
+			var color_entity := PenColorEntity.new()
+			color_entity.color = pen_color_picker.color
+			_bus.add_class_leaf_entity.emit(color_entity, [])
+		
+		if !_pen_thickness_changed_first and !_pen_color_changed_first:
+			var color_entity := PenColorEntity.new()
+			color_entity.color = pen_color_picker.color
+			_bus.add_class_leaf_entity.emit(color_entity, [])
+			
+			var thickness_entity := PenThicknessEntity.new()
+			thickness_entity.thickness = _pending_pen_thickness
+			_bus.add_class_leaf_entity.emit(thickness_entity, [])
+		
+		_first_stroke = false
+		
 #endregion

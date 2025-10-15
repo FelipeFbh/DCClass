@@ -13,7 +13,7 @@ extends Entity
 # 5. constants: define constants here
 
 # 6. export variables: define all export variables in groups here
-@export var color: Color = Color.WHITE
+@export var color: Color
 
 # 7. public variables: define all public variables here
 
@@ -56,6 +56,7 @@ func load_data(data: Dictionary) -> void:
 					 color_data.get("g", 1.0), 
 					 color_data.get("b", 1.0), 
 					 color_data.get("a", 1.0))
+					
 
 # 13. private methods: define all private methods here, use _ as preffix
 

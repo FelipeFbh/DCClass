@@ -13,21 +13,20 @@ var camera: ClassCameraEditor
 var _dragging: bool = false
 var _warped: bool = false
 
+# pen
 var _pen_enabled: bool = false
 var _pressed: bool = false
 var _line: Line2D
 var _last_point: Vector2 = Vector2.INF
 
-var _zoom_enabled: bool = false
-
 var _pen_thickness: float = 2.0
 var _pen_color: Color = Color.WHITE
 
-var _pen_thickness_history: Array = []
-var _current_pen_thickness_index: int = -1
+# var _pen_thickness_history: Array = []
+# var _current_pen_thickness_index: int = -1
 
-var _pen_color_history: Array = []
-var _current_pen_color_index: int = -1
+# var _pen_color_history: Array = []
+# var _current_pen_color_index: int = -1
 
 # Node selection
 var _node_drag_enabled: bool = false
@@ -64,6 +63,7 @@ func _ready() -> void:
 
 func _gui_input(event):
 	if _pen_enabled:
+		_bus.pen_started_drawing.emit()
 		_handle_drawing(event)
 		return
 	
@@ -124,21 +124,11 @@ func _on_pen_toggled(active: bool) -> void:
 	_pen_enabled = active
 	_last_time = Time.get_ticks_msec() / 1000.0
 
-func _on_zoom_toggled(active: bool) -> void:
-	_zoom_enabled = active
-	_last_time = Time.get_ticks_msec() / 1000.0
-
 func _on_pen_thickness_changed(thickness: float) -> void:
 	_pen_thickness = thickness
 	
-	if is_instance_valid(_line):
-		_line.width = _pen_thickness
-
 func _on_pen_color_changed(color: Color) -> void:
 	_pen_color = color
-	
-	if is_instance_valid(_line):
-		_line.default_color = _pen_color
 
 func _on_node_drag_enabled(enabled: bool) -> void:
 	_node_drag_enabled = enabled
@@ -163,18 +153,20 @@ func _handle_drawing(event: InputEvent) -> void:
 			return
 		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
 		
-
 		if event.button_mask & MOUSE_BUTTON_MASK_LEFT:
 			var now = Time.get_ticks_msec() / 1000.0
 
 			if not _pressed:
 				_pressed = true
+				
 				_line = _new_line()
 				_viewport.add_child(_line)
 				_line.add_point(pos)
 				_last_point = pos
-
-
+				
+				_bus.pen_thickness_changed.emit(_pen_thickness)
+				_bus.pen_color_changed.emit(_pen_color)
+				
 				_delays.clear()
 				var delta_time = now - _last_time
 				if delta_time > 10:
@@ -221,36 +213,36 @@ func _handle_drawing(event: InputEvent) -> void:
 								]
 
 			_bus.emit_signal("add_class_leaf_entity", entity, new_entity_properties)
-
+			
 			var parent = _line.get_parent()
-
+			
 			parent.remove_child(_line)
 			_line.queue_free()
 			_line = null
 
-func handle_pen_thickness(entity: PenThicknessEntity):
-	entity.apply_config(self)
-	_save_pen_thickness_to_history("thickness", entity.thickness)
+# func handle_pen_thickness(entity: PenThicknessEntity):
+# 	entity.apply_config(self)
+# 	_save_pen_thickness_to_history("thickness", entity.thickness)
 
-func handle_pen_color(entity: PenColorEntity):
-	entity.apply_config(self)
-	_save_pen_color_to_history("color", entity.color)
+# func handle_pen_color(entity: PenColorEntity):
+# 	entity.apply_config(self)
+# 	_save_pen_color_to_history("color", entity.color)
 	
-func _save_pen_thickness_to_history(type: String, value: float):
-	_pen_thickness_history.append({
-		"type": type,
-		"value": value,
-		"time": Time.get_ticks_msec()
-	})
-	_current_pen_thickness_index = _pen_thickness_history.size() - 1
-	
-func _save_pen_color_to_history(type: String, color: Color):
-	_pen_thickness_history.append({
-		"type": type,
-		"color": color,
-		"time": Time.get_ticks_msec()
-	})
-	_current_pen_color_index = _pen_color_history.size() - 1
+#func _save_pen_thickness_to_history(type: String, value: float):
+	#_pen_thickness_history.append({
+		#"type": type,
+		#"value": value,
+		#"time": Time.get_ticks_msec()
+	#})
+	#_current_pen_thickness_index = _pen_thickness_history.size() - 1
+	#
+#func _save_pen_color_to_history(type: String, color: Color):
+	#_pen_thickness_history.append({
+		#"type": type,
+		#"color": color,
+		#"time": Time.get_ticks_msec()
+	#})
+	#_current_pen_color_index = _pen_color_history.size() - 1
 
 #region Widget Selection
 
@@ -477,7 +469,8 @@ class SelectionBox extends Control:
 
 func _new_line() -> Line2D:
 	var l := Line2D.new()
-	l.width = 4.0
+	l.width = _pen_thickness
+	l.default_color = _pen_color
 	l.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	l.joint_mode = Line2D.LINE_JOINT_ROUND

@@ -21,7 +21,8 @@ func serialize() -> Dictionary:
 
 # Play the line widget.
 func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> void:
-	#line.color = Widget.color
+	line.default_color = Widget.pen_color
+	line.width = Widget.pen_thickness
 	line.show()
 	
 	if tween:
@@ -78,7 +79,8 @@ func skip_to_end() -> void:
 	if tween:
 		tween.kill()
 	line.points = entity.points
-	#line.color = Widget.color
+	line.default_color = Widget.pen_color
+	line.width = Widget.pen_thickness
 	line.show()
 	add_to_group(&"widget_finished")
 	emit_signal("widget_finished")

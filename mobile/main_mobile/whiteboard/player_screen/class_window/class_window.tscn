@@ -1,26 +1,26 @@
 [gd_scene load_steps=11 format=3 uid="uid://oy02dobgre3u"]
 
-[ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_b142x"]
-[ext_resource type="Script" uid="uid://do7ygokb3wgkc" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/whiteboard.gd" id="2_5eppn"]
-[ext_resource type="PackedScene" uid="uid://23jm880wmmev" path="res://mobile/main_mobile/control_panel/control_panel.tscn" id="2_i4i8q"]
-[ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="3_hb30m"]
-[ext_resource type="Script" uid="uid://d2g7r4l51rgv2" path="res://mobile/main_mobile/control_panel/control_panel.gd" id="3_te1kq"]
-[ext_resource type="Script" uid="uid://8vx2rmxyjcgb" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/bottom_split.gd" id="4_te1kq"]
+[ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_c4loa"]
+[ext_resource type="PackedScene" uid="uid://23jm880wmmev" path="res://mobile/main_mobile/control_panel/control_panel.tscn" id="2_ixmjj"]
+[ext_resource type="Script" uid="uid://d2g7r4l51rgv2" path="res://mobile/main_mobile/control_panel/control_panel.gd" id="3_4k8i1"]
+[ext_resource type="Script" uid="uid://8vx2rmxyjcgb" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/bottom_split.gd" id="4_lubsq"]
+[ext_resource type="Script" uid="uid://do7ygokb3wgkc" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/whiteboard.gd" id="5_c34ke"]
+[ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="6_d1wmn"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_mcb8p"]
-atlas = ExtResource("3_hb30m")
+atlas = ExtResource("6_d1wmn")
 region = Rect2(350, 350, 50, 50)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_te1kq"]
-atlas = ExtResource("3_hb30m")
+atlas = ExtResource("6_d1wmn")
 region = Rect2(360, 410, 30, 30)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
-atlas = ExtResource("3_hb30m")
+atlas = ExtResource("6_d1wmn")
 region = Rect2(50, 150, 50, 50)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4hnd6"]
-atlas = ExtResource("3_hb30m")
+atlas = ExtResource("6_d1wmn")
 region = Rect2(0, 300, 50, 50)
 
 [node name="ClassWindow" type="Control"]
@@ -31,7 +31,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("1_b142x")
+script = ExtResource("1_c4loa")
 
 [node name="LeftSplit" type="HSplitContainer" parent="."]
 unique_name_in_owner = true
@@ -57,10 +57,10 @@ layout_mode = 2
 layout_mode = 2
 current_tab = 0
 
-[node name="Control Panel" parent="LeftSplit/RightSplit/PanelContainer/TabContainer" instance=ExtResource("2_i4i8q")]
+[node name="Control Panel" parent="LeftSplit/RightSplit/PanelContainer/TabContainer" instance=ExtResource("2_ixmjj")]
 unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("3_te1kq")
+script = ExtResource("3_4k8i1")
 metadata/_tab_index = 0
 
 [node name="BottomSplit" type="VSplitContainer" parent="LeftSplit/RightSplit"]
@@ -69,14 +69,14 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 dragger_visibility = 1
-script = ExtResource("4_te1kq")
+script = ExtResource("4_lubsq")
 
 [node name="Whiteboard" type="Control" parent="LeftSplit/RightSplit/BottomSplit"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
 size_flags_vertical = 3
-script = ExtResource("2_5eppn")
+script = ExtResource("5_c34ke")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
 unique_name_in_owner = true

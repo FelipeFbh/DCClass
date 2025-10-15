@@ -44,10 +44,9 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	
 	# Play the next child after the last_child
 	var next_child_to_play = _childrens[index + 1]._node_controller
-
 	if next_child_to_play is SlideController:
 		NodeController.push_slide_layer()
-
+		
 	next_child_to_play.play_tree(__duration, __total_real_time, self)
 
 

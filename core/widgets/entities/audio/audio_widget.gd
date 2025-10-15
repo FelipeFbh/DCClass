@@ -63,11 +63,11 @@ func crossfade(from: AudioStreamPlayer, _seek_time: float = -1):
 		else:
 			audio.play()
 	
-		if from and is_instance_valid(from.audio):
+		if from and is_instance_valid(from):
 			crossfade_tween.tween_property(from, "volume_db", fade_out_db, crossfade_duration)
 			
 			# stop audio after fade out
-			crossfade_tween.tween_callback(from.stop_after_fade).set_delay(crossfade_duration)
+			crossfade_tween.tween_callback(from.stop).set_delay(crossfade_duration)
 		
 		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, crossfade_duration)
 	
@@ -108,10 +108,10 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			var time_remaining = prev_audio.duration - prev_audio.audio.get_playback_position()
+			var time_remaining = prev_audio.compute_duration() - prev_audio.audio.get_playback_position()
 			
 			if time_remaining <= crossfade_duration:
-				crossfade(prev_audio)
+				crossfade(prev_audio.audio)
 				
 			else:
 				# creating a timer for the fade out
@@ -171,7 +171,7 @@ func seek_and_play(_seek_time: float) -> void:
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			crossfade(prev_audio, _seek_time)
+			crossfade(prev_audio.audio, _seek_time)
 		else:
 		# the audio is the same
 			crossfade_in(_seek_time)
@@ -181,6 +181,7 @@ func seek_and_play(_seek_time: float) -> void:
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
+	emit_signal("widget_finished")
 	
 	_bus_core.current_node_changed.emit(class_node)
 	
@@ -189,8 +190,7 @@ func seek_and_play(_seek_time: float) -> void:
 	
 	if !state._done:
 		await state.completed
-		
-	stop()
+		reset()
 
 # Stop the audio.
 func stop():

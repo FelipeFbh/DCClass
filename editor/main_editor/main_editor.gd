@@ -24,11 +24,11 @@ func _ready() -> void:
 	PersistenceEditor.editor_signals = editor_signals
 	PersistenceEditor.resources_class = resources_class
 	PersistenceEditor._setup()
-	control_panel.request_detach.connect(_on_request_detach)
+	control_panel._bus.request_detach.connect(_on_request_detach)
 	file_editor._setup()
 	control_panel._setup()
 	audio_record._setup()
-	control_panel.audio_record.connect(_on_request_audio_record)
+	control_panel._bus.audio_record.connect(_on_request_audio_record)
 	_on_request_detach()
 
 

@@ -149,10 +149,13 @@ func _on_timer_timeout():
 
 # handles the types of inputs available
 func _on_viewport_input(event: InputEvent):
+	# screen touch (mobile)
 	if event is InputEventScreenTouch and event.pressed:
 		_handle_input()
+	# screen drag (mobile)
 	if event is InputEventScreenDrag and event.pressed:
 		_make_elements_invisible()
+	# screen click (desktop)
 	if event is InputEventMouseButton and event.pressed:
 		_handle_input()
 		
