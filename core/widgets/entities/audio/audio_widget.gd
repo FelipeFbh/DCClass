@@ -45,7 +45,7 @@ func init(_properties: Dictionary) -> void:
 func serialize() -> Dictionary:
 	return entity.serialize()
 
-func crossfade(from: AudioStreamPlayer, _seek_time: float = -1):
+func crossfade(from: AudioWidget, _seek_time: float = -1):
 	var fade_out_db = -80.0
 	var fade_in_db = 0.0
 	
@@ -64,7 +64,7 @@ func crossfade(from: AudioStreamPlayer, _seek_time: float = -1):
 			audio.play()
 	
 		if from and is_instance_valid(from.audio):
-			crossfade_tween.tween_property(from, "volume_db", fade_out_db, crossfade_duration)
+			crossfade_tween.tween_property(from.audio, "volume_db", fade_out_db, crossfade_duration)
 			
 			# stop audio after fade out
 			crossfade_tween.tween_callback(from.stop_after_fade).set_delay(crossfade_duration)
@@ -90,8 +90,8 @@ func crossfade_in(_seek_time: float = -1):
 		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, crossfade_duration)
 	
 # stops the audio after a fade
-func stop_after_fade(act_audio: AudioStreamPlayer):
-	if act_audio.playing:
+func stop_after_fade(act_audio: AudioWidget):
+	if act_audio.audio.playing:
 		stop()
 
 func _ready():
@@ -108,7 +108,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			var time_remaining = prev_audio.duration - prev_audio.audio.get_playback_position()
+			var time_remaining = prev_audio.audio.stream.get_length() - prev_audio.audio.get_playback_position()
 			
 			if time_remaining <= crossfade_duration:
 				crossfade(prev_audio)
