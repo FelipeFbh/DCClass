@@ -51,3 +51,6 @@ func self_delete() -> void:
 # Converts a temporary entity to a persistent entity.
 func tmp_to_persistent() -> void:
 	pass
+
+func save_resource(path: String) -> String:
+	return ""

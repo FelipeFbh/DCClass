@@ -18,7 +18,7 @@ Se utiliza como base el proyecto [POODLE](./POODLE/README.md).
 - Camara libre para extender el área de la pizarra.
 
 ## Requisitos
-- Godot 4.4
+- Godot 4.5
 - FFmpeg 7.1.1 (full_build)
 
 
@@ -29,9 +29,9 @@ Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `expo
 ```
 # Options
 Binary Format:
-    Embed PCK : true
+	Embed PCK : true
 
 #Resources
 Filters to export non-resources files/folders:
-    *.dcc
+	*.dcc
 ```

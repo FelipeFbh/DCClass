@@ -90,6 +90,8 @@ func tmp_to_persistent() -> void:
 		else:
 			push_error("Audio file does not exist: " + path_tmp + audio_path)
 	audio_path = path_persistent
+	
+
 
 # 13. private methods: define all private methods here, use _ as preffix
 

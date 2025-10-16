@@ -4,8 +4,6 @@ extends Control
 var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
-
-
 #region Whiteboard
 
 @onready var viewport: SubViewport = %SubViewport
@@ -92,7 +90,6 @@ func _ready():
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
 	_bus.status_playback_stop.connect(_status_playback_stop)
 	
-
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
 

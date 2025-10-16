@@ -84,6 +84,29 @@ func get_properties() -> Dictionary:
 		_properties.merge(_prop, true)
 	return _properties
 
+## Set a specific property by type and data
+func set_property_by_type(property_type: String, data: Dictionary) -> void:
+	var existing_property: EntityProperty = null
+	
+	# Search for the prop in props dict
+	for property in entity_properties:
+		if property.get_class_name() == property_type:
+			existing_property = property
+			break
+	
+	# If isnt exist, create
+	if existing_property == null:
+		if CustomClassDB.class_exists(property_type):
+			existing_property = CustomClassDB.instantiate(property_type)
+			entity_properties.append(existing_property)
+		else:
+			push_error("Property type does not exist: " + property_type)
+			return
+	
+	# Set the data
+	existing_property.set_property(data)
+
+
 # Delete this ClassLeaf and its associated entity.
 func self_delete() -> void:
 	# Check if is a dynamic entity.

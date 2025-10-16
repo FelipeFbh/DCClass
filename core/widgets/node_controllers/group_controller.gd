@@ -44,6 +44,9 @@ func play_tree(__duration: float = 0.0, __total_real_time: float = 0.0, last_chi
 	
 	# Play the next child after the last_child
 	var next_child_to_play = _childrens[index + 1]._node_controller
+	if next_child_to_play is SlideController:
+		NodeController.push_slide_layer()
+		
 	next_child_to_play.play_tree(__duration, __total_real_time, self)
 
 
@@ -69,15 +72,16 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	while current != null:
 		current.skip_to_end()
 		if current == node_seek:
+			_bus.emit_signal("execute_after_rendering")
 			return
-		current_node = current.get_next(current_node)
+		current_node = current.get_next(current_node, true)
 		current = current_node[0]
 	return
 
 #region Tree Navigation
 
 # Return the next NodeController after __current_node
-func get_next(__current_node: Array) -> Array:
+func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
 	var last_child = __current_node[1]
 	var index = current_node._index_of(last_child)
@@ -85,10 +89,19 @@ func get_next(__current_node: Array) -> Array:
 	if current_node._childrens.size() == 0 or index + 1 == current_node._childrens.size():
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
+			# Pop current layer if is computing (called only on seek)
+			if current_node is SlideController and compute_layer:
+				NodeController.pop_slide_layer()
+				get_tree().call_group(&"widget_cleared", "unclear")
+				NodeController.unhide_layers()
 			return [parent, current_node]
 		return [null, null]
 	
 	var next_child = current_node._childrens[index + 1]._node_controller
+	# Push current layer if is computing (called only on seek)
+	if next_child is SlideController and compute_layer:
+		NodeController.push_slide_layer()
+
 	return [next_child, null]
 
 
@@ -131,6 +144,12 @@ func get_previous_leaf(last_child: NodeController) -> LeafController:
 			return prev_child[0]
 		prev_child = prev_child[0].get_previous([prev_child[0], prev_child[1]])
 	return null
+
+func skip_all_children():
+	for i in range(_childrens.size()):
+		var child = _childrens[i]._node_controller
+		child.add_to_group(&"skipped_before_play")
+		child.skip_to_end()
 
 #endregion
 
