@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://oy02dobgre3u"]
+[gd_scene load_steps=14 format=3 uid="uid://oy02dobgre3u"]
 
 [ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_c4loa"]
 [ext_resource type="PackedScene" uid="uid://23jm880wmmev" path="res://mobile/main_mobile/control_panel/control_panel.tscn" id="2_ixmjj"]
@@ -7,13 +7,64 @@
 [ext_resource type="Script" uid="uid://do7ygokb3wgkc" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/whiteboard.gd" id="5_c34ke"]
 [ext_resource type="Texture2D" uid="uid://jws2w5wpfvw7" path="res://assets/sprites/ui/sheet_white1x.png" id="6_d1wmn"]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_syixm"]
+atlas = ExtResource("6_d1wmn")
+region = Rect2(202, 0, 52, 50)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_mcb8p"]
 atlas = ExtResource("6_d1wmn")
 region = Rect2(350, 350, 50, 50)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_jmlnq"]
+atlas = ExtResource("6_d1wmn")
+region = Rect2(350, 450, 50, 50)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_te1kq"]
 atlas = ExtResource("6_d1wmn")
 region = Rect2(360, 410, 30, 30)
+
+[sub_resource type="GDScript" id="GDScript_4hnd6"]
+script/source = "class_name PlayerSlider
+extends HSlider
+
+## A custom slider that is used to control the playback of a class.
+##
+## It is a horizontal slider that has a thumb that can be dragged to change the position of the class.
+## It has a debouncer to prevent the signal from being emitted too many times.
+
+## Emitted when the value of the slider is changed.
+signal value_selected(value: float)
+
+@export var debouncer_time = 0.2
+@onready var pressed: bool = false
+@onready var debouncer: Timer = Timer.new()
+
+## Change the value of the slider, with or without emitting the signal.
+func change_value(new_value: float, _emit_signal: bool = false) -> void:
+	if pressed:
+		return
+	if _emit_signal:
+		value = new_value
+	else:
+		set_value_no_signal(new_value)
+
+func _ready() -> void:
+	debouncer.wait_time = debouncer_time
+	debouncer.one_shot = true
+	add_child(debouncer)
+	debouncer.timeout.connect(_emit_change_value)
+	value_changed.connect(_on_value_changed)
+
+
+func _emit_change_value() -> void:
+	emit_signal(\"value_selected\", value)
+	pressed = false
+
+func _on_value_changed(_value: float) -> void:
+	pressed = true
+	debouncer.start()
+	change_value(_value, false)
+"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
 atlas = ExtResource("6_d1wmn")
@@ -50,6 +101,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="LeftSplit/RightSplit"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
@@ -93,7 +145,7 @@ stretch = true
 unique_name_in_owner = true
 disable_3d = true
 handle_input_locally = false
-size = Vector2i(1280, 628)
+size = Vector2i(1280, 612)
 render_target_update_mode = 4
 
 [node name="PlaybackControls" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
@@ -111,11 +163,21 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
+[node name="PrevButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+icon = SubResource("AtlasTexture_syixm")
+
 [node name="StopButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"PlayerIconButton"
 icon = SubResource("AtlasTexture_mcb8p")
+
+[node name="NextButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
+unique_name_in_owner = true
+layout_mode = 2
+icon = SubResource("AtlasTexture_jmlnq")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
 layout_mode = 0
@@ -147,6 +209,32 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="TimeRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="CurrentTimeLabel" type="Label" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "00:00"
+horizontal_alignment = 1
+
+[node name="TimeSlider" type="HSlider" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+step = 0.25
+script = SubResource("GDScript_4hnd6")
+
+[node name="TotalTimeLabel" type="Label" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "00:00"
+horizontal_alignment = 1
 
 [node name="ControlRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -197,7 +285,7 @@ custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-max_value = 1.0
+max_value = 10.0
 step = 0.001
 
 [node name="Spacer4" type="Control" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/ControlRow"]

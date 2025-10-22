@@ -36,3 +36,7 @@ func skip_to_end():
 	Widget.pen_thickness = entity.thickness
 	add_to_group(&"widget_finished")
 	emit_signal("widget_finished")
+
+# Returns the duration of the operation in seconds.
+func compute_duration() -> float:
+	return 0.0
