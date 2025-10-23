@@ -12,8 +12,6 @@ script = ExtResource("1_j0vtf")
 [node name="ClassWindow" parent="." instance=ExtResource("2_0jrey")]
 process_mode = 3
 
-[node name="Timer" type="Timer" parent="."]
-
 [node name="PlayClass" type="Node2D" parent="."]
 unique_name_in_owner = true
 process_mode = 1

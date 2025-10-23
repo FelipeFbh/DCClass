@@ -356,6 +356,7 @@ func _on_toggle_audio_pressed(active: bool) -> void:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_AUDIO)
 	else:
 		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+		PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 func _disabled_toggle_audio_button(active: bool) -> void:
 	btn_audio.disabled = active

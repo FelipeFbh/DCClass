@@ -18,6 +18,10 @@ enum Status {
 
 var _status: Status
 
+enum Events {
+	EDIT_VISUALS = 1,
+	EDIT_AUDIO = 2
+}
 
 func _setup():
 	core_signals.tree_play_finished.connect(_tree_play_finished)
@@ -28,6 +32,10 @@ func _tree_play_finished():
 
 func _pause_playback_widget():
 	_epilog(Status.STOPPED)
+
+func _epilog_events(event: Events):
+	if event == Events.EDIT_AUDIO:
+		editor_signals.setup_timeline.emit()
 
 # Update the status of the editor
 func _epilog(status: Status = _status):

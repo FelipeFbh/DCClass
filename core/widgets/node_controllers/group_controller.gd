@@ -176,11 +176,14 @@ func get_next_audio(current_node: NodeController) -> LeafController:
 		leaf = get_next_leaf(leaf)
 	return leaf
 
+
 # Return the previous LeafController that is an audio
 func get_previous_audio(current_node: NodeController) -> LeafController:
 	var leaf = get_previous_leaf(current_node)
-	while leaf != null and not leaf.is_audio():
-		leaf = get_previous_leaf(leaf)
+	while leaf != null:
+		if leaf.has_method("is_audio") and leaf.is_audio():
+			break
+		leaf = leaf.get_previous_leaf(leaf)
 	return leaf
 
 # Return the total duration between start_leaf and end_leaf
@@ -213,5 +216,53 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 		_total_real_time = _next_leaf_paudio.compute_total_duration_between(_prev_leaf_naudio)
 	
 	return [_duration, _total_real_time]
+
+
+func _compute_class_duration() -> float:
+	var c_audio = get_next_audio(self)
+	var duration : float = 0
+	while c_audio != null:
+		duration += c_audio.compute_duration()
+		c_audio = c_audio.get_next_audio()
+	return duration
+
+
+
+func _compute_current_time(_current_node : NodeController ) -> float:
+	if _current_node is GroupController:
+		_current_node = _current_node.get_next_leaf(_current_node)
+	
+	var c_audio = get_next_audio(self)
+	var duration : float = 0
+	var current_audio
+	if _current_node.has_method("is_audio") and _current_node.is_audio():
+		current_audio = _current_node
+	else:
+		current_audio = _current_node.get_previous_audio(_current_node)
+
+	while c_audio != null and c_audio != current_audio:
+		duration += c_audio.compute_duration()
+		c_audio = c_audio.get_next_audio()
+
+
+	var __duration = 0.0
+	var __total_real_time = 0.0
+
+	var _duration_calculated = _current_node.compute_duration_play(_current_node, __duration, __total_real_time)
+	__duration = _duration_calculated[0]
+	__total_real_time = _duration_calculated[1]
+	
+	if _current_node.has_method("is_audio") and not _current_node.is_audio():
+		var last_audio = _current_node.get_previous_audio(_current_node)
+		var next_leaf_paudio = last_audio.get_next_leaf(last_audio)
+		var prev_leaf = _current_node.get_previous_leaf(self)
+			
+		if prev_leaf.is_audio():
+			pass
+		else:
+			var time_seek = next_leaf_paudio.compute_total_duration_between(_current_node.get_previous_leaf(_current_node))
+			duration += time_seek * (__duration / __total_real_time)
+	
+	return duration
 
 #endregion

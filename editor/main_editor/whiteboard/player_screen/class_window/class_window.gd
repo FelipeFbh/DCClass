@@ -80,6 +80,53 @@ func _disabled_toggle_stop_button(active: bool) -> void:
 
 #endregion
 
+#region Timeline
+@onready var label_time_current : Label = %TimeCurrent
+@onready var time_slider : HSlider = %TimeSlider
+
+var current_time : float
+var final_time : float
+var final_time_str : String
+
+func _setup_timeline():
+	final_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_class_duration()
+	time_slider.max_value = final_time
+	time_slider.value = 0.0
+	
+	var sec_f = fmod(final_time , 60)
+	var min_f = sec_f / 60
+	var hour_f = min_f / 60
+	
+	var format_str = "%02d : %02d : %02d"
+
+	time_slider.value = current_time
+	var sec_c = fmod(current_time , 60)
+	var min_c =  sec_c / 60
+	var hour_c = min_c / 60
+	var current_time_str = format_str % [hour_c, min_c, sec_c]
+
+	final_time_str = format_str % [hour_f, min_f, sec_f]
+	
+	label_time_current.text = current_time_str + " / " + final_time_str
+
+
+func _update_time_control():
+	time_slider.value = current_time
+	var sec_c = fmod(current_time , 60)
+	var min_c =  sec_c / 60
+	var hour_c = min_c / 60
+
+	var format_str = "%02d : %02d : %02d"
+	var current_time_str = format_str % [hour_c, min_c, sec_c]
+	
+	label_time_current.text = current_time_str + " / " + final_time_str
+
+func _seek_node(_current_node : ClassNode):
+	current_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_current_time(_current_node._node_controller)
+	_update_time_control()
+
+#endregion
+
 func _ready():
 	if !is_instance_valid(ClassUIEditor.context):
 		printerr("ClassUIEditor context is not valid")
@@ -87,11 +134,22 @@ func _ready():
 		get_tree().process_frame.connect(_zoom_reset, CONNECT_ONE_SHOT)
 	
 	stop_button.pressed.connect(_toggle_playback_stop)
+	
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
 	_bus.status_playback_stop.connect(_status_playback_stop)
 	
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
+	
+	_setup_timeline()
+	_bus.seek_node.connect(_seek_node)
+	_bus.setup_timeline.connect(_setup_timeline)
+
 
 func _process(_delta: float):
 	_update_zoom_slider_value()
+	if !is_stopped:
+		current_time += _delta
+		if current_time >= final_time:
+			current_time = final_time
+		_update_time_control()

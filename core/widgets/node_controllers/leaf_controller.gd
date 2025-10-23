@@ -314,7 +314,7 @@ func get_next_audio() -> LeafController:
 
 
 # Return the previous audio leaf node
-func get_previous_audio() -> LeafController:
+func get_previous_audio(current_node: NodeController = self) -> LeafController:
 	var leaf = get_previous_leaf(self)
 	while leaf != null:
 		if leaf.has_method("is_audio") and leaf.is_audio():
