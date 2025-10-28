@@ -15,6 +15,12 @@ func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary
 	var item = tree_manager_index.create_item(parent_item)
 	item.set_text(0, node.get_editor_name())
 	item.set_metadata(0, node) # Store the node reference in the item metadata
+	
+	if node is ClassLeaf:
+		var entity = node.entity
+		if entity is not AudioEntity:
+			item.set_visible(false)
+	
 	if node is ClassGroup:
 		for child in node._childrens:
 			_populate_node(item, child, entities)

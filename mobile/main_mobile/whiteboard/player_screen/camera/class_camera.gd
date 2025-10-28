@@ -7,10 +7,8 @@ signal user_controlled_changed(value: bool)
 const KEY_MOVEMENT_SPEED = 20
 const ZOOM_CHANGE_SPEED = 0.005
 const GRID_ZOOM_THRESHOLD = 0.85
-const MIN_ZOOM = 0.5
+const MIN_ZOOM = 1.0
 const MAX_ZOOM = 3.0
-# The max distance between point in which the recent points are deleted to continue on a new section
-const DISTANCE_THRESHOLD = 250.0
 # The max recent points
 const MAX_RECENT = 30
 const CONTENT_MARGIN = 250
@@ -115,8 +113,8 @@ func _follow_content():
 	
 	tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT).set_speed_scale(time_scale)
 	tween.set_parallel(true)
-	tween.tween_property(self, ^"global_position", center, 1.0)
-	tween.tween_property(self, "zoom", Vector2.ONE * required_zoom, 1.0) 
+	tween.tween_property(self, ^"global_position", center, 0.8)
+	tween.tween_property(self, "zoom", Vector2.ONE * required_zoom, 0.8) 
 	
 ## Move the camera to the target position in global coordinates
 func move_to(target_position: Vector2, target_zoom: float = -1.0) -> void:
@@ -128,6 +126,7 @@ func move_to(target_position: Vector2, target_zoom: float = -1.0) -> void:
 	
 	tween = create_tween().set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN_OUT).set_parallel().set_speed_scale(time_scale)
 	tween.tween_property(self, ^"global_position", target_position, 5.0)
+	
 	if target_zoom > 0.0:
 		tween.tween_property(self, ^"zoom", Vector2.ONE * target_zoom, 5.0)
 
@@ -146,25 +145,41 @@ func _recenter():
 
 # Adds points to the whiteboard
 func add_recent_content(line_pos: Vector2):
+	# Checks if the new point is visible
 	if not recent_content.is_empty():
 		var last_pos = recent_content.back()
-		var distance = last_pos.distance_to(line_pos)
 		
-		# Clean on threshold dist
-		if distance > DISTANCE_THRESHOLD:
-			recent_content.clear()
-			min_x = line_pos.x
-			min_y = line_pos.y
-			max_x = line_pos.x
-			max_y = line_pos.y
-			_center_of_mass()
+		# If visible, we stay the same
+		# If not, we move
+		if !is_inside(last_pos.x, last_pos.y):
+			# If the zoom is already max
+			if zoom.x <= MIN_ZOOM + 0.01:
+				# We move to the new content bounds
+				_discard_old_points()
+				
+				# Reset bounds
+				min_x = recent_content[0].x
+				min_y = recent_content[0].y
+				max_x = recent_content[0].x
+				max_y = recent_content[0].y
+				
+				# New bounds
+				for point in recent_content:
+					min_x = min(min_x, point.x)
+					min_y = min(min_y, point.y)
+					max_x = max(max_x, point.x)
+					max_y = max(max_y, point.y)
+				
+				_center_of_mass()
+				
+			_follow_content()
 	
 	# Adds new point, the more distance added, the less points add and more efficient is
 	if recent_content.is_empty() or recent_content.back().distance_to(line_pos) > 10.0:
 		if recent_content.is_empty():
-			min_x = line_pos.x 
+			min_x = line_pos.x
 			min_y = line_pos.y
-			max_x = line_pos.x 
+			max_x = line_pos.x
 			max_y = line_pos.y
 		else:
 			# everytime we add, we modify the bounds
@@ -184,9 +199,29 @@ func add_recent_content(line_pos: Vector2):
 		if not user_controlled:
 			_follow_content()
 
+func _discard_old_points():
+	if recent_content.size() < 2:
+		return
+	
+	var half_size = recent_content.size() / 2
+	var new_recent = recent_content.slice(half_size)
+	recent_content = new_recent
+
+# Checks if a point is inside the bounds of the camera
+func is_inside(point_x: float, point_y: float) -> bool:
+	if (point_x > min_x and point_x < max_x) and (point_y > min_y and point_y < max_y):
+		return true
+	else:
+		return false
+	
 # Gets the center of mass of the content
 func _center_of_mass():
 	if recent_content.is_empty():
+		content_bounds = Rect2(
+			Vector2(0, 0),
+			whiteboard_size
+		)
+		center = content_bounds.get_center()
 		return
 	
 	var width = max(max_x - min_x, 100.0)
