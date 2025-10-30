@@ -11,8 +11,7 @@ const MAX_ZOOM = 1.5
 # The max recent points
 const MAX_RECENT = 30
 const CONTENT_MARGIN = 200
-const DISTANCE_THRESHOLD_X = 2500
-const DISTANCE_THRESHOLD_Y = 2500
+const DISTANCE_THRESHOLD = 800
 
 # Exports
 @export var background: BackgroundMobile
@@ -160,7 +159,8 @@ func add_recent_content(line_pos: Vector2):
 		# If visible, we stay the same
 		# If not, we move
 		if !is_inside_cam(last_pos.x, last_pos.y):
-			if last_pos.x >= DISTANCE_THRESHOLD_X or last_pos.y >= DISTANCE_THRESHOLD_Y:
+			if last_pos.distance_to(line_pos) >= DISTANCE_THRESHOLD:
+				print(last_pos.distance_to(line_pos))
 				_discard_half_points()
 				_discard_half_points()
 				_reset_bounds()
