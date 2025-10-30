@@ -161,14 +161,12 @@ func add_recent_content(line_pos: Vector2):
 		# If not, we move
 		if !is_inside_cam(last_pos.x, last_pos.y):
 			if last_pos.x >= DISTANCE_THRESHOLD_X or last_pos.y >= DISTANCE_THRESHOLD_Y:
-				print("threshold")
 				_discard_half_points()
 				_discard_half_points()
 				_reset_bounds()
 				
 			# If the zoom is already max
 			if zoom.x <= MIN_ZOOM + 0.01 or zoom.y <= MIN_ZOOM + 0.01:
-				print("zoom")
 				# We move to the new content bounds
 				_discard_half_points()
 				_reset_bounds()
