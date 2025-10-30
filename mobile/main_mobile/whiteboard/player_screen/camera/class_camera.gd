@@ -147,7 +147,7 @@ func _follow_content():
 	
 	tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.set_parallel(true).set_speed_scale(time_scale)
-	tween.tween_property(self, ^"global_position", center, 1.0)
+	tween.tween_property(self, ^"global_position", center, 0.8)
 	tween.tween_property(self, "zoom", Vector2.ONE * required_zoom, 1.0) 
 	
 # Adds points to the whiteboard
@@ -158,20 +158,22 @@ func add_recent_content(line_pos: Vector2):
 		
 		# If visible, we stay the same
 		# If not, we move
-		if !is_inside_cam(last_pos.x, last_pos.y):
+		if !is_inside_cam(line_pos.x, line_pos.y):
 			if last_pos.distance_to(line_pos) >= DISTANCE_THRESHOLD:
 				print(last_pos.distance_to(line_pos))
 				_discard_half_points()
 				_discard_half_points()
+				recent_content.append(line_pos)
 				_reset_bounds()
 				
 			# If the zoom is already max
 			if zoom.x <= MIN_ZOOM + 0.01 or zoom.y <= MIN_ZOOM + 0.01:
 				# We move to the new content bounds
 				_discard_half_points()
+				recent_content.append(line_pos)
 				_reset_bounds()
 	
-	# Adds new point, the more distance added, the less points add and more efficient is
+	# Adds new point, the more distance added, the less precise and more efficient is
 	if recent_content.is_empty() or recent_content.back().distance_to(line_pos) > 10.0:
 		if recent_content.is_empty():
 			min_x = line_pos.x
@@ -211,7 +213,7 @@ func _reset_bounds():
 		max_y = max(max_y, point.y)
 	
 	_center_of_mass()
-
+	
 # Discards half of the old point on the recent lines list
 func _discard_half_points():
 	if recent_content.size() < 2:
