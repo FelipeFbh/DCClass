@@ -83,10 +83,14 @@ func _disabled_toggle_stop_button(active: bool) -> void:
 #region Timeline
 @onready var label_time_current : Label = %TimeCurrent
 @onready var time_slider : HSlider = %TimeSlider
+@onready var debouncer_timer : Timer = %DebouncerTimer
 
 var current_time : float
 var final_time : float
 var final_time_str : String
+
+var time_slider_drag : bool = false
+var last_slider_value : float = 0.0
 
 func _setup_timeline():
 	final_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_class_duration()
@@ -121,11 +125,31 @@ func _update_time_control():
 	
 	label_time_current.text = current_time_str + " / " + final_time_str
 
-func _seek_node(_current_node : ClassNode):
+func _seek_time_slide(_current_node : ClassNode):
 	current_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_current_time(_current_node._node_controller)
 	_update_time_control()
 
+func _on_time_slider_drag_started() -> void:
+	time_slider_drag = true
+
+
+func _on_time_slider_drag_ended(value_changed: bool) -> void:
+	time_slider_drag = false
+	_seek_time_slide(PersistenceEditor.resources_class._current_node)
+
+
+func _on_time_slider_value_changed(value: float) -> void:
+	if time_slider_drag:
+		last_slider_value = value
+		debouncer_timer.start()
+
+func _on_debouncer_timer_timeout() -> void:
+	var seeked_node : NodeController= PersistenceEditor.resources_class.root_tree_structure._node_controller._seek_node_time(last_slider_value)
+	_bus_core.current_node_changed.emit(seeked_node._class_node)
+	_bus.seek_node.emit(seeked_node._class_node)
+
 #endregion
+
 
 func _ready():
 	if !is_instance_valid(ClassUIEditor.context):
@@ -142,8 +166,15 @@ func _ready():
 	zoom_button.pressed.connect(_zoom_reset)
 	
 	_setup_timeline()
-	_bus.seek_node.connect(_seek_node)
 	_bus.setup_timeline.connect(_setup_timeline)
+	_bus.seek_time_slide.connect(_seek_time_slide)
+
+	
+	time_slider.drag_started.connect(_on_time_slider_drag_started)
+	time_slider.value_changed.connect(_on_time_slider_value_changed)
+	debouncer_timer.timeout.connect(_on_debouncer_timer_timeout)
+	time_slider.drag_ended.connect(_on_time_slider_drag_ended)
+	
 
 
 func _process(_delta: float):

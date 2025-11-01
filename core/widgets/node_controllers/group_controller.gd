@@ -217,7 +217,8 @@ func _compute_duration_play(current_node: NodeController, _duration: float = 0.0
 	
 	return [_duration, _total_real_time]
 
-
+# Compute the complete class duration.
+# Designed to be only used by the root of the tree.
 func _compute_class_duration() -> float:
 	var c_audio = get_next_audio(self)
 	var duration : float = 0
@@ -226,8 +227,8 @@ func _compute_class_duration() -> float:
 		c_audio = c_audio.get_next_audio()
 	return duration
 
-
-
+# Compute the current time for the giving node.
+# Designed to be only used by the root of the tree.
 func _compute_current_time(_current_node : NodeController ) -> float:
 	if _current_node is GroupController:
 		_current_node = _current_node.get_next_leaf(_current_node)
@@ -264,5 +265,40 @@ func _compute_current_time(_current_node : NodeController ) -> float:
 			duration += time_seek * (__duration / __total_real_time)
 	
 	return duration
+
+# Get the current node for the giving a time.
+# Designed to be only used by the root of the tree.
+func _seek_node_time(_current_time : float) -> NodeController:
+	var c_audio = get_next_audio(self)
+	var duration : float = 0
+	while c_audio != null:
+		var c_audio_dur = c_audio.compute_duration()
+		if _current_time < duration + c_audio_dur:
+			break
+		duration += c_audio_dur
+		c_audio = c_audio.get_next_audio()
+
+	var __duration = 0.0
+	var __total_real_time = 0.0
+	
+	var c_node : LeafController = c_audio
+	
+	var _duration_calculated = c_node.compute_duration_play(c_node, __duration, __total_real_time)
+	__duration = _duration_calculated[0]
+	__total_real_time = _duration_calculated[1]
+
+	
+	while c_node != null:
+		var n_node : LeafController = c_node.get_next_leaf(c_node)
+		if n_node.has_method("is_audio") and n_node.is_audio():
+			break
+		else:
+			c_node = n_node
+			var time_leaf = (__duration / __total_real_time) * c_node.compute_duration()
+			if _current_time < duration + time_leaf:
+				break
+			duration += time_leaf
+
+	return c_node
 
 #endregion

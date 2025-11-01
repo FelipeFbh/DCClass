@@ -19,8 +19,10 @@ enum Status {
 var _status: Status
 
 enum Events {
-	EDIT_VISUALS = 1,
-	EDIT_AUDIO = 2
+	SEEK_PANEL = 51,
+	SEEK_SLIDE_TIME = 52,
+	EDIT_VISUALS = 101,
+	EDIT_AUDIO = 102
 }
 
 func _setup():
@@ -33,8 +35,12 @@ func _tree_play_finished():
 func _pause_playback_widget():
 	_epilog(Status.STOPPED)
 
-func _epilog_events(event: Events):
-	if event == Events.EDIT_AUDIO:
+func _epilog_events(event: Events, params = []):
+
+	if event == Events.SEEK_PANEL:
+		editor_signals.seek_time_slide.emit(params[0])
+	
+	elif event == Events.EDIT_AUDIO:
 		editor_signals.setup_timeline.emit()
 
 # Update the status of the editor

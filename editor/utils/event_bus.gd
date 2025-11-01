@@ -110,4 +110,6 @@ signal status_playback_stop(active : bool)
 
 signal setup_timeline()
 
+signal seek_time_slide(node: ClassNode)
+
 #endregion
