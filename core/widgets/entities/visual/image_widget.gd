@@ -31,12 +31,16 @@ func init(properties: Dictionary) -> void:
 
 	var texture := _create_texture(data)
 	image = scene.instantiate()
+	image.stretch_mode = TextureRect.STRETCH_SCALE 
 	add_child(image)
 	if properties.has("position"):
 		position = properties["position"]
 	if properties.has("size"):
 		image.size = properties["size"]
 	image.texture = texture
+	
+	if class_node is ClassLeaf:
+		(class_node as ClassLeaf).property_updated.connect(_on_property_updated)
 
 func serialize() -> Dictionary:
 	return entity.serialize()
@@ -81,6 +85,10 @@ func unclear():
 	skip_to_end()
 	remove_from_group(&"widget_cleared")
 
+func get_rect_bound() -> Rect2:
+	if image:
+		return Rect2(Vector2.ZERO, image.size)
+	return Rect2()
 
 func _create_texture(data: PackedByteArray) -> Texture2D:
 	var _image := Image.new()
@@ -91,3 +99,9 @@ func _create_texture(data: PackedByteArray) -> Texture2D:
 		"bmp": _image.load_bmp_from_buffer(data)
 		_: push_error("Unsupported image format: " + entity.image_path.split(".")[-1])
 	return ImageTexture.create_from_image(_image)
+
+func _on_property_updated(property: EntityProperty) -> void:
+	if property is PositionEntityProperty:
+		position = property.position
+	elif property is SizeEntityProperty:
+		image.size = property.size

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c876bpobo68ux"]
+[gd_scene load_steps=8 format=3 uid="uid://c876bpobo68ux"]
 
 [ext_resource type="Script" uid="uid://bcdfoy8ne6av6" path="res://editor/main_editor/main_editor.gd" id="1_dhey8"]
 [ext_resource type="PackedScene" uid="uid://ctbhart5orqu0" path="res://editor/main_editor/whiteboard/window_whiteboard.tscn" id="2_35r6u"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bkt85dfs5q52u" path="res://editor/main_editor/control_panel/control_panel.tscn" id="4_4yc00"]
 [ext_resource type="Script" uid="uid://gjjscxmdrlxg" path="res://editor/main_editor/resources_class.gd" id="4_sli3p"]
 [ext_resource type="Script" uid="uid://cmtkyg0tf5jml" path="res://editor/main_editor/audio_record.gd" id="6_gdxi0"]
-[ext_resource type="Script" uid="uid://drqtounqffrap" path="res://core/widgets/visual_outline_system.gd" id="6_mhl3f"]
 
 [sub_resource type="AudioStreamMicrophone" id="AudioStreamMicrophone_gdxi0"]
 
@@ -49,10 +48,6 @@ layout_mode = 2
 [node name="Resources" type="Node" parent="Class"]
 unique_name_in_owner = true
 script = ExtResource("4_sli3p")
-
-[node name="OutlineSystem" type="Node" parent="Class"]
-unique_name_in_owner = true
-script = ExtResource("6_mhl3f")
 
 [node name="Controllers" type="Node" parent="Class"]
 unique_name_in_owner = true

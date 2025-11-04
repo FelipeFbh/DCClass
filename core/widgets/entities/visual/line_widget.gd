@@ -7,6 +7,7 @@ const scene = preload("res://core/widgets/entities/visual/line_widget.tscn")
 var line: Line2D
 var tween: Tween
 var bound = null
+var _original_bound: Rect2
 
 # Initialize the widget with properties.
 func init(properties: Dictionary) -> void:
@@ -15,6 +16,9 @@ func init(properties: Dictionary) -> void:
 	if properties.has("position"):
 		position = properties["position"]
 	line.hide()
+	
+	if class_node is ClassLeaf:
+		(class_node as ClassLeaf).property_updated.connect(_on_property_updated)
 
 func serialize() -> Dictionary:
 	return entity.serialize()
@@ -142,3 +146,38 @@ func _compute_bounds() -> Rect2:
 	var br = Vector2(max_x, max_y)
 
 	return Rect2(tl, br - tl)
+
+func _on_property_updated(property: EntityProperty) -> void:
+	if property is PositionEntityProperty:
+		position = property.position
+	elif property is SizeEntityProperty:
+		# Guardar el bound original si no existe
+		if _original_bound == Rect2():
+			_original_bound = get_rect_bound()
+		
+		# Si el bound original es válido, transformar los puntos
+		if _original_bound.size.x > 0 and _original_bound.size.y > 0:
+			var new_bound = Rect2(_original_bound.position, property.size)
+			
+			# Calcular la escala
+			var scale_x = new_bound.size.x / _original_bound.size.x
+			var scale_y = new_bound.size.y / _original_bound.size.y
+			 
+			# Transformar cada punto
+			var new_points: PackedVector2Array = []
+			for point in entity.points:
+				# Normalizar punto respecto al bound original
+				var normalized = (point - _original_bound.position) / _original_bound.size
+				# Aplicar al nuevo bound
+				var new_point = new_bound.position + (normalized * new_bound.size)
+				new_points.append(new_point)
+			
+			# Actualizar entity y visual
+			entity.points = new_points
+			line.points = new_points
+			
+			# Invalidar bound cacheado
+			bound = null
+			
+			# Actualizar el original bound para futuros resizes
+			_original_bound = new_bound
