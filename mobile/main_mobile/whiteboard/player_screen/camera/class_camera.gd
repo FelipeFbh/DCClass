@@ -12,7 +12,7 @@ const MAX_ZOOM = 2.0
 const MAX_RECENT = 30
 const CONTENT_MARGIN = 200
 const DISTANCE_THRESHOLD = 800
-const VERTICAL_THRESHOLD = 800
+const VERTICAL_THRESHOLD = 300
 const ADD_THRESHOLD = 10
 
 # Exports
@@ -167,6 +167,7 @@ func add_recent_content(line_pos: Vector2):
 				_reset_bounds()
 				
 			if abs(last_pos.y - line_pos.y) >= VERTICAL_THRESHOLD:
+				print(last_pos.y - line_pos.y)
 				recent_content.clear()
 				recent_content.append(line_pos)
 				_reset_bounds()
