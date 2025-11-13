@@ -12,6 +12,8 @@ const MAX_ZOOM = 2.0
 const MAX_RECENT = 30
 const CONTENT_MARGIN = 200
 const DISTANCE_THRESHOLD = 800
+const VERTICAL_THRESHOLD = 800
+const ADD_THRESHOLD = 10
 
 # Exports
 @export var background: BackgroundMobile
@@ -164,6 +166,11 @@ func add_recent_content(line_pos: Vector2):
 				_discard_half_points()
 				_reset_bounds()
 				
+			if abs(last_pos.y - line_pos.y) >= VERTICAL_THRESHOLD:
+				recent_content.clear()
+				recent_content.append(line_pos)
+				_reset_bounds()
+				
 			# If the zoom is already max
 			if zoom.x <= MIN_ZOOM + 0.01 or zoom.y <= MIN_ZOOM + 0.01:
 				# We move to the new content bounds
@@ -171,7 +178,7 @@ func add_recent_content(line_pos: Vector2):
 				_reset_bounds()
 	
 	# Adds new point, the more distance added, the less precise and more efficient is
-	if recent_content.is_empty() or recent_content.back().distance_to(line_pos) > 10.0:
+	if recent_content.is_empty() or recent_content.back().distance_to(line_pos) > ADD_THRESHOLD:
 		if recent_content.is_empty():
 			min_x = line_pos.x
 			min_y = line_pos.y
@@ -223,11 +230,11 @@ func _discard_half_points():
 
 # Checks if a point is inside the bounds of the camera
 func is_inside_cam(point_x: float, point_y: float) -> bool:
-	if (point_x - 100 > min_x and point_x + 100 < max_x) and (point_y - 100 > min_y and point_y + 100 < max_y):
+	if (point_x - CONTENT_MARGIN > min_x and point_x + CONTENT_MARGIN < max_x) and (point_y - CONTENT_MARGIN > min_y and point_y + CONTENT_MARGIN < max_y):
 		return true
 	else:
 		return false
-	
+
 # Gets the center of mass of the content
 func _center_of_mass():
 	if recent_content.is_empty():
