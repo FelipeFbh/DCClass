@@ -100,12 +100,12 @@ text = "Time Initial / Time Final"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-step = 0.1
+step = 0.01
 scrollable = false
 
 [node name="DebouncerTimer" type="Timer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer/TimeControl"]
 unique_name_in_owner = true
-wait_time = 0.2
+wait_time = 0.1
 one_shot = true
 
 [node name="ControlRow" type="HBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/BottomPanel/MarginContainer/VBoxContainer"]

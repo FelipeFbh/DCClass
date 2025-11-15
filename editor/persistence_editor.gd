@@ -71,6 +71,7 @@ func _stopped():
 	editor_signals.disabled_toggle_stop_button.emit(false)
 	editor_signals.disabled_toggle_drag_button.emit(false)
 	editor_signals.status_playback_stop.emit(true)
+	editor_signals.update_timer_slider_by_time.emit()
 
 func _playing():
 	editor_signals.disabled_toggle_audio_button.emit(true)

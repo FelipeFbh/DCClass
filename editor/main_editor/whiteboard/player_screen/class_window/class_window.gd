@@ -90,7 +90,6 @@ var final_time : float
 var final_time_str : String
 
 var time_slider_drag : bool = false
-var last_slider_value : float = 0.0
 
 func _setup_timeline():
 	final_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_class_duration()
@@ -135,18 +134,25 @@ func _on_time_slider_drag_started() -> void:
 
 func _on_time_slider_drag_ended(value_changed: bool) -> void:
 	time_slider_drag = false
-	_seek_time_slide(PersistenceEditor.resources_class._current_node)
+	debouncer_timer.start()
 
 
 func _on_time_slider_value_changed(value: float) -> void:
 	if time_slider_drag:
-		last_slider_value = value
 		debouncer_timer.start()
 
 func _on_debouncer_timer_timeout() -> void:
-	var seeked_node : NodeController= PersistenceEditor.resources_class.root_tree_structure._node_controller._seek_node_time(last_slider_value)
+	_update_timer_slider_by_time()
+
+
+func _update_timer_slider_by_time():
+	print(time_slider.value)
+	var seeked_node : NodeController = PersistenceEditor.resources_class.root_tree_structure._node_controller._seek_node_time(time_slider.value)
 	_bus_core.current_node_changed.emit(seeked_node._class_node)
 	_bus.seek_node.emit(seeked_node._class_node)
+	if !time_slider_drag:
+		_seek_time_slide(PersistenceEditor.resources_class._current_node)
+
 
 #endregion
 
@@ -168,12 +174,14 @@ func _ready():
 	_setup_timeline()
 	_bus.setup_timeline.connect(_setup_timeline)
 	_bus.seek_time_slide.connect(_seek_time_slide)
-
+	
 	
 	time_slider.drag_started.connect(_on_time_slider_drag_started)
 	time_slider.value_changed.connect(_on_time_slider_value_changed)
 	debouncer_timer.timeout.connect(_on_debouncer_timer_timeout)
 	time_slider.drag_ended.connect(_on_time_slider_drag_ended)
+	
+	_bus.update_timer_slider_by_time.connect(_update_timer_slider_by_time)
 	
 
 
