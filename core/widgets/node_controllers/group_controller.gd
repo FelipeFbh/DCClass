@@ -59,6 +59,8 @@ func play_seek(last_child: NodeController = null) -> void:
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
 			parent.play_seek(self)
+		#We are the root
+		_bus_core.tree_play_finished.emit()
 		return
 	
 	var next_child_to_play = _childrens[index + 1]._node_controller
@@ -274,6 +276,8 @@ func _compute_current_time(_current_node : NodeController ) -> float:
 # Designed to be only used by the root of the tree.
 func _seek_node_time(_current_time : float) -> NodeController:
 	var c_audio = get_next_audio(self)
+	if c_audio == null: # Case: There is not audio in the class.
+		return self
 	var duration : float = 0
 	var c_node : LeafController = c_audio
 	while true:

@@ -40,9 +40,12 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		return
 
 	tween = create_tween()
-
 	tween.set_speed_scale(1 / (_duration / _total_real_time)) # Set the speed scale to match the duration with his respective time.
 	
+	add_to_group("active_line")
+	
+	var center = _points_center(pts)
+	tween.tween_callback(Callable(self, "_notify_center").bind(center))
 	
 	# With the callback of the function "add_points" we add points to the line after each delay.
 	for i in range(count):
@@ -56,10 +59,29 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 	
 	await tween.finished
 	
+	remove_from_group("active_line")
 	remove_from_group(&"widget_playing")
 	add_to_group(&"widget_finished")
 
 	emit_signal("widget_finished")
+
+func _points_center(points: PackedVector2Array) -> Vector2:
+	if points.is_empty():
+		return Vector2.ZERO
+	
+	var sum_x = 0.0
+	var sum_y = 0.0
+		
+	for point in points:
+		sum_x += point.x
+		sum_y += point.y
+		
+	return Vector2(sum_x / points.size(), sum_y / points.size())
+
+func _notify_center(center: Vector2) -> void:
+	if ClassUIMobile.context and ClassUIMobile.context.camera:
+		var global_center = to_global(center)
+		ClassUIMobile.context.camera.add_recent_content(global_center)
 
 # Reset the line widget to its initial state.
 # This means hiding the line and clearing its points.
@@ -68,6 +90,7 @@ func reset():
 		tween.kill()
 	line.hide()
 	line.clear_points()
+	remove_from_group("active_line")
 	remove_from_group(&"widget_playing")
 	remove_from_group(&"widget_finished")
 	emit_signal("widget_finished")
@@ -86,6 +109,7 @@ func skip_to_end() -> void:
 	line.default_color = Widget.pen_color
 	line.width = Widget.pen_thickness
 	line.show()
+	remove_from_group("active_line")
 	add_to_group(&"widget_finished")
 	emit_signal("widget_finished")
 

@@ -146,7 +146,6 @@ func _on_debouncer_timer_timeout() -> void:
 
 
 func _update_timer_slider_by_time():
-	print(time_slider.value)
 	var seeked_node : NodeController = PersistenceEditor.resources_class.root_tree_structure._node_controller._seek_node_time(time_slider.value)
 	_bus_core.current_node_changed.emit(seeked_node._class_node)
 	_bus.seek_node.emit(seeked_node._class_node)
