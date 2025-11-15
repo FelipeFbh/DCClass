@@ -22,12 +22,6 @@ var _last_point: Vector2 = Vector2.INF
 var _pen_thickness: float = 2.0
 var _pen_color: Color = Color.WHITE
 
-# var _pen_thickness_history: Array = []
-# var _current_pen_thickness_index: int = -1
-
-# var _pen_color_history: Array = []
-# var _current_pen_color_index: int = -1
-
 # Node selection
 var _node_drag_enabled: bool = false
 var _current_node: ClassNode
@@ -44,6 +38,15 @@ var _drag_selection_enabled: bool = false
 var _drag_selection_start: Vector2
 var _drag_selection_rect: Rect2
 var _selection_box: Control
+# Node Resizing
+var _node_resize_enabled: bool = false
+var _resizing:= false
+var _resize_start_pos: Vector2
+var _resize_start_size: Vector2
+var _resize_handle_size: float = 10.0
+var _expanded_margin: float = 20.0
+var _nodes_to_resize: Array[ClassLeaf]
+var _nodes_start_sizes: Array[Vector2]
 # Selection state
 var _selection_mouse_pressed: bool = false
 var _selection_start_pos: Vector2
@@ -54,6 +57,7 @@ func _ready() -> void:
 	_bus.pen_thickness_changed.connect(_on_pen_thickness_changed)
 	_bus.pen_color_changed.connect(_on_pen_color_changed)
 	_bus.drag_toggled.connect(_on_node_drag_enabled)
+	_bus.resize_toggled.connect(_on_node_resize_enabled)
 	_bus_core.current_node_changed.connect(_current_node_changed)
 	_bus.class_node_selected.connect(_on_class_node_selected)
 	_bus.clear_selection.connect(_clear_selection)
@@ -66,17 +70,17 @@ func _gui_input(event):
 		_bus.pen_started_drawing.emit()
 		_handle_drawing(event)
 		return
-	
-	#if _zoom_enabled:
-		#_handle_zoom(event)
-		#return
 
 	if _node_drag_enabled:
 		_handle_node_dragging(event)
 		return
 
-	if _node_drag_enabled:
-		_handle_node_dragging(event)
+	# if _node_drag_enabled:
+	# 	_handle_node_dragging(event)
+	# 	return
+	
+	if _node_resize_enabled:
+		_handle_node_resize(event)
 		return
 	
 	if not (_pen_enabled or _node_drag_enabled):
@@ -132,6 +136,9 @@ func _on_pen_color_changed(color: Color) -> void:
 
 func _on_node_drag_enabled(enabled: bool) -> void:
 	_node_drag_enabled = enabled
+
+func _on_node_resize_enabled(enabled: bool) -> void:
+	_node_resize_enabled = enabled
 
 func _on_class_node_selected(node: ClassNode, selected: bool) -> void:
 	if node == _current_node:
@@ -220,38 +227,14 @@ func _handle_drawing(event: InputEvent) -> void:
 			_line.queue_free()
 			_line = null
 
-# func handle_pen_thickness(entity: PenThicknessEntity):
-# 	entity.apply_config(self)
-# 	_save_pen_thickness_to_history("thickness", entity.thickness)
-
-# func handle_pen_color(entity: PenColorEntity):
-# 	entity.apply_config(self)
-# 	_save_pen_color_to_history("color", entity.color)
-	
-#func _save_pen_thickness_to_history(type: String, value: float):
-	#_pen_thickness_history.append({
-		#"type": type,
-		#"value": value,
-		#"time": Time.get_ticks_msec()
-	#})
-	#_current_pen_thickness_index = _pen_thickness_history.size() - 1
-	#
-#func _save_pen_color_to_history(type: String, color: Color):
-	#_pen_thickness_history.append({
-		#"type": type,
-		#"color": color,
-		#"time": Time.get_ticks_msec()
-	#})
-	#_current_pen_color_index = _pen_color_history.size() - 1
-
-#region Widget Selection
+#region properties handling
 
 func _handle_node_dragging(event: InputEvent) -> void:
 	if not _current_node:
 		return
 	
 	# Start Drag case
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			var controller = _current_node._node_controller
 			_nodes_start_pos.clear()
@@ -260,41 +243,38 @@ func _handle_node_dragging(event: InputEvent) -> void:
 			# Case when current node is a Leaf and is not an audio
 			if controller is LeafController and not controller.is_audio():
 				_nodes_to_drag.append(_current_node)
-				var widget = controller.leaf_value
-				_nodes_start_pos.append(widget.position)
+				var position = _current_node.get_properties().get("position")
+				if position is Vector2:
+					_nodes_start_pos.append(position)
 			# Case when current node is a Group and his TreeItem is collapsed
 			elif controller is GroupController:
 				# Get all nodes added to the skipped visual group
 				for node_controller in get_tree().get_nodes_in_group(&"skipped_before_play"):
 					if node_controller is LeafController:
-						_nodes_to_drag.append(node_controller._class_node)
-						var widget = node_controller.leaf_value
-						_nodes_start_pos.append(widget.position)
+						var class_node: ClassLeaf = node_controller._class_node
+						_nodes_to_drag.append(class_node)
+						var position = class_node.get_properties().get("position")
+						if position is Vector2:
+							_nodes_start_pos.append(position)
 			else:
 				return
 			
 			# Add selected nodes to the drag
 			for node in _selected_nodes:
 				_nodes_to_drag.append(node)
-				var widget = node._node_controller.leaf_value
-				_nodes_start_pos.append(widget.position)
+				var position = node.get_properties().get("position")
+				if position is Vector2:
+					_nodes_start_pos.append(position)
 			
-			# Take note of the initial positions
 			_dragging = true
 			_drag_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
 		else:
-			# Execute after release button and save pos prop of nodes
+			# Execute after release button
 			if _dragging:
-				_bus.clear_selection.emit()
+				_nodes_start_pos.clear()
+				_nodes_to_drag.clear()
 				_dragging = false
-				var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
-				var offset: Vector2 = pos - _drag_start_pos
-				for i in range(len(_nodes_to_drag)):
-					var node = _nodes_to_drag[i]
-					var node_pos = _nodes_start_pos[i]
-					node.set_property_by_type("PositionEntityProperty", {
-						"position": node_pos + offset
-					})
+				_bus.clear_selection.emit()
 			return
 	# Dragging case
 	elif event is InputEventMouseMotion and _dragging:
@@ -312,9 +292,92 @@ func _handle_node_dragging(event: InputEvent) -> void:
 		var offset: Vector2 = pos - _drag_start_pos
 
 		for i in range(len(_nodes_to_drag)):
-			var ctrl = _nodes_to_drag[i]._node_controller
-			var widget = ctrl.leaf_value
-			widget.position = _nodes_start_pos[i] + offset
+			var position = _nodes_to_drag[i].get_properties().get("position")
+			if position is Vector2:
+				_nodes_start_pos.append(position)
+				position = _nodes_start_pos[i] + offset
+				var new_prop = PositionEntityProperty.new()
+				new_prop.position = position
+				_nodes_to_drag[i].set_property(new_prop)
+
+func _handle_node_resize(event: InputEvent) -> void:
+	if not _current_node:
+		return
+
+	# Resize init
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			var controller = _current_node._node_controller
+			_nodes_start_sizes.clear()
+			_nodes_to_resize.clear()
+
+			# Case when current node is a Leaf and is not an audio
+			if controller is LeafController and not controller.is_audio():
+				var widget: Widget = controller.leaf_value
+				if not is_instance_valid(widget):
+					return
+				var size = widget.get_rect_bound().size
+				if size != Vector2.ZERO:
+					_nodes_to_resize.append(_current_node)
+					_nodes_start_sizes.append(size)
+					_resize_start_size = size
+			
+			# Add selected nodes to the resize
+			for node in _selected_nodes:
+				var node_controller = node._node_controller
+				if node_controller is LeafController and not node_controller.is_audio():
+					var widget: Widget = node_controller.leaf_value
+					if not is_instance_valid(widget):
+						continue
+					var size = widget.get_rect_bound().size
+					if size != Vector2.ZERO:
+						_nodes_to_resize.append(node)
+						_nodes_start_sizes.append(size)
+
+			_resizing = true
+			_resize_start_pos = _viewport.get_camera_2d().get_global_mouse_position()
+	
+		else:
+			# Execute after release button
+			if _resizing:
+				_resizing = false
+				_nodes_start_sizes.clear()
+				_nodes_to_resize.clear()
+				_bus.clear_selection.emit()
+	elif event is InputEventMouseMotion and _resizing:
+		if not is_instance_valid(_viewport) or not _current_node:
+			return
+		
+		# Get an resize offset to apply to all nodes by its own origin previous to the resize
+		var pos: Vector2 = _viewport.get_camera_2d().get_global_mouse_position()
+		var offset: Vector2 = pos - _resize_start_pos
+
+		var scale_x = 1.0
+		var scale_y = 1.0
+
+		if _resize_start_size.x > 0:
+			scale_x = max (0.1, (_resize_start_size.x + offset.x) / _resize_start_size.x)
+		if _resize_start_size.y > 0:
+			scale_y = max (0.1, (_resize_start_size.y + offset.y) / _resize_start_size.y)
+
+		for i in range(len(_nodes_to_resize)):
+			var size = _nodes_to_resize[i].get_properties().get("size")
+			var original_size = _nodes_start_sizes[i]
+			var new_size = Vector2(
+				original_size.x * scale_x,
+				original_size.y * scale_y
+			)
+
+			new_size.x = max(new_size.x, 20)
+			new_size.y = max(new_size.y, 20)
+
+			var new_prop := SizeEntityProperty.new()
+			new_prop.size = new_size
+			_nodes_to_resize[i].set_property(new_prop)
+
+#endregion
+
+#region Widget Selection
 
 # Handler for node selection on visual widgets
 func _handle_widget_selection(event: InputEvent):
@@ -479,4 +542,5 @@ func _new_line() -> Line2D:
 
 func _current_node_changed(node: ClassNode) -> void:
 	_current_node = node
+	_bus.clear_selection.emit()
 	

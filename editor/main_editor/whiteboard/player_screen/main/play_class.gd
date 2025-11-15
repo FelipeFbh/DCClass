@@ -8,6 +8,7 @@ var WHITEBOARD_SIZE: Vector2i
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
+@onready var _visual_system: VisualOutlineSystem
 
 @export var class_index: ClassIndex
 
@@ -42,6 +43,8 @@ func _load_whiteboard_size() -> Vector2i:
 func _instantiate() -> bool:
 	NodeController.visual_widgets = visual_widgets
 	NodeController.push_slide_layer('BaseLayer')
+	_visual_system = VisualOutlineSystem.new()
+	add_child(_visual_system)
 	return true
 
 # To begin the reproduction from the entry point of the class.

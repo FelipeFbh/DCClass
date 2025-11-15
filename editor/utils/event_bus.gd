@@ -32,6 +32,9 @@ signal pen_color_changed(color: Color)
 # Toggle Drag Button
 signal disabled_toggle_drag_button(active: bool)
 
+# Toggle Resize Button
+signal disabled_toggle_resize_button(active: bool)
+
 #endregion
 
 #region TreeItem - Whiteboard Rendering
@@ -95,6 +98,9 @@ signal request_detach
 
 # Drag toggled
 signal drag_toggled(active: bool)
+
+# Resize toggled
+signal resize_toggled(active: bool)
 
 # Seek the visual for a node
 signal seek_node(node: ClassNode)

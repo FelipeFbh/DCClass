@@ -67,10 +67,11 @@ static func get_current_layer() -> Node2D:
 static func clear_layers() -> void:
 	while NodeController.current_layer_index >= 0:
 		var layer_to_remove = slide_layers[current_layer_index]
-		visual_widgets.remove_child(layer_to_remove)
 		slide_layers.remove_at(current_layer_index)
 		current_layer_index -= 1
-		layer_to_remove.queue_free()
+		if is_instance_valid(layer_to_remove):
+			visual_widgets.remove_child(layer_to_remove)
+			layer_to_remove.queue_free()
 
 	slide_layers.clear()
 	current_layer_index = -1

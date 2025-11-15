@@ -11,6 +11,7 @@ extends MarginContainer
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
 @onready var btn_drag: CheckButton = %DragButton
+@onready var btn_resize: CheckButton = %ResizeButton
 
 #@onready var btn_zoom: CheckButton = %ZoomButton
 
@@ -62,6 +63,9 @@ func _ready() -> void:
 
 	btn_drag.toggled.connect(_on_button_drag_toggled)
 	_bus.disabled_toggle_drag_button.connect(_disabled_toggle_drag_button)
+
+	btn_resize.toggled.connect(_on_button_resize_toggled)
+	_bus.disabled_toggle_resize_button.connect(_disabled_toggle_resize_button)
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
@@ -319,7 +323,13 @@ func _on_image_selected(status: bool, selected_paths: PackedStringArray, _select
 		"image_path": tmp_path 
 	}
 	entity_image.load_data(image_data)
-	_bus.emit_signal("add_class_leaf_entity", entity_image, [])
+	_bus.emit_signal("add_class_leaf_entity", entity_image, [
+								{
+									"position:x": 0,
+									"position:y": 0,
+									"property_type": "PositionEntityProperty"
+								}
+							])
 
 
 # func _add_zoom():
@@ -388,6 +398,17 @@ func _on_button_drag_toggled(active: bool) -> void:
 
 func _disabled_toggle_drag_button(active: bool) -> void:
 	btn_drag.disabled = active
+
+# Toggle resize mode
+func _on_button_resize_toggled(active: bool) -> void:
+	_bus.resize_toggled.emit(active)
+	if active:
+		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_RESIZE)
+	else:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _disabled_toggle_resize_button(active: bool) -> void:
+	btn_resize.disabled = active
 
 func _whiteboard_nodes_selection(nodes: Array[ClassLeaf]):
 	if select_item_index_disabled or nodes.size() == 0:
