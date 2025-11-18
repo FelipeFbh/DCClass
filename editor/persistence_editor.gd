@@ -84,7 +84,7 @@ func _playing():
 	editor_signals.disabled_toggle_edit_button.emit(true)
 	editor_signals.disabled_toggle_insert_button.emit(true)
 	editor_signals.disabled_toggle_select_item_index.emit(true)
-	editor_signals.disabled_toggle_stop_button.emit(true)
+	editor_signals.disabled_toggle_stop_button.emit(false)
 	editor_signals.disabled_toggle_drag_button.emit(true)
 	editor_signals.status_playback_stop.emit(false)
 

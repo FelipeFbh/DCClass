@@ -62,32 +62,3 @@ func _find_item_recursive(item: TreeItem, target: ClassNode) -> TreeItem:
 			return found
 		child = child.get_next()
 	return null
-
-
-
-#region ¡Experimental
-func get_next_leaf_item(current_node: ClassNode) -> TreeItem:
-	var current_item = find_item_by_node(current_node)
-	if current_item == null:
-		return null
-	var next_item = current_item.get_next_visible()
-	while next_item:
-		var node = next_item.get_metadata(0)
-		if node is ClassLeaf:
-			return next_item
-		next_item = next_item.get_next_visible()
-	return null
-
-
-func get_previous_leaf_item(current_node: ClassNode) -> TreeItem:
-	var current_item = find_item_by_node(current_node)
-	if current_item == null:
-		return null
-	var prev_item = current_item.get_prev_visible()
-	while prev_item:
-		var node = prev_item.get_metadata(0)
-		if node is ClassLeaf:
-			return prev_item
-		prev_item = prev_item.get_prev_visible()
-	return null
-#endregion

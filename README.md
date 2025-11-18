@@ -13,7 +13,7 @@ El objetivo del proyecto se centra en desarrollar un reproductor y editor de con
 - Control de la reproducción para insertar pausas.
 - Slides: Son análogas a hojas físicas que se suporponen.
 - Compatibilidad con tabletas gráficas.
-- Camara libre para extender el área de la pizarra. Además, permite al docente controlar la vista del estudiante.
+- Camara libre para extender el área de la pizarra.
 
 ## Installation
 
