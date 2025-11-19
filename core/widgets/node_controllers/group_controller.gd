@@ -258,6 +258,8 @@ func _compute_current_time(_current_node : NodeController ) -> float:
 	var _duration_calculated = _current_node.compute_duration_play(_current_node, __duration, __total_real_time)
 	__duration = _duration_calculated[0]
 	__total_real_time = _duration_calculated[1]
+	if _duration_calculated == [0.0,0.0]:
+		return 0.0
 	
 	if _current_node.has_method("is_audio") and not _current_node.is_audio():
 		var last_audio = _current_node.get_previous_audio(_current_node)

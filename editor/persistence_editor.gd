@@ -68,7 +68,6 @@ func _epilog(status: Status = _status):
 func _stopped():
 	editor_signals.disabled_toggle_audio_button.emit(false)
 	editor_signals.disabled_toggle_pen_button.emit(false)
-	editor_signals.disabled_toggle_audio_button.emit(false)
 	editor_signals.disabled_toggle_edit_button.emit(false)
 	editor_signals.disabled_toggle_insert_button.emit(false)
 	editor_signals.disabled_toggle_select_item_index.emit(false)
@@ -76,7 +75,7 @@ func _stopped():
 	editor_signals.disabled_toggle_drag_button.emit(false)
 	editor_signals.disabled_toggle_resize_button.emit(false)
 	editor_signals.status_playback_stop.emit(true)
-	editor_signals.update_timer_slider_by_time.emit()
+	editor_signals.seek_time_slide.emit(resources_class._current_node)
 
 func _playing():
 	editor_signals.disabled_toggle_audio_button.emit(true)

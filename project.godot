@@ -28,7 +28,6 @@ driver/enable_input=true
 [autoload]
 
 PersistenceEditor="*res://editor/persistence_editor.gd"
-ModLoader="*res://core/mods/module_loader.tscn"
 PersistenceMobile="*res://mobile/persistence_mobile.gd"
 
 [debug]
