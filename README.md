@@ -25,6 +25,7 @@ El objetivo del proyecto se centra en desarrollar un reproductor y editor de con
 File|Description
 :---|:---
 [DCClass.exe](https://github.com/FelipeFbh/DCClass/releases/latest) | Editor version for Windows.
+[DCClass.x86_64](https://github.com/FelipeFbh/DCClass/releases/latest) | Editor version for Linux.
 [DCClass-Mobile.exe](https://github.com/FelipeFbh/DCClass/releases/latest) | Dedicated version for playing classes on mobile screens on Windows.
 
 ## Development Requirements
@@ -34,7 +35,7 @@ File|Description
 
 ## How to Build
 
-To build the project into an executable (`.exe`), just run the Godot export using the settings from `export_presets_DCClass.cfg`.
+To build the project into an executable (`.exe`), just run the Godot export using the settings from `export_presets.cfg`.
 
 ## Contributors
 
