@@ -59,6 +59,7 @@ func play_seek(last_child: NodeController = null) -> void:
 		var parent = _class_node.get_parent_controller()
 		if parent != null:
 			parent.play_seek(self)
+			return
 		#We are the root
 		_bus_core.tree_play_finished.emit()
 		return

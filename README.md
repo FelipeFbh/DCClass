@@ -4,16 +4,15 @@ El objetivo del proyecto se centra en desarrollar un reproductor y editor de con
 
 ## Features
 
-- Reproductor integrado para ver la clase envasada y su edición en vivo.
-- Agrupación de elementos mediante grupos para facilitar la organización de la clase.
-- Permitir copiar, pegar y eliminar elementos.
-- Grabación de audio.
-- Trazos con diferentes grosores y colores.
-- Soporte para imágenes.
-- Control de la reproducción para insertar pausas.
-- Slides: Son análogas a hojas físicas que se suporponen.
-- Compatibilidad con tabletas gráficas.
-- Camara libre para extender el área de la pizarra.
+- Integrated player to view the class with real-time editing updates.
+- Groups of elements to facilitate class organization.
+- Copy, paste, and delete elements.
+- Lines with different thicknesses and colors.
+- Support for images.
+- Add pauses to the class so students can understand better.
+- Slides: Analogous to physical sheets stacked on top of each other.
+- Free-Camera to extend the board area.
+- In the mobile version, the camera follows the current drawing position to make it easier to follow the class on small screens.
 
 ## Installation
 
