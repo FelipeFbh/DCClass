@@ -59,4 +59,4 @@ func _seek_node(node_seek: ClassNode) -> void:
 	var node_seek_controller: NodeController = node_seek._node_controller
 	entry_point = PersistenceEditor.resources_class.root_tree_structure._node_controller
 	NodeController.clear_layers()
-	entry_point.seek(node_seek_controller, entry_point)
+	entry_point.seek_by_layer(node_seek_controller, entry_point)

@@ -44,6 +44,7 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/per_pixel_transparency/allowed=true
 display_server/driver.windows="windows"
+display_server/driver.linuxbsd="x11"
 display_server/driver.android="android"
 display_server/driver.ios="iOS"
 display_server/driver.macos="macos"
@@ -136,3 +137,4 @@ pointing/emulate_mouse_from_touch=false
 
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_2d=1
+renderer/rendering_method.linux="gl_compatibility"

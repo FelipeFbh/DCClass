@@ -78,10 +78,68 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 		current = current_node[0]
 	return
 
+func seek_by_layer(node_seek: NodeController, last_child: NodeController = null) -> void:
+	var current: NodeController = last_child
+	var current_node = [self, last_child]
+	var layer_hierarchy := get_layer_hierarchy(node_seek)
+
+	while current != null:
+		current.skip_to_end()
+		if current == node_seek:
+			_bus.emit_signal("execute_after_rendering")
+			return
+		
+		var prev_current = current
+		current_node = current.get_next(current_node)
+		current = current_node[0]
+
+		# Slide layer management
+		if current is SlideController:
+			# If we are entering in a layer that is in the hierarchy of the target node
+			if current in layer_hierarchy:
+				# Case entering in a new slide layer
+				if current_node[1] == null:
+					NodeController.push_slide_layer()
+			# If not, we manage continue with next node after current
+			else:
+				var parent = current._class_node.get_parent_controller()
+				current_node = [parent, current]
+				current = parent
+
+		elif prev_current is SlideController and prev_current not in layer_hierarchy:
+			NodeController.pop_slide_layer()
+			get_tree().call_group(&"widget_cleared", "unclear")
+			NodeController.unhide_layers()
+	return
+
+		# if pre_compute_node[0] is SlideController and pre_compute_node[0] in layer_hierarchy:
+		# 	# Case we are entering in a layer that is in the hierarchy of the target node
+		# 	get_next(current_node, true)
+		# else:
+		# 	# Continue without computing layer changes until 
+
+func get_node_layer_depth(node: NodeController) -> int:
+	var depth: int = 0
+	var parent = _class_node.get_parent_controller()
+	while parent != null:
+		if parent is SlideController:
+			depth += 1
+		parent = parent._class_node.get_parent_controller()
+	return depth
+
+func get_layer_hierarchy(node: NodeController) -> Array[NodeController]:
+	var layers: Array[NodeController] = [node]
+	var parent = node._class_node.get_parent_controller()
+	while parent != null:
+		if parent is SlideController:
+			layers.append(parent)
+		parent = parent._class_node.get_parent_controller()
+	return layers
+
 #region Tree Navigation
 
-# Return the next NodeController after __current_node
-func get_next(__current_node: Array, compute_layer:= false) -> Array:
+# Return the next NodeController skipping layers that are not target_node
+func get_next(__current_node: Array) -> Array:
 	var current_node = __current_node[0]
 	var last_child = __current_node[1]
 	var index = current_node._index_of(last_child)
@@ -89,20 +147,36 @@ func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	if current_node._childrens.size() == 0 or index + 1 == current_node._childrens.size():
 		var parent = current_node._class_node.get_parent_controller()
 		if parent != null:
-			# Pop current layer if is computing (called only on seek)
-			if current_node is SlideController and compute_layer:
-				NodeController.pop_slide_layer()
-				get_tree().call_group(&"widget_cleared", "unclear")
-				NodeController.unhide_layers()
 			return [parent, current_node]
 		return [null, null]
-	
+
 	var next_child = current_node._childrens[index + 1]._node_controller
-	# Push current layer if is computing (called only on seek)
-	if next_child is SlideController and compute_layer:
-		NodeController.push_slide_layer()
 
 	return [next_child, null]
+
+## Return the next NodeController after __current_node
+#func get_next(__current_node: Array, compute_layer:= false) -> Array:
+	#var current_node = __current_node[0]
+	#var last_child = __current_node[1]
+	#var index = current_node._index_of(last_child)
+		#
+	#if current_node._childrens.size() == 0 or index + 1 == current_node._childrens.size():
+		#var parent = current_node._class_node.get_parent_controller()
+		#if parent != null:
+			## Pop current layer if is computing (called only on seek)
+			#if current_node is SlideController and compute_layer:
+				#NodeController.pop_slide_layer()
+				#get_tree().call_group(&"widget_cleared", "unclear")
+				#NodeController.unhide_layers()
+			#return [parent, current_node]
+		#return [null, null]
+	#
+	#var next_child = current_node._childrens[index + 1]._node_controller
+	## Push current layer if is computing (called only on seek)
+	#if next_child is SlideController and compute_layer:
+		#NodeController.push_slide_layer()
+#
+	#return [next_child, null]
 
 
 # Return the previous LeafController before last_child
