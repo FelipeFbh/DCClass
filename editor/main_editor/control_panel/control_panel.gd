@@ -160,6 +160,7 @@ func _paste() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.paste_class_nodes.emit()
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 
 func _delete() -> void:
@@ -174,6 +175,7 @@ func _delete() -> void:
 		current = tree_manager.get_next_selected(current)
 	
 	_bus.delete_class_nodes.emit(nodes_del)
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 	
 #endregion
@@ -366,6 +368,7 @@ func _on_toggle_audio_pressed(active: bool) -> void:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_AUDIO)
 	else:
 		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+		PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 func _disabled_toggle_audio_button(active: bool) -> void:
 	btn_audio.disabled = active
@@ -449,7 +452,8 @@ func _on_item_activated() -> void:
 	var node = item.get_metadata(0)
 	_bus_core.current_node_changed.emit(node)
 	_bus.seek_node.emit(node)
-
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.SEEK_PANEL, [node] )
+	
 func _disabled_toggle_select_item_index(active: bool) -> void:
 	select_item_index_disabled = active
 

@@ -149,6 +149,10 @@ func play_seek(last_child: NodeController = null) -> void:
 	
 	if not is_audio():
 		var last_audio = get_previous_audio()
+		if last_audio == null:
+			leaf_value.skip_to_end()
+			_bus_core.pause_playback_widget.emit()
+			return
 		var next_leaf_paudio = last_audio.get_next_leaf(last_audio)
 		var prev_leaf = get_previous_leaf(self)
 		if prev_leaf.is_audio():
@@ -314,7 +318,7 @@ func get_next_audio() -> LeafController:
 
 
 # Return the previous audio leaf node
-func get_previous_audio() -> LeafController:
+func get_previous_audio(current_node: NodeController = self) -> LeafController:
 	var leaf = get_previous_leaf(self)
 	while leaf != null:
 		if leaf.has_method("is_audio") and leaf.is_audio():
@@ -343,6 +347,8 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 		_duration = current_node.compute_duration()
 	else:
 		_previous_audio = get_previous_audio()
+		if _previous_audio == null:
+			return [0,0]
 		_duration = _previous_audio.compute_duration()
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf(_previous_audio)

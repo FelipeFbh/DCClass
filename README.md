@@ -1,37 +1,50 @@
 # DCClass
 
-> **Contribuidores:** Juan Cid, Evelyn Avila, Felipe Olivares, Luis Mateu B. y Puntito (_Christopher Marín_)
+El objetivo del proyecto se centra en desarrollar un reproductor y editor de contenidos para clases envasadas basadas en una pizarra, con la finalidad de facilitar la realización y edición de clases, además de admitir diversas funcionalidades que mejoren la experiencia del estudiante.
 
-## Resumen
+## Features
 
-El objetivo del proyecto se centra en desarrollar un reproductor y editor de contenidos para clases envasadas basadas en una pizarra, con la finalidad de acercar la experiencia educativa remota al formato en vivo.
-Se utiliza como base el proyecto [POODLE](./POODLE/README.md).
+- Integrated player to view the class with real-time editing updates.
+- Groups of elements to facilitate class organization.
+- Copy, paste, and delete elements.
+- Lines with different thicknesses and colors.
+- Support for images.
+- Add pauses to the class so students can understand better.
+- Slides: Analogous to physical sheets stacked on top of each other.
+- Free-Camera to extend the board area.
+- In the mobile version, the camera follows the current drawing position to make it easier to follow the class on small screens.
 
+## Installation
 
-## Funcionalidades
+### Requirements
 
-- Reproductor integrado para ver la clase envasada y su edición en vivo.
-- Agrupación de elementos mediante grupos de los elementos para facilitar la organización de la clase.
-- Permitir copiar, pegar y eliminar elementos.
-- Grabación de audio y de trazos en la pizarra.
-- Compatibilidad con tabletas gráficas.
-- Camara libre para extender el área de la pizarra.
+- FFmpeg 7.1.1 (Only needed for the editor version)
 
-## Requisitos
+### Release
+
+File|Description
+:---|:---
+[DCClass.exe](https://github.com/FelipeFbh/DCClass/releases/latest) | Editor version for Windows.
+[DCClass.x86_64](https://github.com/FelipeFbh/DCClass/releases/latest) | Editor version for Linux.
+[DCClass-Mobile.exe](https://github.com/FelipeFbh/DCClass/releases/latest) | Dedicated version for playing classes on mobile screens on Windows.
+
+## Development Requirements
+
 - Godot 4.5
-- FFmpeg 7.1.1 (full_build)
+- FFmpeg 7.1.1
 
+## How to Build
 
-## Build
+To build the project into an executable (`.exe`), just run the Godot export using the settings from `export_presets.cfg`.
 
-Para compilar el proyecto en un ejecutable (`.exe`), basta con ejecutar el `export` desde Godot con los parámetros de `export_presets_DCClass.cfg`. Alternativamente, se puede definir manualmente los siguientes parámetros en el menú de exportación de Godot:
+## Contributors
 
-```
-# Options
-Binary Format:
-	Embed PCK : true
+See the [CONTRIBUTORS](./CONTRIBUTORS) file to know the list of contributors to this project.
 
-#Resources
-Filters to export non-resources files/folders:
-	*.dcc
-```
+## License
+
+DCClass is licensed under the [MIT License](./LICENSE).
+
+This project was forked from [POODLE](https://github.com/PuntitOwO/poodle), which is licensed under the [MIT License](https://github.com/PuntitOwO/poodle/blob/main/LICENSE.md).
+
+See [THIRD_PARTY_LICENSES](./THIRD_PARTY_LICENSES) for details.

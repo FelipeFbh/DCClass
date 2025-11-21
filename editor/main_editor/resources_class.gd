@@ -230,9 +230,9 @@ func _paste_class_nodes() -> void:
 					var index_current = _current_class_group_childrens.find(_current_node)
 					_current_class_group_childrens.insert(index_current + 1, node)
 
-			_bus.update_treeindex.emit()
-			_bus_core.current_node_changed.emit(node)
-			_bus.seek_node.emit(node)
+			
+			_current_node = node
+			
 			
 		elif node is ClassGroup or node is ClassSlide:
 			if _current_node == node_group_parent:
@@ -244,6 +244,9 @@ func _paste_class_nodes() -> void:
 				_insert_class_group(node)
 
 
+	_bus.update_treeindex.emit()
+	_bus_core.current_node_changed.emit(_current_node)
+	_bus.seek_node.emit(_current_node)
 	PersistenceEditor.clipboard = []
 
 # Delete nodes from the class structure/tree.
@@ -286,9 +289,10 @@ func _make_group():
 	if first_current[0] == null: # We are at the root level.
 		first_current[0] = root_tree_structure._node_controller
 
-	# Case: We are the first element in the parent group, so the previous is the parent of the parent group!
+	# Case: We are the first element in the parent group, so the previous is the parent of all elements!
 	if first_current[0] == parent_group.get_parent_controller():
 		first_current[0] = parent_group._node_controller
+
 
 	var data_new = {
 		"name": "Group",
@@ -296,9 +300,15 @@ func _make_group():
 		"childrens": []
 	}
 	var class_node = ClassGroup.deserialize(data_new)
+	
 	PersistenceEditor.resources_class._current_node = first_current[0]._class_node
-
-	_bus.add_class_group.emit(class_node, true)
+	
+	#Case: The previous node is a group that is not the parent, so we have to insert the new group after this node.
+	if first_current[0] != parent_group._node_controller and first_current[0] is GroupController:
+		_insert_class_group(class_node)
+	
+	else: #We are the parent of all the elements, so we use the normal add group.
+		_add_class_group(class_node, true)
 	
 	for node in PersistenceEditor.clipboard:
 		if node in parent_group._childrens:

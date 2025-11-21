@@ -31,7 +31,6 @@ func _zoom_slider_value_selected(value: float) -> void:
 	if !is_instance_valid(ClassUIMobile.context) or !is_instance_valid(ClassUIMobile.context.camera):
 		return
 	ClassUIMobile.context.camera.zoom = Vector2(value, value)
-	ClassUIMobile.context.camera.update_grid_visibility()
 
 func _zoom_reset() -> void:
 	if !is_instance_valid(ClassUIMobile.context) or !is_instance_valid(ClassUIMobile.context.camera):
@@ -42,15 +41,25 @@ func _zoom_reset() -> void:
 
 #endregion
 
+#region Time
+
+@onready var time_slider: HSlider = %TimeSlider
+@onready var current_time_label: Label = %CurrentTimeLabel
+@onready var total_time_label: Label = %TotalTimeLabel
+
+#endregion
+
 #region Playback Controls
 
 @onready var stop_button: Button = %StopButton
+@onready var prev_button: Button = %PrevButton
+@onready var next_button: Button = %NextButton
 
 @onready var play_icon: Texture2D = get_theme_icon("play", stop_button.theme_type_variation)
 @onready var pause_icon: Texture2D = get_theme_icon("pause", stop_button.theme_type_variation)
 
 var is_stopped: bool = true
-
+	
 # Toggle playback stop button.
 # If the button is pressed, it will toggle between playing and stopping.
 # When playing, the visual widget will begin 
@@ -64,7 +73,7 @@ func _toggle_playback_stop() -> void:
 	_bus_core.stop_widget.emit()
 	get_tree().call_group(&"widget_playing", "stop")
 	PersistenceMobile._epilog(PersistenceMobile.Status.STOPPED)
-
+	
 # 0: playing, 1: stopped
 # This is used to update the stup_button icon/state.
 func _status_playback_stop(active : bool = is_stopped ) -> void:
@@ -101,6 +110,9 @@ func _volume_controls() -> void:
 	
 	var act_vol = AudioServer.get_bus_volume_db(bus_index)
 	var act_vol_linear = db_to_linear(act_vol)
+	
+	volume_slider.value = act_vol_linear
+	_update_volume_icon(act_vol_linear)
 	
 	volume_slider.value_changed.connect(_on_volume_changed)
 	volume_button.pressed.connect(_toggle_mute)
@@ -155,14 +167,13 @@ func _toggle_camera_button(user_controlled_camera: bool) -> void:
 
 func _setup():
 	control_panel._setup()
-	
 
 func _ready():
 	if !is_instance_valid(ClassUIMobile.context):
 		printerr("ClassUIMobile context is not valid")
 	else:
 		get_tree().process_frame.connect(_zoom_reset, CONNECT_ONE_SHOT)
-	
+		
 	stop_button.pressed.connect(_toggle_playback_stop)
 	_bus.disabled_toggle_stop_button.connect(_disabled_toggle_stop_button)
 	_bus.status_playback_stop.connect(_status_playback_stop)
