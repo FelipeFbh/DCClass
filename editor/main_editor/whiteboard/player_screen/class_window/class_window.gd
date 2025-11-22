@@ -98,17 +98,21 @@ func _setup_timeline():
 	final_time = PersistenceEditor.resources_class.root_tree_structure._node_controller._compute_class_duration()
 	time_slider.max_value = final_time
 	time_slider.value = 0.0
-	
+
+	var sec_ftotal = final_time
 	var sec_f = fmod(final_time, 60)
-	var min_f = sec_f / 60
-	var hour_f = min_f / 60
+	var min_ftotal = sec_ftotal / 60
+	var min_f = fmod(min_ftotal, 60)
+	var hour_f = min_ftotal / 24
 	
 	var format_str = "%02d : %02d : %02d"
 
 	time_slider.value = current_time
+	var sec_total = current_time
 	var sec_c = fmod(current_time, 60)
-	var min_c = sec_c / 60
-	var hour_c = min_c / 60
+	var min_total = sec_total / 60
+	var min_c = fmod(min_total, 60)
+	var hour_c = min_total / 24
 	var current_time_str = format_str % [hour_c, min_c, sec_c]
 
 	final_time_str = format_str % [hour_f, min_f, sec_f]
@@ -118,9 +122,11 @@ func _setup_timeline():
 # Update the time slider and label based on the current time.
 func _update_time_control():
 	time_slider.value = current_time
+	var sec_total = current_time
 	var sec_c = fmod(current_time, 60)
-	var min_c = sec_c / 60
-	var hour_c = min_c / 60
+	var min_total = sec_total / 60
+	var min_c = fmod(min_total, 60)
+	var hour_c = min_total / 24
 
 	var format_str = "%02d : %02d : %02d"
 	var current_time_str = format_str % [hour_c, min_c, sec_c]
