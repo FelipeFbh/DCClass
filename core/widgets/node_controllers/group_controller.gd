@@ -75,6 +75,9 @@ func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
 	while current != null:
 		current.skip_to_end()
 		if current == node_seek:
+			# hotfix tmp: should remove editor bus dependancy
+			if !is_instance_valid(_bus):
+				return
 			_bus.emit_signal("execute_after_rendering")
 			return
 		current_node = current.get_next(current_node, true)

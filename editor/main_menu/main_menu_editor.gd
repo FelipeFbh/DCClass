@@ -23,12 +23,12 @@ func _select_file():
 #endregion
 
 #region Native Seleccionando Archivo
-@onready var export_file_dialog: FileDialog = %SelectFileDialog
+@onready var select_file_dialog: FileDialog = %SelectFileDialog
 
 
 func _native_dialog():
-	export_file_dialog.popup()
-	var file_path: String = await export_file_dialog.file_selected
+	select_file_dialog.popup()
+	var file_path: String = await select_file_dialog.file_selected
 	_on_file_selected(file_path)
 
 #region Process file
