@@ -179,7 +179,7 @@ func get_last_clear() -> LeafController:
 func get_next_audio(current_node: NodeController) -> LeafController:
 	var leaf = get_next_leaf(current_node)
 	while leaf != null and not leaf.is_audio():
-		leaf = get_next_leaf(leaf)
+		leaf = leaf.get_next_leaf(leaf)
 	return leaf
 
 
