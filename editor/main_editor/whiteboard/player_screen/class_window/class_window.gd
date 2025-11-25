@@ -194,7 +194,7 @@ func _ready():
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
 	
-	_setup_timeline()
+	_setup_timeline() # To set the ti & tf
 	_bus.setup_timeline.connect(_setup_timeline)
 	_bus.seek_time_slide.connect(_seek_time_slide)
 	

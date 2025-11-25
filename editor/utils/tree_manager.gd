@@ -2,19 +2,23 @@ class_name TreeManagerEditor
 extends Tree
 
 var tree_manager_index: Tree
+var node_dict: Dictionary[ClassNode, TreeItem] = {}
 
 # Build the index tree following the structure of the classGroup.
 func build(root_group: ClassGroup, entities: Dictionary) -> Tree:
 	tree_manager_index.clear()
+	node_dict.clear()
 	var root_item = tree_manager_index.create_item()
 	_populate_node(root_item, root_group, entities)
 	return tree_manager_index
 
 # Populate the tree with nodes from the class structure.
-func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary, depth:=0, slide_order:=0) -> void:
+func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary, depth := 0, slide_order := 0) -> void:
 	var item = tree_manager_index.create_item(parent_item)
 	item.set_text(0, node.get_editor_name())
 	item.set_metadata(0, node) # Store the node reference in the item metadata
+	node_dict[node] = item
+	
 	
 	if node is ClassSlide:
 		node = node as ClassSlide
@@ -27,7 +31,7 @@ func _populate_node(parent_item: TreeItem, node: ClassNode, entities: Dictionary
 	var child_slide_order = 0
 	if node is ClassGroup or node is ClassSlide:
 		for child in node._childrens:
-			if child is ClassSlide: 
+			if child is ClassSlide:
 				_populate_node(item, child, entities, depth, child_slide_order)
 				child_slide_order += 1
 			else:
@@ -46,6 +50,12 @@ func reset_colors():
 
 # Find a TreeItem by its associated ClassNode.
 func find_item_by_node(target: ClassNode) -> TreeItem:
+	return node_dict[target]
+
+
+#region Deprecated
+# Find a TreeItem by its associated ClassNode.
+func find_item_by_node_recursive(target: ClassNode) -> TreeItem:
 	var root = tree_manager_index.get_root()
 	if root == null:
 		return null
@@ -62,3 +72,4 @@ func _find_item_recursive(item: TreeItem, target: ClassNode) -> TreeItem:
 			return found
 		child = child.get_next()
 	return null
+#endregion

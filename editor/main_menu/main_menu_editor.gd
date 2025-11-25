@@ -18,7 +18,7 @@ func _select_file():
 		return
 	if OS.has_feature("web"):
 		print("Web detected. Using browser file picker.")
-	print("No custom dialog support detected. Using built-in file picker or  native file picker.")
+	print("No custom dialog support detected. Using built-in file picker or native file picker.")
 	_native_dialog()
 #endregion
 
