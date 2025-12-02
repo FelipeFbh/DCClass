@@ -15,10 +15,11 @@ extends VSplitContainer
 @onready var volume_button: TextureButton = %VolumeButton
 @onready var volume_slider: HSlider = %VolumeSlider
 @onready var recenter: Button = %RecenterCameraButton
+@onready var go_back: Button = %GoBackButton
 
 @onready var whiteboard: Control = %Whiteboard
 
-var hover_elements = [bottom_panel, play_button, next_button, prev_button, volume_button, volume_slider, recenter]
+var hover_elements = [bottom_panel, play_button, next_button, prev_button, go_back, volume_button, volume_slider, recenter]
 var is_control_visible: bool = true
 var is_mouse_over: bool = false
 
@@ -92,7 +93,8 @@ func fade_out_elements():
 	tween.tween_property(bottom_panel, "modulate:a", 0.0, fade_duration)
 	tween.tween_property(play_button, "modulate:a", 0.0, fade_duration)
 	tween.tween_property(prev_button, "modulate:a", 0.0, fade_duration)
-	tween.tween_property(next_button, "modulate:a", 0.0, fade_duration                                      )
+	tween.tween_property(next_button, "modulate:a", 0.0, fade_duration)
+	tween.tween_property(go_back, "modulate:a", 0.0, fade_duration)
 	tween.tween_property(recenter, "modulate:a", 0.0, fade_duration)
 	
 	tween.finished.connect(_make_elements_invisible, CONNECT_ONE_SHOT)
@@ -111,6 +113,7 @@ func fade_in_elements():
 	prev_button.visible = true
 	next_button.visible = true
 	recenter.visible = true
+	go_back.visible = true
 	
 	# tween creation
 	tween = create_tween()
@@ -121,6 +124,7 @@ func fade_in_elements():
 	tween.tween_property(play_button, "modulate:a", 1.0, fade_duration)
 	tween.tween_property(prev_button, "modulate:a", 1.0, fade_duration)
 	tween.tween_property(next_button, "modulate:a", 1.0, fade_duration)
+	tween.tween_property(go_back, "modulate:a", 1.0, fade_duration)
 	tween.tween_property(recenter, "modulate:a", 1.0, fade_duration)
 	
 	tween.finished.connect(_make_elements_visible, CONNECT_ONE_SHOT)
@@ -134,12 +138,14 @@ func _make_elements_invisible():
 	prev_button.visible = false
 	next_button.visible = false
 	recenter.visible = false
+	go_back.visible = false
 	
 	bottom_panel.modulate.a = 0.0
 	play_button.modulate.a = 0.0
 	prev_button.modulate.a = 0.0
 	next_button.modulate.a = 0.0
 	recenter.modulate.a = 0.0
+	go_back.modulate.a = 0.0
 	
 	is_control_visible = false
 
@@ -150,12 +156,14 @@ func _make_elements_visible():
 	prev_button.visible = true
 	next_button.visible = true
 	recenter.visible = true
+	go_back.visible = true
 	
 	bottom_panel.modulate.a = 1.0
 	play_button.modulate.a = 1.0
 	prev_button.modulate.a = 1.0
 	next_button.modulate.a = 1.0
 	recenter.modulate.a = 1.0
+	go_back.modulate.a = 1.0
 	
 	is_control_visible = true
 	

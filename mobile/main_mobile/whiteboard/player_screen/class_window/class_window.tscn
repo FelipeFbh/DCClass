@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://oy02dobgre3u"]
+[gd_scene load_steps=14 format=3 uid="uid://oy02dobgre3u"]
 
 [ext_resource type="Script" uid="uid://blrscs04v5ou4" path="res://mobile/main_mobile/whiteboard/player_screen/class_window/class_window.gd" id="1_c4loa"]
 [ext_resource type="PackedScene" uid="uid://23jm880wmmev" path="res://mobile/main_mobile/control_panel/control_panel.tscn" id="2_ixmjj"]
@@ -22,6 +22,10 @@ region = Rect2(350, 450, 50, 50)
 [sub_resource type="AtlasTexture" id="AtlasTexture_te1kq"]
 atlas = ExtResource("6_d1wmn")
 region = Rect2(360, 410, 30, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ugx4"]
+atlas = ExtResource("6_d1wmn")
+region = Rect2(50, 0, 50, 50)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
 atlas = ExtResource("6_d1wmn")
@@ -139,10 +143,10 @@ icon = SubResource("AtlasTexture_jmlnq")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
 layout_mode = 0
-offset_left = 1200.0
-offset_top = 20.0
-offset_right = 1238.0
-offset_bottom = 58.0
+offset_left = 1230.0
+offset_top = 10.0
+offset_right = 1268.0
+offset_bottom = 48.0
 
 [node name="RecenterCameraButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
 unique_name_in_owner = true
@@ -151,6 +155,19 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 icon = SubResource("AtlasTexture_te1kq")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 68.0
+offset_bottom = 68.0
+
+[node name="GoBackButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+icon = SubResource("AtlasTexture_7ugx4")
 
 [node name="BottomPanel" type="PanelContainer" parent="LeftSplit/RightSplit/BottomSplit"]
 unique_name_in_owner = true

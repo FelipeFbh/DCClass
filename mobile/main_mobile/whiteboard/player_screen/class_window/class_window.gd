@@ -164,6 +164,15 @@ func _toggle_camera_button(user_controlled_camera: bool) -> void:
 
 #endregion
 
+#region Go Back
+
+@onready var go_back_button: Button = %GoBackButton
+
+func _on_go_back_pressed() -> void:
+	get_tree().change_scene_to_file("res://mobile/main_menu/main_menu_mobile.tscn")
+
+#endregion
+
 @onready var control_panel: ControlPanelMobile = %"Control Panel"
 
 func _setup():
@@ -183,6 +192,8 @@ func _ready():
 	
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
+	
+	go_back_button.pressed.connect(_on_go_back_pressed)
 	
 	_volume_controls()
 	
