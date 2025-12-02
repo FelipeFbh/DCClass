@@ -13,6 +13,7 @@ func _ready():
 func _select_file():
 	if OS.has_feature("android"):
 		print("Android detected. Using Android file picker.")
+		_android_dialog()
 		return
 	if OS.has_feature("web"):
 		print("Web detected. Using browser file picker.")
@@ -32,6 +33,21 @@ func _on_native_dialog_file_selected(status: bool, selected_paths: PackedStringA
 	if status == false:
 		return
 	var path := selected_paths[0]
+	_on_file_selected(path)
+#endregion
+
+#region Android
+func _android_dialog():
+	if Engine.has_singleton("GodotFilePicker"):
+		var picker = Engine.get_singleton("GodotFilePicker")
+		if not picker.file_picked.is_connected(_on_android_file_selected):
+			picker.file_picked.connect(_on_android_file_selected)
+		picker.openFilePicker("*/*")
+	else:
+		printerr("GodotFilePicker singleton not found")
+		return
+
+func _on_android_file_selected(path: String, _mime_type: String) -> void:
 	_on_file_selected(path)
 #endregion
 

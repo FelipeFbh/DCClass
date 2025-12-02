@@ -93,13 +93,13 @@ func _handle_drawing(event: InputEvent) -> void:
 			if not _pressed:
 				_pressed = true
 				
+				_bus.pen_thickness_changed.emit(_pen_thickness)
+				_bus.pen_thickness_changed.emit(_pen_color)
+				
 				_line = _new_line()
 				_viewport.add_child(_line)
 				_line.add_point(pos)
 				_last_point = pos
-				
-				_bus.pen_thickness_changed.emit(_pen_thickness)
-				_bus.pen_thickness_changed.emit(_pen_color)
 				
 				_delays.clear()
 				var delta_time = now - _last_time

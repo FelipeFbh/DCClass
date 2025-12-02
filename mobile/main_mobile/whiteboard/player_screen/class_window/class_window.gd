@@ -30,6 +30,7 @@ func _update_zoom_slider_value() -> void:
 func _zoom_slider_value_selected(value: float) -> void:
 	if !is_instance_valid(ClassUIMobile.context) or !is_instance_valid(ClassUIMobile.context.camera):
 		return
+	ClassUIMobile.context.camera.user_controlled = true
 	ClassUIMobile.context.camera.zoom = Vector2(value, value)
 
 func _zoom_reset() -> void:

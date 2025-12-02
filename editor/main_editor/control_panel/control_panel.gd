@@ -54,9 +54,8 @@ func _ready() -> void:
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
 	
 	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
-		
+	
 	btn_detach.pressed.connect(_on_button_detach_pressed)
-
 
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
@@ -310,6 +309,7 @@ func _current_node_changed(current_node):
 	tree_manager.scroll_to_item(current_item_tree, true)
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
+	
 
 func _on_pen_thickness_changed():
 	_bus.pen_thickness_changed.emit(_pending_pen_thickness)
