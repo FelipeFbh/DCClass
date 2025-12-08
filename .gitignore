@@ -19,5 +19,4 @@ android/build/*
 *.tmp
 
 # Ignore if you are using a custom ffmpeg build directly in the project.
-editor/utils/ffmpeg/ffmpeg.exe
-editor/utils/ffmpeg/LICENSE
+editor/utils/ffmpeg/

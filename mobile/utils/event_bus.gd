@@ -63,4 +63,10 @@ signal disabled_toggle_stop_button(active: bool)
 # Toggle the Play(Stop) button
 signal status_playback_stop(active : bool)
 
+signal setup_timeline()
+
+signal seek_time_slide(node: ClassNode)
+
+signal update_timer_slider_by_time()
+
 #endregion

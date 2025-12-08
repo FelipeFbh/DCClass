@@ -1,6 +1,6 @@
 # DCClass
 
-El objetivo del proyecto se centra en desarrollar un reproductor y editor de contenidos para clases envasadas basadas en una pizarra, con la finalidad de facilitar la realización y edición de clases, además de admitir diversas funcionalidades que mejoren la experiencia del estudiante.
+The objective of this project is to develop a player and editor for pre-packaged whiteboard-based lessons, with the aim of making it easier to create and edit classes, as well as supporting various features that enhance the student learning experience.
 
 ## Features
 

@@ -69,5 +69,21 @@ func _recording_audio():
 	mobile_signals.disabled_toggle_stop_button.emit(true)
 	mobile_signals.disabled_toggle_pen_button.emit(true)
 
+enum Events {
+	SEEK_PANEL = 51,
+	SEEK_SLIDE_TIME = 52,
+	EDIT_VISUALS = 101,
+	EDIT_AUDIO = 102
+}
+
+func _epilog_events(event: Events, params = []):
+
+	if event == Events.SEEK_PANEL:
+		mobile_signals.seek_time_slide.emit(params[0])
+	
+	elif event == Events.EDIT_AUDIO:
+		mobile_signals.setup_timeline.emit()
+
+
 func clipboard_clear_files():
 	pass

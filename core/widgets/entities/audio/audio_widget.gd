@@ -111,7 +111,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 			var time_remaining = prev_audio.compute_duration() - prev_audio.audio.get_playback_position()
 			
 			if time_remaining <= crossfade_duration:
-				crossfade(prev_audio.audio)
+				crossfade(prev_audio)
 				
 			else:
 				# creating a timer for the fade out
