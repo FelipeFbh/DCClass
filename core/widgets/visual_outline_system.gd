@@ -117,7 +117,8 @@ func remove_widget_outline(class_node: ClassNode) -> void:
 	if class_node not in outline_nodes:
 		return
 
-	outline_nodes[class_node].queue_free()
+	if is_instance_valid(outline_nodes[class_node]):
+		outline_nodes[class_node].queue_free()
 	outline_nodes.erase(class_node)
 	_update_group_outline()
 

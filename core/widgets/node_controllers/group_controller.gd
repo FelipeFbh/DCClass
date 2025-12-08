@@ -68,20 +68,7 @@ func play_seek(last_child: NodeController = null) -> void:
 	next_child_to_play.play_seek(self)
 
 
-# Seek to the given node. Skiping to end all the nodes between node_seek and last_child.
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
-	var current: NodeController = last_child
-	var current_node = [self, last_child]
-	while current != null:
-		current.skip_to_end()
-		if current == node_seek:
-			_bus.emit_signal("execute_after_rendering")
-			return
-		current_node = current.get_next(current_node, true)
-		current = current_node[0]
-	return
-
-func seek_by_layer(node_seek: NodeController, last_child: NodeController = null) -> void:
 	var current: NodeController = last_child
 	var current_node = [self, last_child]
 	var layer_hierarchy := get_layer_hierarchy(node_seek)
@@ -115,11 +102,6 @@ func seek_by_layer(node_seek: NodeController, last_child: NodeController = null)
 			NodeController.unhide_layers()
 	return
 
-		# if pre_compute_node[0] is SlideController and pre_compute_node[0] in layer_hierarchy:
-		# 	# Case we are entering in a layer that is in the hierarchy of the target node
-		# 	get_next(current_node, true)
-		# else:
-		# 	# Continue without computing layer changes until 
 
 func get_node_layer_depth(node: NodeController) -> int:
 	var depth: int = 0
