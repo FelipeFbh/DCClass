@@ -88,6 +88,24 @@ func crossfade_in(_seek_time: float = -1):
 			audio.play()
 			
 		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, crossfade_duration)
+
+func crossfade_out(_seek_time: float = -1):
+	var fade_out_db = -80.0
+	
+	if crossfade_tween:
+		crossfade_tween.kill()
+		
+	crossfade_tween = create_tween()
+	
+	if audio and is_instance_valid(audio):
+		audio.volume_db = 0.0
+		
+		if _seek_time != -1:
+			audio.play(_seek_time)
+		else:
+			audio.play()
+			
+		crossfade_tween.tween_property(audio, "volume_db", fade_out_db, crossfade_duration)
 	
 # stops the audio after a fade
 func stop_after_fade(act_audio: AudioWidget):
@@ -123,10 +141,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		else:
 			# the audio is the same, no crossfade
 			crossfade_in()
-			
 	else:
 		# there's no other audio
-		crossfade_in()
+		crossfade_out()
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
