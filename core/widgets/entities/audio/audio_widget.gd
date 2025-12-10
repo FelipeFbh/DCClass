@@ -138,9 +138,6 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 				
 				if prev_audio.audio.playing:
 					crossfade(prev_audio)
-		else:
-			# the audio is the same, no crossfade
-			crossfade_in()
 	else:
 		# there's no other audio
 		crossfade_out()
