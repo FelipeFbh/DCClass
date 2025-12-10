@@ -109,9 +109,11 @@ var prev_vol: float = 0.5
 func _volume_controls() -> void:
 	bus_index = AudioServer.get_bus_index(bus_name)
 	
+	# it transforms to lineal scale the actual volume on db
 	var act_vol = AudioServer.get_bus_volume_db(bus_index)
 	var act_vol_linear = db_to_linear(act_vol)
 	
+	# updates to the new value on lineal scale and its icon
 	volume_slider.value = act_vol_linear
 	_update_volume_icon(act_vol_linear)
 	

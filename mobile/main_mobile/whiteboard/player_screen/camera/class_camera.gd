@@ -167,7 +167,6 @@ func add_recent_content(line_pos: Vector2):
 				_reset_bounds()
 				
 			if abs(last_pos.y - line_pos.y) >= VERTICAL_THRESHOLD:
-				print(last_pos.y - line_pos.y)
 				recent_content.clear()
 				recent_content.append(line_pos)
 				_reset_bounds()
