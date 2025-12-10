@@ -176,12 +176,9 @@ func seek_and_play(_seek_time: float) -> void:
 		if prev_audio != self:
 			# fade if its a different audio
 			crossfade(prev_audio, _seek_time)
-		else:
-		# the audio is the same
-			crossfade_in(_seek_time)
 	else:
 		# there's no other audio
-		crossfade_in(_seek_time)
+		crossfade_out(_seek_time)
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
