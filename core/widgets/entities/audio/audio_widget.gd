@@ -4,6 +4,7 @@ extends Widget
 @export var entity: AudioEntity
 var crossfade_tween: Tween
 var crossfade_duration: float = 0.06
+var fade_duration: float = 0.03
 var audio: AudioStreamPlayer
 
 
@@ -82,12 +83,14 @@ func crossfade_in(_seek_time: float = -1):
 	if audio and is_instance_valid(audio):
 		audio.volume_db = -80.0
 		
+		await get_tree().process_frame
+		
 		if _seek_time != -1:
 			audio.play(_seek_time)
 		else:
 			audio.play()
 			
-		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, crossfade_duration)
+		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, fade_duration)
 
 func crossfade_out(_seek_time: float = -1):
 	var fade_out_db = -80.0
@@ -105,7 +108,7 @@ func crossfade_out(_seek_time: float = -1):
 		else:
 			audio.play()
 			
-		crossfade_tween.tween_property(audio, "volume_db", fade_out_db, crossfade_duration)
+		crossfade_tween.tween_property(audio, "volume_db", fade_out_db, fade_duration)
 	
 # stops the audio after a fade
 func stop_after_fade(act_audio: AudioWidget):

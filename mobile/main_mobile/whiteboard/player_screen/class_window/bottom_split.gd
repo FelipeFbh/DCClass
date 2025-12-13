@@ -177,7 +177,7 @@ func _on_viewport_input(event: InputEvent):
 	if event is InputEventScreenTouch and event.pressed:
 		_handle_input()
 	# screen drag (mobile)
-	if event is InputEventScreenDrag and event.pressed:
+	if event is InputEventScreenDrag:
 		_make_elements_invisible()
 	# screen click (desktop)
 	if event is InputEventMouseButton and event.pressed:

@@ -80,7 +80,6 @@ func _on_pen_thickness_changed(thickness: float) -> void:
 func _on_pen_color_changed(color: Color) -> void:
 	_pen_color = color
 
-
 func _handle_drawing(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		if not is_instance_valid(_viewport):
@@ -94,7 +93,7 @@ func _handle_drawing(event: InputEvent) -> void:
 				_pressed = true
 				
 				_bus.pen_thickness_changed.emit(_pen_thickness)
-				_bus.pen_thickness_changed.emit(_pen_color)
+				_bus.pen_color_changed.emit(_pen_color)
 				
 				_line = _new_line()
 				_viewport.add_child(_line)

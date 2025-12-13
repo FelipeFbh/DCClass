@@ -74,8 +74,18 @@ func _ready() -> void:
 # Setup the control panel with the current resources class
 func _setup():
 	resources_class = PersistenceEditor.resources_class
+	
+	if not is_instance_valid(resources_class):
+		printerr("ERROR: resources_class is not valid!")
+		# Intenta inicializar PersistenceEditor si es necesario
+		if PersistenceEditor.resources_class == null:
+			printerr("PersistenceEditor.resources_class is null!")
+			return
+	
 	_setup_index_class()
 	_current_node_changed(resources_class._current_node)
+	
+	print("ControlPanel setup complete")
 
 #region Menu Edit
 
@@ -312,6 +322,12 @@ func _current_node_changed(current_node):
 	
 
 func _on_pen_thickness_changed():
+	if not is_instance_valid(resources_class):
+		resources_class = PersistenceEditor.resources_class
+	if not is_instance_valid(resources_class):
+		printerr("ERROR: Cannot access resources_class in _on_pen_thickness_changed")
+		return
+
 	_bus.pen_thickness_changed.emit(_pending_pen_thickness)
 	
 	var thickness_entity := PenThicknessEntity.new()
@@ -320,6 +336,12 @@ func _on_pen_thickness_changed():
 	_bus.add_class_leaf_entity.emit(thickness_entity, [])
 
 func _on_pen_color_changed(color: Color) -> void:
+	if not is_instance_valid(resources_class):
+		resources_class = PersistenceEditor.resources_class
+		if not is_instance_valid(resources_class):
+			printerr("ERROR: Cannot access resources_class in _on_pen_color_changed")
+			return
+	
 	_bus.pen_color_changed.emit(color)
 		
 	var color_entity := PenColorEntity.new()
