@@ -27,7 +27,7 @@ var _pending_pen_color: Color = Color.WHITE
 @onready var pen_thickness_label: Label = %PenThicknessLabel
 @onready var pen_thickness_container: HBoxContainer = %PenThicknessContainer
 var _pen_thickness_timer: Timer
-var _pending_pen_thickness: float = 2.0
+var _pending_pen_thickness: float = 3.0
 
 var resources_class: ResourcesClassEditor
 
