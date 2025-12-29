@@ -204,6 +204,8 @@ func _handle_drawing(event: InputEvent) -> void:
 
 			var entity := LineEntity.new()
 			entity.points = _line.points
+			entity.pen_color = _pen_color
+			entity.pen_thickness = _pen_thickness
 			
 			var _position_origin: Vector2 = _line.points[0]
 			for i in range(entity.points.size()):
