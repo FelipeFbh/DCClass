@@ -29,6 +29,34 @@ signal pen_thickness_changed(value: float)
 # Pen Color Changed
 signal pen_color_changed(color: Color)
 
+# Toggle Drag Button
+signal disabled_toggle_drag_button(active: bool)
+
+# Toggle Resize Button
+signal disabled_toggle_resize_button(active: bool)
+
+#endregion
+
+#region TreeItem - Whiteboard Rendering
+
+# Signal called after rendering on seek
+signal execute_after_rendering()
+
+# Emit class node from tree items that are selected or unselected
+signal class_node_selected(node: ClassNode, selected: bool)
+
+# Signal called for clear outlines
+signal clear_outlines()
+
+# Signal called for show outlines from current node
+signal show_outlines()
+
+# Signal to deselect after dragging
+signal clear_selection()
+
+# Signal for node selection on whiteboard
+signal whiteboard_nodes_selected(nodes: Array[ClassLeaf])
+
 #endregion
 
 #region Resources
@@ -38,6 +66,8 @@ signal pen_color_changed(color: Color)
 # If true, the group is added at the begin
 # if false, the group is added at the end.
 signal add_class_group(group: ClassGroup, back: bool)
+
+signal add_class_slide(slide: ClassSlide, back: bool)
 
 signal add_class_leaf(entity: Entity)
 
@@ -66,6 +96,12 @@ signal audio_record(active: bool)
 # Pressed detach
 signal request_detach
 
+# Drag toggled
+signal drag_toggled(active: bool)
+
+# Resize toggled
+signal resize_toggled(active: bool)
+
 # Seek the visual for a node
 signal seek_node(node: ClassNode)
 
@@ -77,5 +113,11 @@ signal disabled_toggle_stop_button(active: bool)
 
 # Toggle the Play(Stop) button
 signal status_playback_stop(active : bool)
+
+signal setup_timeline()
+
+signal seek_time_slide(node: ClassNode)
+
+signal update_timer_slider_by_time()
 
 #endregion

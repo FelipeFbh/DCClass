@@ -11,13 +11,15 @@ config_version=5
 [application]
 
 config/name="DCClass"
-config/version="0.1"
-run/main_scene="uid://dmdj1fy3hd6q7"
+config/version="0.2"
+run/main_scene="uid://d3ahyg18n5ed2"
 config/features=PackedStringArray("4.5", "GL Compatibility")
 run/max_fps=120
-config/icon="res://icon.svg"
-run/main_scene.dcclass-editor="res://editor/editor_main.tscn"
+config/icon="uid://dsgbxa6x62b5m"
+run/main_scene.dcclass-editor="uid://d3ahyg18n5ed2"
 config/name.dcclass-editor="DCClass Editor"
+run/main_scene.dcclass-mobile="uid://dmdj1fy3hd6q7"
+config/name.dcclass-mobile="DCClass Mobile"
 
 [audio]
 
@@ -27,7 +29,6 @@ driver/enable_input=true
 [autoload]
 
 PersistenceEditor="*res://editor/persistence_editor.gd"
-ModLoader="*res://core/mods/module_loader.tscn"
 PersistenceMobile="*res://mobile/persistence_mobile.gd"
 
 [debug]
@@ -44,16 +45,13 @@ window/stretch/mode="viewport"
 window/stretch/aspect="expand"
 window/per_pixel_transparency/allowed=true
 display_server/driver.windows="windows"
+display_server/driver.linuxbsd="wayland"
 display_server/driver.android="android"
 display_server/driver.ios="iOS"
 display_server/driver.macos="macos"
 window/handheld/orientation=4
 window/stretch/scale.android=2.0
 whiteboard/size=Vector2i(2400, 1274)
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/godot_file_picker/plugin.cfg", "res://addons/html5_file_dialog/plugin.cfg")
 
 [file_customization]
 
@@ -128,8 +126,13 @@ pointing/android/enable_pan_and_scale_gestures=true
 pen_tablet/driver.windows="wintab"
 pointing/emulate_mouse_from_touch=false
 
+[layer_names]
+
+2d_physics/layer_1="widget_select"
+
 [rendering]
 
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_2d=1
+renderer/rendering_method.linuxbsd="gl_compatibility"

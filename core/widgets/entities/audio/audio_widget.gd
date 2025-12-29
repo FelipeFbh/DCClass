@@ -129,7 +129,7 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			var time_remaining = prev_audio.audio.stream.get_length() - prev_audio.audio.get_playback_position()
+			var time_remaining = prev_audio.compute_duration() - prev_audio.audio.get_playback_position()
 			
 			if time_remaining <= crossfade_duration:
 				crossfade(prev_audio)
@@ -145,19 +145,29 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 		# there's no other audio
 		crossfade_out()
 	
-	add_to_group(&"audio_playing")
-	add_to_group(&"widget_playing")
+	# add_to_group(&"audio_playing")
+	# add_to_group(&"widget_playing")
 		
-	# Wait until this audio is terminated or finished 
+	# # Wait until this audio is terminated or finished 
+	# var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
+	# var state = SignalsCore.await_any_once(sigs)
+	
+	# _bus_core.current_node_changed.emit(class_node)
+	
+	# if !state._done:
+	# 	await state.completed
+		
+	# stop()
+
+	# Now play this audio
 	var sigs: Array[Signal] = [audio.finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
-	
 	_bus_core.current_node_changed.emit(class_node)
+	audio.play()
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")
 	emit_signal("widget_finished")
-	
 	if !state._done:
 		await state.completed
 		reset()

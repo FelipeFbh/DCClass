@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpv365jptss0o"
-path="res://.godot/imported/icon.png-bb42749800b6659b138001b0989a72fa.ctex"
+uid="uid://dciqdluyqxc3b"
+path="res://.godot/imported/antialliased_line.png-34f4ce973437dca43963f8f5cb274253.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/html5_file_dialog/icon.png"
-dest_files=["res://.godot/imported/icon.png-bb42749800b6659b138001b0989a72fa.ctex"]
+source_file="res://assets/sprites/widgets/antialliased_line.png"
+dest_files=["res://.godot/imported/antialliased_line.png-34f4ce973437dca43963f8f5cb274253.ctex"]
 
 [params]
 

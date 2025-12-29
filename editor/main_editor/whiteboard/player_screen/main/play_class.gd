@@ -8,6 +8,7 @@ var WHITEBOARD_SIZE: Vector2i
 
 @onready var _bus_core: CoreEventBus = Engine.get_singleton(&"CoreSignals")
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
+@onready var _visual_system: VisualOutlineSystem
 
 @export var class_index: ClassIndex
 
@@ -40,14 +41,15 @@ func _load_whiteboard_size() -> Vector2i:
 
 
 func _instantiate() -> bool:
-	var visual_slide: Node2D = Node2D.new()
 	NodeController.visual_widgets = visual_widgets
-	visual_widgets.add_child(visual_slide)
-	NodeController.visual_slide = visual_slide
+	NodeController.push_slide_layer('BaseLayer')
+	_visual_system = VisualOutlineSystem.new()
+	add_child(_visual_system)
 	return true
 
 # To begin the reproduction from the entry point of the class.
 func _seek_play():
+	get_tree().call_group(&"skipped_before_play", "clear_before_play")
 	entry_point = PersistenceEditor.resources_class._current_node._node_controller
 	entry_point.play_seek()
 
@@ -55,8 +57,6 @@ func _seek_play():
 func _seek_node(node_seek: ClassNode) -> void:
 	get_tree().call_group(&"widget_finished", "clear")
 	var node_seek_controller: NodeController = node_seek._node_controller
-	var last_clear: LeafController = node_seek_controller.get_last_clear()
 	entry_point = PersistenceEditor.resources_class.root_tree_structure._node_controller
-	if last_clear != null:
-		entry_point = last_clear
+	NodeController.clear_layers()
 	entry_point.seek(node_seek_controller, entry_point)

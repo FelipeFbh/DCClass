@@ -10,6 +10,10 @@ extends MarginContainer
 @onready var btn_audio: CheckButton = %AudioButton
 @onready var btn_pen: CheckButton = %PenButton
 @onready var btn_detach: Button = %DetachButton
+@onready var btn_drag: CheckButton = %DragButton
+@onready var btn_resize: CheckButton = %ResizeButton
+
+#@onready var btn_zoom: CheckButton = %ZoomButton
 
 @onready var tree_manager: TreeManagerEditor = %IndexTree
 
@@ -57,8 +61,22 @@ func _ready() -> void:
 	
 	btn_detach.pressed.connect(_on_button_detach_pressed)
 
+	btn_drag.toggled.connect(_on_button_drag_toggled)
+	_bus.disabled_toggle_drag_button.connect(_disabled_toggle_drag_button)
+
+	btn_resize.toggled.connect(_on_button_resize_toggled)
+	_bus.disabled_toggle_resize_button.connect(_disabled_toggle_resize_button)
+
 	tree_manager.item_activated.connect(_on_item_activated)
 	_bus.disabled_toggle_select_item_index.connect(_disabled_toggle_select_item_index)
+	
+	# Node selection
+	tree_manager.item_collapsed.connect(_on_item_collapse)
+	tree_manager.multi_selected.connect(_on_multi_selected)
+	_bus.execute_after_rendering.connect(_execute_after_rendering)
+	_bus.clear_selection.connect(_clear_selection)
+	_bus.whiteboard_nodes_selected.connect(_whiteboard_nodes_selection)
+
 
 	pen_thickness_slider.value_changed.connect(_on_thickness_slider_changed)
 	
@@ -134,6 +152,15 @@ func _copy_to_clipboard() -> void:
 			var new_node = ClassGroup.deserialize(data_new)
 			PersistenceEditor.clipboard.append(new_node)
 
+		elif node is ClassSlide:
+			var data_new = {
+				"name": "Slide",
+				"type": "ClassSlide",
+				"childrens": []
+			}
+			var new_node = ClassSlide.deserialize(data_new)
+			PersistenceEditor.clipboard.append(new_node)
+
 func _cut_to_clipboard() -> void:
 	_copy_to_clipboard()
 	_delete()
@@ -143,6 +170,7 @@ func _paste() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.paste_class_nodes.emit()
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 
 func _delete() -> void:
@@ -157,6 +185,7 @@ func _delete() -> void:
 		current = tree_manager.get_next_selected(current)
 	
 	_bus.delete_class_nodes.emit(nodes_del)
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 	
 #endregion
@@ -176,6 +205,12 @@ func _on_menu_btn_insert(id: int) -> void:
 		_add_clear()
 	if id == 5:
 		_add_pause()
+	if id == 6:
+		_add_slide()
+	if id == 7:
+		_push_slide()
+	if id == 8:
+		_add_image()
 
 func _disabled_toggle_insert_button(active: bool) -> void:
 	menu_btn_insert.disabled = active
@@ -226,6 +261,35 @@ func _make_group() -> void:
 		PersistenceEditor.clipboard.append(node)
 	_bus.make_group.emit()
 
+#region Slide
+# Add a new slide to the end of the current node
+func _add_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node, true)
+
+# Push a new slide to the end of the current node
+func _push_slide() -> void:
+	var data_new = {
+		"name": "Slide",
+		"type": "ClassSlide",
+		"childrens": []
+	}
+	var class_node = ClassSlide.deserialize(data_new)
+	var first = tree_manager.get_next_selected(null)
+	if first != null:
+		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
+	_bus.add_class_slide.emit(class_node, false)
+	
+#endregion
+
 
 # Add a clear entity after the current node
 func _add_clear() -> void:
@@ -253,7 +317,55 @@ func _add_pause() -> void:
 	if first != null:
 		PersistenceEditor.resources_class._current_node = first.get_metadata(0)
 	_bus.add_class_leaf.emit(class_node)
+
+func _add_image() -> void:
+	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG):
+		DisplayServer.file_dialog_show("Open File", "", "", false, DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, ["*.png,*.jpg,*.svg,*.bmp"], _on_image_selected)
+
+func _on_image_selected(status: bool, selected_paths: PackedStringArray, _selected_filter_index: int) -> void:
+	if status == false:
+		return
+	var path := selected_paths[0]
+
+	var entity_image = ImageEntity.new()
+	var tmp_path = entity_image.save_resource(path)
+	var image_data = {
+		"image_path": tmp_path 
+	}
+	entity_image.load_data(image_data)
+	_bus.emit_signal("add_class_leaf_entity", entity_image, [
+								{
+									"position:x": 0,
+									"position:y": 0,
+									"property_type": "PositionEntityProperty"
+								}
+							])
+
+
+# func _add_zoom():
+	# var entity_zoom = ZoomEntity.new()
+	# var data_new = {
+	# 	"type": "Zoom",
+	# 	"entity_id": entity_zoom.entity_id,
+	# 	"entiy_properties": [] 
+	# }
 	
+func _set_pen_controls_enabled(enabled: bool):
+	if pen_thickness_slider:
+		pen_thickness_container.visible = true
+		pen_thickness_slider.editable = enabled
+	if pen_color_picker:
+		pen_color_container.visible = true
+		pen_color_picker.disabled = not enabled
+
+func _set_pen_controls_disabled(enabled: bool):
+	if pen_thickness_slider:
+		pen_thickness_container.visible = false
+		pen_thickness_slider.editable = not enabled
+	if pen_color_picker:
+		pen_color_container.visible = false
+		pen_color_picker.disabled = enabled
+		
 #endregion
 
 
@@ -266,6 +378,7 @@ func _on_toggle_audio_pressed(active: bool) -> void:
 		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_AUDIO)
 	else:
 		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+		PersistenceEditor._epilog_events(PersistenceEditor.Events.EDIT_AUDIO)
 
 func _disabled_toggle_audio_button(active: bool) -> void:
 	btn_audio.disabled = active
@@ -285,6 +398,48 @@ func _disabled_toggle_pen_button(active: bool) -> void:
 func _on_button_detach_pressed() -> void:
 	_bus.request_detach.emit()
 
+# Toggle drag mode
+func _on_button_drag_toggled(active: bool) -> void:
+	_bus.drag_toggled.emit(active)
+	if active:
+		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_DRAG)
+	else:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _disabled_toggle_drag_button(active: bool) -> void:
+	btn_drag.disabled = active
+
+# Toggle resize mode
+func _on_button_resize_toggled(active: bool) -> void:
+	_bus.resize_toggled.emit(active)
+	if active:
+		PersistenceEditor._epilog(PersistenceEditor.Status.RECORDING_RESIZE)
+	else:
+		PersistenceEditor._epilog(PersistenceEditor.Status.STOPPED)
+
+func _disabled_toggle_resize_button(active: bool) -> void:
+	btn_resize.disabled = active
+
+func _whiteboard_nodes_selection(nodes: Array[ClassLeaf]):
+	if select_item_index_disabled or nodes.size() == 0:
+		return
+	
+	var t_items: Array[TreeItem] = []
+	for node in nodes:
+		var t_item = tree_manager.find_item_by_node(node)
+		if t_item:
+			t_items.append(t_item)
+	
+	if t_items.size() > 0:
+		tree_manager.deselect_all()
+		# Set first on rendering order as current node an others as selected
+		var last = t_items.pop_back()
+		var node = last.get_metadata(0)
+		_bus_core.current_node_changed.emit(node)		
+		for t_item: TreeItem in t_items:
+			t_item.select(0)
+			tree_manager.multi_selected.emit(t_item, 0, true)
+	
 #endregion
 
 
@@ -307,12 +462,14 @@ func _on_item_activated() -> void:
 	var node = item.get_metadata(0)
 	_bus_core.current_node_changed.emit(node)
 	_bus.seek_node.emit(node)
-
+	PersistenceEditor._epilog_events(PersistenceEditor.Events.SEEK_PANEL, [node] )
+	
 func _disabled_toggle_select_item_index(active: bool) -> void:
 	select_item_index_disabled = active
 
 # Update the current node
 func _current_node_changed(current_node):
+	get_tree().call_group(&"skipped_before_play", "clear_before_play")
 	if current_item_tree != null:
 		current_item_tree.set_custom_color(0, Color.GRAY)
 	current_item_tree = tree_manager.find_item_by_node(current_node)
@@ -320,6 +477,32 @@ func _current_node_changed(current_node):
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
 	
+
+# Show or hide items from a group if it is collapsed
+func _on_item_collapse(item: TreeItem) -> void:
+	if item == current_item_tree:
+		_execute_after_rendering()
+
+# Emit class selected nodes from panel items
+func _on_multi_selected(item: TreeItem, column: int, selected: bool):
+	if select_item_index_disabled:
+		return
+	var node = item.get_metadata(0)
+	_bus.class_node_selected.emit(node, selected)
+
+# Show or hide all the children of a group if it is collapsed
+func _execute_after_rendering():
+	if select_item_index_disabled:
+		return
+	if _current_node._node_controller is GroupController and current_item_tree.collapsed:
+		_current_node._node_controller.skip_all_children()
+		_bus.show_outlines.emit()
+	else:
+		get_tree().call_group(&"skipped_before_play", "clear_before_play")
+		_bus.clear_outlines.emit()
+
+func _clear_selection():
+	tree_manager.deselect_all()
 
 func _on_pen_thickness_changed():
 	if not is_instance_valid(resources_class):

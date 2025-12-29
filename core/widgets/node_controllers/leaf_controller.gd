@@ -39,15 +39,15 @@ func play_widget(__duration: float, __total_real_time: float):
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_slide:
-					leaf_value.reparent(visual_slide)
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
 
 		# We add to the correct parent (visual or audio).
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_slide.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -95,15 +95,15 @@ func play_seekwidget(__duration: float, __total_real_time: float):
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_slide:
-					leaf_value.reparent(visual_slide)
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
 
 		# We add to the correct parent (visual or audio).
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_slide.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished, _bus_core.stop_widget]
 	var state = SignalsCore.await_any_once(sigs)
@@ -136,19 +136,23 @@ func play_seek(last_child: NodeController = null) -> void:
 				if leaf_value.get_parent() != audio_widgets:
 					leaf_value.reparent(audio_widgets)
 		
-			elif leaf_value.get_parent() != visual_widgets:
-					leaf_value.reparent(visual_widgets)
-		
+			elif leaf_value.get_parent() != NodeController.get_current_layer():
+					leaf_value.reparent(NodeController.get_current_layer())
+
 		else:
 			if is_audio():
 				audio_widgets.add_child(leaf_value)
 			else:
-				visual_widgets.add_child(leaf_value)
+				NodeController.get_current_layer().add_child(leaf_value)
 	
 	leaf_value.reset()
 	
 	if not is_audio():
 		var last_audio = get_previous_audio()
+		if last_audio == null:
+			leaf_value.skip_to_end()
+			_bus_core.pause_playback_widget.emit()
+			return
 		var next_leaf_paudio = last_audio.get_next_leaf(last_audio)
 		var prev_leaf = get_previous_leaf(self)
 		if prev_leaf.is_audio():
@@ -188,14 +192,14 @@ func skip_to_end() -> void:
 			if leaf_value.get_parent() != audio_widgets:
 				leaf_value.reparent(audio_widgets)
 	
-		elif leaf_value.get_parent() != visual_widgets:
-			leaf_value.reparent(visual_widgets)
+		elif leaf_value.get_parent() != NodeController.get_current_layer():
+			leaf_value.reparent(NodeController.get_current_layer())
 	
 	else:
 		if is_audio():
 			audio_widgets.add_child(leaf_value)
 		else:
-			visual_widgets.add_child(leaf_value)
+			NodeController.get_current_layer().add_child(leaf_value)
 	
 	
 	var sigs: Array[Signal] = [leaf_value.widget_finished]
@@ -205,6 +209,10 @@ func skip_to_end() -> void:
 	if !state._done:
 		await state.completed
 
+func clear_before_play() -> void:
+	remove_from_group(&"skipped_before_play")
+	if leaf_value != null and is_instance_valid(leaf_value):
+		leaf_value.clear()
 
 # Seek to the given node. Skiping to end all the nodes between node_seek and last_child.
 func seek(node_seek: NodeController, last_child: NodeController = null) -> void:
@@ -250,7 +258,7 @@ func _get_widget(entity: Entity) -> Widget:
 #region Tree Navigation
 
 # Return the next node
-func get_next(__current_node: Array) -> Array:
+func get_next(__current_node: Array, compute_layer:= false) -> Array:
 	var current_node = __current_node[0]
 
 	var parent = current_node._class_node.get_parent_controller()
@@ -310,7 +318,7 @@ func get_next_audio() -> LeafController:
 
 
 # Return the previous audio leaf node
-func get_previous_audio() -> LeafController:
+func get_previous_audio(current_node: NodeController = self) -> LeafController:
 	var leaf = get_previous_leaf(self)
 	while leaf != null:
 		if leaf.has_method("is_audio") and leaf.is_audio():
@@ -339,6 +347,8 @@ func compute_duration_play(current_node: NodeController, _duration: float, _tota
 		_duration = current_node.compute_duration()
 	else:
 		_previous_audio = get_previous_audio()
+		if _previous_audio == null:
+			return [0,0]
 		_duration = _previous_audio.compute_duration()
 	
 	var _next_leaf_paudio = _previous_audio.get_next_leaf(_previous_audio)

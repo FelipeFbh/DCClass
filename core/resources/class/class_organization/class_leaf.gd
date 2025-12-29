@@ -6,6 +6,7 @@ extends ClassNode
 
 
 # 3. signals: define signals here
+signal property_updated(property: EntityProperty)
 
 
 # 4. enums: define enums here
@@ -83,6 +84,35 @@ func get_properties() -> Dictionary:
 		var _prop: Dictionary = property.get_property()
 		_properties.merge(_prop, true)
 	return _properties
+	
+## Get a specific property by its type
+func get_property_by_type(property_type: String) -> EntityProperty:
+	for property in entity_properties:
+		if property.get_class_name() == property_type:
+			return property
+	return EntityProperty.new()
+
+## Set a specific property
+func set_property(property: EntityProperty) -> void:
+	var property_type: String = property.get_class_name()
+	var data: Dictionary = property.get_property()
+	var existing_property: EntityProperty = null
+	
+	# Search for the prop in props dict
+	for prop: EntityProperty in entity_properties:
+		if prop.get_class_name() == property_type:
+			existing_property = prop
+			break
+	
+	# If isnt exist, create
+	if existing_property == null:
+		existing_property = property
+		entity_properties.append(existing_property)
+	else:
+		existing_property.set_property(data)
+	
+	property_updated.emit(property)
+
 
 # Delete this ClassLeaf and its associated entity.
 func self_delete() -> void:

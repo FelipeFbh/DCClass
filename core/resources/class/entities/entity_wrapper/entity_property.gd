@@ -6,6 +6,10 @@ extends Resource
 func get_property() -> Dictionary:
 	return {}
 
+## Sets the property values from a dictionary
+func set_property(data: Dictionary) -> void:
+	pass
+
 func get_class_name() -> String:
 	return "EntityProperty"
 
