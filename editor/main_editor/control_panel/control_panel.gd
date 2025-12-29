@@ -476,7 +476,80 @@ func _current_node_changed(current_node):
 	tree_manager.scroll_to_item(current_item_tree, true)
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
+	_update_pen_settings_from_node(current_node)
+
+func _update_pen_settings_from_node(node: ClassNode):
+	if not is_instance_valid(node):
+		return
 	
+	# Only for ClassLeaf
+	if node is ClassLeaf:
+		var entity = node.entity
+		if not is_instance_valid(entity):
+			return
+		
+		# Updates color picker and thickness to its actual value
+		if entity is LineEntity:
+			_set_colorpicker_silently(entity.pen_color)
+			_set_thickness_silently(entity.pen_thickness)
+			
+			# Emits the actual color so it keeps writing were it was left
+			_bus.pen_color_changed.emit(entity.pen_color)
+			_bus.pen_thickness_changed.emit(entity.pen_thickness)
+		
+		# For the PenColorEntity and ThicknessEntity we want to update too
+		# because the drawing starts from here on
+		elif entity is PenColorEntity:
+			_set_colorpicker_silently(entity.color)
+			
+			_bus.pen_color_changed.emit(entity.color)
+			
+		elif entity is PenThicknessEntity:
+			_set_thickness_silently(entity.thickness)
+			
+			_bus.pen_thickness_changed.emit(entity.thickness)
+
+## Sets the color without adding a new node
+func _set_colorpicker_silently(color: Color):
+	if not is_instance_valid(pen_color_picker):
+		return
+	
+	# Disconnects color picker temporarily to avoid loops
+	if pen_color_picker.is_connected("color_changed", _on_color_picker_changed):
+		pen_color_picker.disconnect("color_changed", _on_color_picker_changed)
+	
+	# Updates the color
+	pen_color_picker.color = color
+	
+	# Updates the label
+	if pen_color_label:
+		pen_color_label.text = "Color: #%s" % color.to_html()
+	
+	# Reconnects the color picker
+	pen_color_picker.color_changed.connect(_on_color_picker_changed)
+
+## Sets a value for the slider without adding a new node
+func _set_thickness_silently(value: float):
+	if not is_instance_valid(pen_thickness_slider):
+		return
+	
+	# Stops the timer if active
+	if _pen_thickness_timer.time_left > 0:
+		_pen_thickness_timer.stop()
+	
+	# Disconnects the slider temporarily
+	if pen_thickness_slider.is_connected("value_changed", _on_thickness_slider_changed):
+		pen_thickness_slider.disconnect("value_changed", _on_thickness_slider_changed)
+	
+	# Updates value
+	pen_thickness_slider.value = value
+	
+	# Updates label
+	if pen_thickness_label:
+		pen_thickness_label.text = "Thickness: %.1f" % value
+	
+	# Reconnects
+	pen_thickness_slider.value_changed.connect(_on_thickness_slider_changed)
 
 # Show or hide items from a group if it is collapsed
 func _on_item_collapse(item: TreeItem) -> void:

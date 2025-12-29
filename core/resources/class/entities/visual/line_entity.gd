@@ -20,6 +20,12 @@ extends Entity
 # The delays between each point in the line.
 @export var delays: Array
 
+# The color of the line
+@export var pen_color: Color = Color.WHITE
+
+# The thickness of the line
+@export var pen_thickness: float = 3.0
+
 # TODO: add property variables
 # 7. public variables: define all public variables here
 
@@ -47,7 +53,12 @@ func serialize() -> Dictionary:
 		"entity_type": get_class_name(),
 		"duration": duration,
 		"points": points_array.map(func(v): return {"x": v.x, "y": v.y}),
-		"delays": delays
+		"delays": delays,
+		"color_r": pen_color.r,
+		"color_g": pen_color.g,
+		"color_b": pen_color.b,
+		"color_a": pen_color.a,
+		"thickness": pen_thickness
 	}
 
 # Load data from a dictionary format(.json) to resource(LineEntity).
@@ -58,6 +69,17 @@ func load_data(data: Dictionary) -> void:
 	points = PackedVector2Array(points_array)
 	delays = data["delays"]
 	duration = compute_duration()
+	
+	if data.has("color_r"):
+		pen_color = Color(
+			data["color_r"],
+			data["color_g"],
+			data["color_b"],
+			data["color_a"]
+		)
+	
+	if data.has("pen_thickness"):
+		pen_thickness = data["thickness"]
 
 # Compute the total real duration of the line based on the delays.
 func compute_duration() -> float:
