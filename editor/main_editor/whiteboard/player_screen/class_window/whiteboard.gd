@@ -19,7 +19,7 @@ var _pressed: bool = false
 var _line: Line2D
 var _last_point: Vector2 = Vector2.INF
 
-var _pen_thickness: float = 2.0
+var _pen_thickness: float = 3.0
 var _pen_color: Color = Color.WHITE
 
 # Node selection
