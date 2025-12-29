@@ -23,6 +23,10 @@ region = Rect2(350, 450, 50, 50)
 atlas = ExtResource("6_d1wmn")
 region = Rect2(360, 410, 30, 30)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_7ugx4"]
+atlas = ExtResource("6_d1wmn")
+region = Rect2(50, 0, 50, 50)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_uioh1"]
 atlas = ExtResource("6_d1wmn")
 region = Rect2(50, 150, 50, 50)
@@ -123,7 +127,6 @@ alignment = 1
 
 [node name="PrevButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 icon = SubResource("AtlasTexture_syixm")
 
@@ -135,16 +138,15 @@ icon = SubResource("AtlasTexture_mcb8p")
 
 [node name="NextButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/PlaybackControls"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 icon = SubResource("AtlasTexture_jmlnq")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
 layout_mode = 0
-offset_left = 1200.0
-offset_top = 20.0
-offset_right = 1238.0
-offset_bottom = 58.0
+offset_left = 1230.0
+offset_top = 10.0
+offset_right = 1268.0
+offset_bottom = 48.0
 
 [node name="RecenterCameraButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer"]
 unique_name_in_owner = true
@@ -153,6 +155,19 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 size_flags_stretch_ratio = 0.0
 icon = SubResource("AtlasTexture_te1kq")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard"]
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 68.0
+offset_bottom = 68.0
+
+[node name="GoBackButton" type="Button" parent="LeftSplit/RightSplit/BottomSplit/Whiteboard/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+icon = SubResource("AtlasTexture_7ugx4")
 
 [node name="BottomPanel" type="PanelContainer" parent="LeftSplit/RightSplit/BottomSplit"]
 unique_name_in_owner = true
@@ -216,7 +231,7 @@ custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-min_value = 0.5
+min_value = 0.4
 max_value = 3.0
 step = 0.1
 value = 1.0
