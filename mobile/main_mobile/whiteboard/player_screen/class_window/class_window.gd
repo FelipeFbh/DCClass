@@ -30,6 +30,7 @@ func _update_zoom_slider_value() -> void:
 func _zoom_slider_value_selected(value: float) -> void:
 	if !is_instance_valid(ClassUIMobile.context) or !is_instance_valid(ClassUIMobile.context.camera):
 		return
+	ClassUIMobile.context.camera.user_controlled = true
 	ClassUIMobile.context.camera.zoom = Vector2(value, value)
 
 func _zoom_reset() -> void:
@@ -100,9 +101,11 @@ var prev_vol: float = 0.5
 func _volume_controls() -> void:
 	bus_index = AudioServer.get_bus_index(bus_name)
 	
+	# it transforms to lineal scale the actual volume on db
 	var act_vol = AudioServer.get_bus_volume_db(bus_index)
 	var act_vol_linear = db_to_linear(act_vol)
 	
+	# updates to the new value on lineal scale and its icon
 	volume_slider.value = act_vol_linear
 	_update_volume_icon(act_vol_linear)
 	
@@ -152,6 +155,15 @@ func _toggle_mute():
 
 func _toggle_camera_button(user_controlled_camera: bool) -> void:
 	center_camera_button.visible = user_controlled_camera
+
+#endregion
+
+#region Go Back
+
+@onready var go_back_button: Button = %GoBackButton
+
+func _on_go_back_pressed() -> void:
+	get_tree().change_scene_to_file("res://mobile/main_menu/main_menu_mobile.tscn")
 
 #endregion
 
@@ -277,6 +289,8 @@ func _ready():
 	
 	zoom_slider.value_changed.connect(_zoom_slider_value_selected)
 	zoom_button.pressed.connect(_zoom_reset)
+	
+	go_back_button.pressed.connect(_on_go_back_pressed)
 	
 	_volume_controls()
 	

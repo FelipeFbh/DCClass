@@ -4,6 +4,7 @@ extends Widget
 @export var entity: AudioEntity
 var crossfade_tween: Tween
 var crossfade_duration: float = 0.06
+var fade_duration: float = 0.03
 var audio: AudioStreamPlayer
 
 
@@ -82,12 +83,32 @@ func crossfade_in(_seek_time: float = -1):
 	if audio and is_instance_valid(audio):
 		audio.volume_db = -80.0
 		
+		await get_tree().process_frame
+		
 		if _seek_time != -1:
 			audio.play(_seek_time)
 		else:
 			audio.play()
 			
-		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, crossfade_duration)
+		crossfade_tween.tween_property(audio, "volume_db", fade_in_db, fade_duration)
+
+func crossfade_out(_seek_time: float = -1):
+	var fade_out_db = -80.0
+	
+	if crossfade_tween:
+		crossfade_tween.kill()
+		
+	crossfade_tween = create_tween()
+	
+	if audio and is_instance_valid(audio):
+		audio.volume_db = 0.0
+		
+		if _seek_time != -1:
+			audio.play(_seek_time)
+		else:
+			audio.play()
+			
+		crossfade_tween.tween_property(audio, "volume_db", fade_out_db, fade_duration)
 	
 # stops the audio after a fade
 func stop_after_fade(act_audio: AudioWidget):
@@ -120,13 +141,9 @@ func play(_duration: float, _total_real_time: float, _duration_leaf: float) -> v
 				
 				if prev_audio.audio.playing:
 					crossfade(prev_audio)
-		else:
-			# the audio is the same, no crossfade
-			crossfade_in()
-			
 	else:
 		# there's no other audio
-		crossfade_in()
+		crossfade_out()
 	
 	# add_to_group(&"audio_playing")
 	# add_to_group(&"widget_playing")
@@ -171,13 +188,10 @@ func seek_and_play(_seek_time: float) -> void:
 		
 		if prev_audio != self:
 			# fade if its a different audio
-			crossfade(prev_audio.audio, _seek_time)
-		else:
-		# the audio is the same
-			crossfade_in(_seek_time)
+			crossfade(prev_audio, _seek_time)
 	else:
 		# there's no other audio
-		crossfade_in(_seek_time)
+		crossfade_out(_seek_time)
 	
 	add_to_group(&"audio_playing")
 	add_to_group(&"widget_playing")

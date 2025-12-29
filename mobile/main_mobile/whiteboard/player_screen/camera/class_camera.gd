@@ -167,7 +167,6 @@ func add_recent_content(line_pos: Vector2):
 				_reset_bounds()
 				
 			if abs(last_pos.y - line_pos.y) >= VERTICAL_THRESHOLD:
-				print(last_pos.y - line_pos.y)
 				recent_content.clear()
 				recent_content.append(line_pos)
 				_reset_bounds()
@@ -192,7 +191,7 @@ func add_recent_content(line_pos: Vector2):
 			max_x = max(max_x, line_pos.x)
 			max_y = max(max_y, line_pos.y)
 		
-		_center_of_mass()
+		_center()
 		recent_content.append(line_pos)
 		
 		# checks the limit points allowed to save
@@ -218,7 +217,7 @@ func _reset_bounds():
 		max_x = max(max_x, point.x)
 		max_y = max(max_y, point.y)
 	
-	_center_of_mass()
+	_center()
 	
 # Discards half of the old point on the recent lines list
 func _discard_half_points():
@@ -237,7 +236,7 @@ func is_inside_cam(point_x: float, point_y: float) -> bool:
 		return false
 
 # Gets the center of mass of the content
-func _center_of_mass():
+func _center():
 	if recent_content.is_empty():
 		content_bounds = Rect2(
 			Vector2(0, 0),

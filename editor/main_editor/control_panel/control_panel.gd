@@ -58,7 +58,7 @@ func _ready() -> void:
 	_bus.disabled_toggle_pen_button.connect(_disabled_toggle_pen_button)
 	
 	_bus.pen_started_drawing.connect(_on_pen_started_drawing)
-		
+	
 	btn_detach.pressed.connect(_on_button_detach_pressed)
 
 	btn_drag.toggled.connect(_on_button_drag_toggled)
@@ -92,8 +92,18 @@ func _ready() -> void:
 # Setup the control panel with the current resources class
 func _setup():
 	resources_class = PersistenceEditor.resources_class
+	
+	if not is_instance_valid(resources_class):
+		printerr("ERROR: resources_class is not valid!")
+		# Intenta inicializar PersistenceEditor si es necesario
+		if PersistenceEditor.resources_class == null:
+			printerr("PersistenceEditor.resources_class is null!")
+			return
+	
 	_setup_index_class()
 	_current_node_changed(resources_class._current_node)
+	
+	print("ControlPanel setup complete")
 
 #region Menu Edit
 
@@ -466,6 +476,7 @@ func _current_node_changed(current_node):
 	tree_manager.scroll_to_item(current_item_tree, true)
 	current_item_tree.set_custom_color(0, Color.LIME_GREEN)
 	_current_node = current_node
+	
 
 # Show or hide items from a group if it is collapsed
 func _on_item_collapse(item: TreeItem) -> void:
@@ -494,6 +505,12 @@ func _clear_selection():
 	tree_manager.deselect_all()
 
 func _on_pen_thickness_changed():
+	if not is_instance_valid(resources_class):
+		resources_class = PersistenceEditor.resources_class
+	if not is_instance_valid(resources_class):
+		printerr("ERROR: Cannot access resources_class in _on_pen_thickness_changed")
+		return
+
 	_bus.pen_thickness_changed.emit(_pending_pen_thickness)
 	
 	var thickness_entity := PenThicknessEntity.new()
@@ -502,6 +519,12 @@ func _on_pen_thickness_changed():
 	_bus.add_class_leaf_entity.emit(thickness_entity, [])
 
 func _on_pen_color_changed(color: Color) -> void:
+	if not is_instance_valid(resources_class):
+		resources_class = PersistenceEditor.resources_class
+		if not is_instance_valid(resources_class):
+			printerr("ERROR: Cannot access resources_class in _on_pen_color_changed")
+			return
+	
 	_bus.pen_color_changed.emit(color)
 		
 	var color_entity := PenColorEntity.new()
