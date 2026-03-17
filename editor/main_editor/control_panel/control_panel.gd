@@ -350,21 +350,6 @@ func _on_image_selected(status: bool, selected_paths: PackedStringArray, _select
 	# 	"entiy_properties": [] 
 	# }
 	
-func _set_pen_controls_enabled(enabled: bool):
-	if pen_thickness_slider:
-		pen_thickness_container.visible = true
-		pen_thickness_slider.editable = enabled
-	if pen_color_picker:
-		pen_color_container.visible = true
-		pen_color_picker.disabled = not enabled
-
-func _set_pen_controls_disabled(enabled: bool):
-	if pen_thickness_slider:
-		pen_thickness_container.visible = false
-		pen_thickness_slider.editable = not enabled
-	if pen_color_picker:
-		pen_color_container.visible = false
-		pen_color_picker.disabled = enabled
 		
 #endregion
 
