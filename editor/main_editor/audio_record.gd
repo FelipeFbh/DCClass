@@ -1,7 +1,6 @@
 class_name ClassAudioRecord
 extends Node
 
-
 var resources_class: ResourcesClassEditor
 @onready var _bus: EditorEventBus = Engine.get_singleton(&"EditorSignals")
 
@@ -12,7 +11,6 @@ var record_data: AudioStreamWAV
 
 func _setup():
 	resources_class = PersistenceEditor.resources_class
-
 
 func record() -> void:
 	if record_effect.is_recording_active():
@@ -29,7 +27,6 @@ func play_recording() -> void:
 	new_audiostream.stream = record_data
 	add_child(new_audiostream)
 	new_audiostream.play()
-	
 
 func save_recording(_record_data: AudioStreamWAV) -> void:
 	var path_tmp: String = "user://tmp/class_editor/"
@@ -44,7 +41,15 @@ func save_recording(_record_data: AudioStreamWAV) -> void:
 	var absolute_path_ogg = ProjectSettings.globalize_path(path_ogg)
 	
 	var args = ["-y", "-i", absolute_path_wav, "-c:a", "libvorbis", absolute_path_ogg]
+	
+	# If you want to use a binary version of FFmpeg, you can specify the path here.
+	#var ffmpeg_path = "res://editor/utils/ffmpeg/ffmpeg.exe"
+	#ffmpeg_path = ProjectSettings.globalize_path(ffmpeg_path)
+	#var exit_code = OS.execute(ffmpeg_path, args, [], false, false)
+	# And comment the line below
+	# Otherwise, it will use the system's FFmpeg.
 	var exit_code = OS.execute("ffmpeg", args, [], false, false)
+
 	if exit_code != 0:
 		push_error("FFmpeg Error: %d" % exit_code)
 

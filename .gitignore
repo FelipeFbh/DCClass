@@ -4,13 +4,9 @@
 # Godot-specific ignores
 .import/
 export.cfg
-export_presets.cfg
 
 # VSCode specific ignores
 .vscode/
-
-# Godot recordings
-.recordings/
 
 # Exported
 .export/
@@ -21,3 +17,6 @@ android/build/*
 
 #Ignore temporary files
 *.tmp
+
+# Ignore if you are using a custom ffmpeg build directly in the project.
+editor/utils/ffmpeg/

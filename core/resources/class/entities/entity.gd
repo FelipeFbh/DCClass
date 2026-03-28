@@ -26,7 +26,7 @@ func serialize() -> Dictionary:
 		"entity_type": get_class_name()
 	}
 
-## Returns a new instance of this entity type from the given dictionary.
+## Returns a new instance of this entity type from the given dictionary(.json).
 static func deserialize(data: Dictionary) -> Entity:
 	assert(CustomClassDB.class_exists(data["entity_type"]), "Entity type does not exist: " + data["entity_type"])
 	var instance = CustomClassDB.instantiate(data["entity_type"])
@@ -38,18 +38,19 @@ static func deserialize(data: Dictionary) -> Entity:
 func load_data(_data: Dictionary) -> void:
 	pass
 
+# Returns a temporary copy of this entity.
 func copy_tmp() -> Entity:
 	var new_entity: Entity = CustomClassDB.instantiate(get_class_name())
 	new_entity.load_data(serialize())
 	return new_entity
 
-## Deletes this entity.
+# Deletes this entity.
 func self_delete() -> void:
 	pass
 
-
-func cp_tmp():
-	pass
-
+# Converts a temporary entity to a persistent entity.
 func tmp_to_persistent() -> void:
 	pass
+
+func save_resource(path: String) -> String:
+	return ""

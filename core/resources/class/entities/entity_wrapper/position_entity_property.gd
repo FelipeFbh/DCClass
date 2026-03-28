@@ -7,6 +7,10 @@ extends EntityProperty
 func get_property() -> Dictionary:
 	return {"position": position}
 
+func set_property(data: Dictionary) -> void:
+	if data.has("position") and data["position"] is Vector2:
+		position = data["position"]
+
 func get_class_name() -> String:
 	return "PositionEntityProperty"
 

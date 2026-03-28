@@ -13,15 +13,15 @@ extends Resource
 # 6. export variables: define all export variables in groups here
 
 ## Reference to the parent node of this node in the tree.
-@export var _parent: ClassNode 
+@export var _parent: ClassNode
 
-## Reference to the node controller that manages this node.
-var _node_controller: NodeController
 
 # 7. public variables: define all public variables here
 
 
 # 8. private variables: define all private variables here, use _ as preffix
+## Reference to the node controller that manages this node.
+var _node_controller: NodeController
 
 # 9. onready variables: define all onready variables here
 
@@ -31,11 +31,13 @@ var _node_controller: NodeController
 
 # 12. public methods: define all public methods here
 
+# Get the controller associated with this ClassNode.
 func get_parent_controller():
 	if _parent != null:
 		return _parent._node_controller
 	return null
 
+# Set the parent of this ClassNode.
 func set_parent(parent):
 	_parent = parent
 
@@ -45,20 +47,16 @@ func get_class_name() -> String:
 func get_editor_name() -> String:
 	return "Class_Node"
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
 	return {
 		"type": get_class_name()
 	}
 
+# Deserialize from a dictionary format(.json) to resource(ClassNode).
 static func deserialize(data: Dictionary) -> ClassNode:
 	var instance: ClassNode = CustomClassDB.instantiate(data["type"]).deserialize(data)
 	return instance
-
-func self_delete() -> void:
-	pass
-
-func child_delete(child: ClassNode) -> void:
-	pass
 
 
 # 13. private methods: define all private methods here, use _ as preffix

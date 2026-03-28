@@ -18,24 +18,18 @@ func _select_file():
 		return
 	if OS.has_feature("web"):
 		print("Web detected. Using browser file picker.")
-		return
-	if DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG):
-		_native_dialog()
-		print("Native dialog support detected. Using native file picker.")
-		return
-	print("No custom dialog support detected. Using built-in file picker.")
+	print("No custom dialog support detected. Using built-in file picker or native file picker.")
+	_native_dialog()
 #endregion
 
 #region Native Seleccionando Archivo
-func _native_dialog():
-	DisplayServer.file_dialog_show("Open File", "", "", false, DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, ["*.dcc"], _on_native_dialog_file_selected)
+@onready var select_file_dialog: FileDialog = %SelectFileDialog
 
-func _on_native_dialog_file_selected(status: bool, selected_paths: PackedStringArray, _selected_filter_index: int) -> void:
-	if status == false:
-		return
-	var path := selected_paths[0]
-	_on_file_selected(path)
-#endregion
+
+func _native_dialog():
+	select_file_dialog.popup()
+	var file_path: String = await select_file_dialog.file_selected
+	_on_file_selected(file_path)
 
 #region Process file
 func _on_file_selected(path: String) -> void:

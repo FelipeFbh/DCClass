@@ -6,6 +6,7 @@ extends ClassNode
 
 
 # 3. signals: define signals here
+signal property_updated(property: EntityProperty)
 
 
 # 4. enums: define enums here
@@ -15,11 +16,18 @@ extends ClassNode
 static var entities: Dictionary
 
 # 6. export variables: define all export variables in groups here
-var entity_id
+
+# The entity associated with this ClassLeaf.
 @export var entity: Entity = null
+
+# The properties of the entity associated with this ClassLeaf.
 @export var entity_properties: Array[EntityProperty] = []
 
 # 7. public variables: define all public variables here
+
+# The unique identifier for the entity. Can be an int or a string.
+# Ideally use a string for Operations and a int for dynamic entities.
+var entity_id
 
 
 # 8. private variables: define all private variables here, use _ as preffix
@@ -40,6 +48,7 @@ func get_class_name():
 func get_editor_name() -> String:
 	return entity.get_editor_name()
 
+# Serialize to a dictionary format(.json) for saving.
 func serialize() -> Dictionary:
 	return {
 		"type": get_class_name(),
@@ -47,6 +56,7 @@ func serialize() -> Dictionary:
 		"entity_properties": entity_properties.map(func(p): return p.serialize()),
 	}
 
+# Deserialize from a dictionary format(.json) to resource(ClassLeaf).
 static func deserialize(data: Dictionary) -> ClassLeaf:
 	var instance: ClassLeaf = ClassLeaf.new()
 	instance.entity_id = data["entity_id"]
@@ -55,7 +65,8 @@ static func deserialize(data: Dictionary) -> ClassLeaf:
 		instance.entity_properties.append(EntityProperty.deserialize(property_data))
 	return instance
 
-func _setup_controller(is_child_root : bool) -> void:
+# Setup the controller associated with this ClassLeaf.
+func _setup_controller(is_child_root: bool) -> void:
 	var _class: String = get_class_name().replace("Class", "") + "Controller"
 	assert(CustomClassDB.class_exists(_class), "Class " + _class + " does not exist.")
 	var controller: LeafController = CustomClassDB.instantiate(_class)
@@ -73,9 +84,39 @@ func get_properties() -> Dictionary:
 		var _prop: Dictionary = property.get_property()
 		_properties.merge(_prop, true)
 	return _properties
+	
+## Get a specific property by its type
+func get_property_by_type(property_type: String) -> EntityProperty:
+	for property in entity_properties:
+		if property.get_class_name() == property_type:
+			return property
+	return EntityProperty.new()
+
+## Set a specific property
+func set_property(property: EntityProperty) -> void:
+	var property_type: String = property.get_class_name()
+	var data: Dictionary = property.get_property()
+	var existing_property: EntityProperty = null
+	
+	# Search for the prop in props dict
+	for prop: EntityProperty in entity_properties:
+		if prop.get_class_name() == property_type:
+			existing_property = prop
+			break
+	
+	# If isnt exist, create
+	if existing_property == null:
+		existing_property = property
+		entity_properties.append(existing_property)
+	else:
+		existing_property.set_property(data)
+	
+	property_updated.emit(property)
 
 
+# Delete this ClassLeaf and its associated entity.
 func self_delete() -> void:
+	# Check if is a dynamic entity.
 	if (entity_id is int or entity_id is float) and entity_id in entities:
 		entity.self_delete()
 		entities.erase(entity_id)
@@ -85,6 +126,7 @@ func self_delete() -> void:
 	_parent.child_delete(self)
 	_node_controller.self_delete()
 
+# Create a copy of this ClassLeaf with its entity and properties.
 func copy_tmp() -> ClassLeaf:
 	var new_leaf: ClassLeaf = ClassLeaf.new()
 	new_leaf.entity = entity.copy_tmp()
